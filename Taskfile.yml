@@ -1,0 +1,22 @@
+version: '3'
+
+# Taskfile for this project.
+# Installed by deft-install --yes (Epic-4). Add your own tasks below or in
+# additional included files. The deft include makes all framework tasks
+# (task check, task vbrief:*, task doctor, etc.) available from the project root.
+
+includes:
+  deft:
+    taskfile: ./.deft/core/Taskfile.yml
+    optional: true
+
+tasks:
+  open:
+    desc: Open cursorSpeedometer in Xcode with Baba's iPhone 15 Pro selected
+    cmds:
+      - ./scripts/open-xcode.sh
+
+  build:device:
+    desc: Build cursorSpeedometer for Baba's iPhone 15 Pro
+    cmds:
+      - ./scripts/run-device.sh build

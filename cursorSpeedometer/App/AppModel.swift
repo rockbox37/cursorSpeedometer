@@ -1,0 +1,67 @@
+import Combine
+import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
+
+@MainActor
+final class AppModel: ObservableObject {
+    let settings = AppSettings()
+    let rideViewModel: RideViewModel
+    let locationService: LocationService
+    let themeController = ThemeAutoSwitcherController()
+    let brightnessRunner = BrightnessControllerRunner()
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        let viewModel = RideViewModel(settings: settings)
+        rideViewModel = viewModel
+        locationService = LocationService { sample in
+            viewModel.handleSample(sample)
+        }
+
+        settings.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+    }
+
+    func onAppear() {
+        locationService.requestPermissionIfNeeded()
+        refreshAdaptiveControllers()
+    }
+
+    func onScenePhaseChange(_ phase: ScenePhase) {
+        switch phase {
+        case .active:
+            refreshAdaptiveControllers()
+            applyRideMode()
+        case .inactive, .background:
+            themeController.stop()
+            brightnessRunner.stop()
+        @unknown default:
+            break
+        }
+    }
+
+    func onSettingsChanged() {
+        applyRideMode()
+        refreshAdaptiveControllers()
+    }
+
+    private func refreshAdaptiveControllers() {
+        let latitude = locationService.coordinate?.latitude ?? 37.3349
+        let longitude = locationService.coordinate?.longitude ?? -122.0090
+
+        themeController.start(settings: settings, latitude: latitude, longitude: longitude)
+        brightnessRunner.start(settings: settings, latitude: latitude, longitude: longitude)
+    }
+
+    private func applyRideMode() {
+        #if canImport(UIKit)
+        UIApplication.shared.isIdleTimerDisabled = settings.rideModeEnabled
+        #endif
+    }
+}

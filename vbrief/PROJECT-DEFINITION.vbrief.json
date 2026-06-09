@@ -1,0 +1,39 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:deft-directive-setup",
+    "description": "Project identity gestalt",
+    "created": "2026-06-07T00:00:00Z",
+    "updated": "2026-06-08T03:59:53Z"
+  },
+  "plan": {
+    "title": "cursorSpeedometer",
+    "status": "running",
+    "policy": {
+      "allowDirectCommitsToMaster": false
+    },
+    "narratives": {
+      "Overview": "cursorSpeedometer is a native iOS trip-computer app for motorcycle, bicycle, and e-bike riders. It shows GPS-derived speed, odometer, and trip stats (max speed, distance, average speed) in a glanceable UI optimized for riding.",
+      "TechStack": "iPhone native app using Swift — SwiftUI for UI, CoreLocation for GPS, targeting iOS 16+",
+      "Strategy": "Use interview for this project",
+      "Quality": "Run task check before every commit. Achieve >= 85% coverage overall + per-module. Store secrets in secrets/ dir.",
+      "ProjectRules": "Target iOS 16+ only.",
+      "Branching": "Branch-based workflow (default)",
+      "DeftVersion": "0.42.1"
+    },
+    "items": [
+      {
+        "id": "2026-06-07-gps-trip-computer-mvp",
+        "title": "GPS Trip Computer MVP",
+        "status": "proposed",
+        "metadata": {
+          "source_path": "proposed/2026-06-07-gps-trip-computer-mvp.vbrief.json",
+          "lifecycle_folder": "proposed"
+        }
+      }
+    ],
+    "metadata": {
+      "staleness_flags": []
+    }
+  }
+}

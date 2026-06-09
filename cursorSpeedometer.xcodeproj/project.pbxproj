@@ -1,0 +1,497 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		054104FAB3725A79AABEE836 /* RideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A81492851E35EB49BD6C88A /* RideView.swift */; };
+		08ADE2517F9054F89F0B5AF5 /* SolarScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */; };
+		1D52CD11C79657F6A9534C50 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269BE46840305D1CBED21DE0 /* SplashView.swift */; };
+		1FA52121956C510A9C772CBF /* TripComputerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */; };
+		24F6E8BFEA8A57B9B795FAD3 /* SpeedUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */; };
+		3F9585F69119531AA010C95B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3655E9F13E665948AC686625 /* AppSettings.swift */; };
+		4390AA741D545B3485D93718 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F35C634B06522481CFB1CC /* AppModel.swift */; };
+		4A04FEAA15595EB194BCD9E9 /* TripComputerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */; };
+		4A2C1B18394A5153B1E0AA60 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D548BD21B9051D9A56B78B4 /* SettingsView.swift */; };
+		4D056AF11BBB5F0197191B1C /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7141B3F6C60F5BF8B451BF7B /* LocationService.swift */; };
+		5972A68EA1D05FEBA03563CF /* BrandHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */; };
+		678B834DF77D5EEF8FDCA6CE /* DisplayTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */; };
+		71D750748A88589BB6BCFE82 /* cursorSpeedometerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */; };
+		78270220E8C457FA87E536FD /* BrightnessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */; };
+		7EDE3D95671F5CC4A4258115 /* StatTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493232F3FB32521A81427802 /* StatTile.swift */; };
+		8B176E8A0F85541698374AC9 /* DisplayThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44DA22C252350A692710CEF /* DisplayThemeTests.swift */; };
+		914C143038B359EE826F452C /* ThemeAutoSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */; };
+		A247931BCF495FAA9C8B3728 /* RideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D88B521B5F5C35B4F1225A /* RideViewModel.swift */; };
+		A24940A8A3E45B4EBF14B7E3 /* SolarScheduleServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */; };
+		B35443CE57E8573AAD9ED2F4 /* ThemeAutoSwitcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */; };
+		CCAF880248965504B21AE138 /* BrightnessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DA977EAE365AD7A11A0857 /* BrightnessController.swift */; };
+		DEA03F49E73C5D2BAE605FC0 /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77651616CA6A57FA967047DD /* Resources/Assets.xcassets */; };
+		E4E371C3ECAD554ABAF0ACDD /* Resources/LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		12D2A8D540A0555CA898835D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1B2C3D4E5F6478990ABCDE5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1B2C3D4E5F6478990ABCDE1;
+			remoteInfo = cursorSpeedometer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeAutoSwitcher.swift; sourceTree = "<group>"; };
+		04DA977EAE365AD7A11A0857 /* BrightnessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessController.swift; sourceTree = "<group>"; };
+		1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleService.swift; sourceTree = "<group>"; };
+		269BE46840305D1CBED21DE0 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		3655E9F13E665948AC686625 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		493232F3FB32521A81427802 /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
+		5A81492851E35EB49BD6C88A /* RideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideView.swift; sourceTree = "<group>"; };
+		5D548BD21B9051D9A56B78B4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		70F35C634B06522481CFB1CC /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		7141B3F6C60F5BF8B451BF7B /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeAutoSwitcherTests.swift; sourceTree = "<group>"; };
+		77651616CA6A57FA967047DD /* Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Resources/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		99D88B521B5F5C35B4F1225A /* RideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideViewModel.swift; sourceTree = "<group>"; };
+		9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngineTests.swift; sourceTree = "<group>"; };
+		9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandHeaderView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6478990ABCDE3 /* cursorSpeedometer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cursorSpeedometer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6478990ABCDE4 /* cursorSpeedometerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cursorSpeedometerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedUnit.swift; sourceTree = "<group>"; };
+		D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cursorSpeedometerApp.swift; sourceTree = "<group>"; };
+		DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTheme.swift; sourceTree = "<group>"; };
+		DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngine.swift; sourceTree = "<group>"; };
+		E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessControllerTests.swift; sourceTree = "<group>"; };
+		EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleServiceTests.swift; sourceTree = "<group>"; };
+		F44DA22C252350A692710CEF /* DisplayThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayThemeTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		780910B35FE25833B1901AD0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BD591B594D3E5E30A49C63E5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02584DD1B4F35EB1822BAAF8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */,
+				5A81492851E35EB49BD6C88A /* RideView.swift */,
+				5D548BD21B9051D9A56B78B4 /* SettingsView.swift */,
+				269BE46840305D1CBED21DE0 /* SplashView.swift */,
+				493232F3FB32521A81427802 /* StatTile.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0C9C7D4539755BEB8DB850A2 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		0D5BAB959FB0507687113DB9 = {
+			isa = PBXGroup;
+			children = (
+				B484052401305CC9A40E970D /* cursorSpeedometer */,
+				15796B6635DE5BB6AB27D76E /* cursorSpeedometerTests */,
+				8EC8DCE6940A5E02BF01D543 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		15796B6635DE5BB6AB27D76E /* cursorSpeedometerTests */ = {
+			isa = PBXGroup;
+			children = (
+				E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */,
+				F44DA22C252350A692710CEF /* DisplayThemeTests.swift */,
+				EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */,
+				71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */,
+				9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */,
+			);
+			path = cursorSpeedometerTests;
+			sourceTree = "<group>";
+		};
+		70D469A10F5D57448FFF8FCD /* App */ = {
+			isa = PBXGroup;
+			children = (
+				70F35C634B06522481CFB1CC /* AppModel.swift */,
+				D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		798ABFD4D40D585BBCD31917 /* Stores */ = {
+			isa = PBXGroup;
+			children = (
+				3655E9F13E665948AC686625 /* AppSettings.swift */,
+			);
+			path = Stores;
+			sourceTree = "<group>";
+		};
+		7CEB1CA06F595616B9280624 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				04DA977EAE365AD7A11A0857 /* BrightnessController.swift */,
+				7141B3F6C60F5BF8B451BF7B /* LocationService.swift */,
+				1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */,
+				02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		8EC8DCE6940A5E02BF01D543 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6478990ABCDE3 /* cursorSpeedometer.app */,
+				A1B2C3D4E5F6478990ABCDE4 /* cursorSpeedometerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		922732F60B5D5383913EFF81 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */,
+				AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B484052401305CC9A40E970D /* cursorSpeedometer */ = {
+			isa = PBXGroup;
+			children = (
+				70D469A10F5D57448FFF8FCD /* App */,
+				0C9C7D4539755BEB8DB850A2 /* Engine */,
+				922732F60B5D5383913EFF81 /* Models */,
+				7CEB1CA06F595616B9280624 /* Services */,
+				798ABFD4D40D585BBCD31917 /* Stores */,
+				EF1BB98256BD551FBDCCD3FE /* ViewModels */,
+				02584DD1B4F35EB1822BAAF8 /* Views */,
+				77651616CA6A57FA967047DD /* Resources/Assets.xcassets */,
+				797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */,
+			);
+			path = cursorSpeedometer;
+			sourceTree = "<group>";
+		};
+		EF1BB98256BD551FBDCCD3FE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				99D88B521B5F5C35B4F1225A /* RideViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1B2C3D4E5F6478990ABCDE1 /* cursorSpeedometer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F3AFAEE6D055D23968672FA /* Build configuration list for PBXNativeTarget "cursorSpeedometer" */;
+			buildPhases = (
+				CC21D48AB3BD5147B2ACEC40 /* Sources */,
+				BD591B594D3E5E30A49C63E5 /* Frameworks */,
+				9396A1D108CB55E49A518DF1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = cursorSpeedometer;
+			productName = cursorSpeedometer;
+			productReference = A1B2C3D4E5F6478990ABCDE3 /* cursorSpeedometer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A1B2C3D4E5F6478990ABCDE2 /* cursorSpeedometerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C4ECB75CDAC5C7A91AF989D /* Build configuration list for PBXNativeTarget "cursorSpeedometerTests" */;
+			buildPhases = (
+				E8E8F445BF645C2B87F22972 /* Sources */,
+				780910B35FE25833B1901AD0 /* Frameworks */,
+				9F4324DE295B51C783101DD8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6D3ED51E7F1F53AEACF2399D /* PBXTargetDependency */,
+			);
+			name = cursorSpeedometerTests;
+			productName = cursorSpeedometerTests;
+			productReference = A1B2C3D4E5F6478990ABCDE4 /* cursorSpeedometerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1B2C3D4E5F6478990ABCDE5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A1B2C3D4E5F6478990ABCDE1 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					A1B2C3D4E5F6478990ABCDE2 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A1B2C3D4E5F6478990ABCDE1;
+					};
+				};
+			};
+			buildConfigurationList = 9FC8408808A45B9CA9072378 /* Build configuration list for PBXProject "cursorSpeedometer" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 0D5BAB959FB0507687113DB9;
+			productRefGroup = 8EC8DCE6940A5E02BF01D543 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1B2C3D4E5F6478990ABCDE1 /* cursorSpeedometer */,
+				A1B2C3D4E5F6478990ABCDE2 /* cursorSpeedometerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9396A1D108CB55E49A518DF1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEA03F49E73C5D2BAE605FC0 /* Resources/Assets.xcassets in Resources */,
+				E4E371C3ECAD554ABAF0ACDD /* Resources/LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F4324DE295B51C783101DD8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CC21D48AB3BD5147B2ACEC40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4390AA741D545B3485D93718 /* AppModel.swift in Sources */,
+				71D750748A88589BB6BCFE82 /* cursorSpeedometerApp.swift in Sources */,
+				4A04FEAA15595EB194BCD9E9 /* TripComputerEngine.swift in Sources */,
+				678B834DF77D5EEF8FDCA6CE /* DisplayTheme.swift in Sources */,
+				24F6E8BFEA8A57B9B795FAD3 /* SpeedUnit.swift in Sources */,
+				CCAF880248965504B21AE138 /* BrightnessController.swift in Sources */,
+				4D056AF11BBB5F0197191B1C /* LocationService.swift in Sources */,
+				08ADE2517F9054F89F0B5AF5 /* SolarScheduleService.swift in Sources */,
+				914C143038B359EE826F452C /* ThemeAutoSwitcher.swift in Sources */,
+				3F9585F69119531AA010C95B /* AppSettings.swift in Sources */,
+				A247931BCF495FAA9C8B3728 /* RideViewModel.swift in Sources */,
+				5972A68EA1D05FEBA03563CF /* BrandHeaderView.swift in Sources */,
+				054104FAB3725A79AABEE836 /* RideView.swift in Sources */,
+				4A2C1B18394A5153B1E0AA60 /* SettingsView.swift in Sources */,
+				1D52CD11C79657F6A9534C50 /* SplashView.swift in Sources */,
+				7EDE3D95671F5CC4A4258115 /* StatTile.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8E8F445BF645C2B87F22972 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				78270220E8C457FA87E536FD /* BrightnessControllerTests.swift in Sources */,
+				8B176E8A0F85541698374AC9 /* DisplayThemeTests.swift in Sources */,
+				A24940A8A3E45B4EBF14B7E3 /* SolarScheduleServiceTests.swift in Sources */,
+				B35443CE57E8573AAD9ED2F4 /* ThemeAutoSwitcherTests.swift in Sources */,
+				1FA52121956C510A9C772CBF /* TripComputerEngineTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6D3ED51E7F1F53AEACF2399D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1B2C3D4E5F6478990ABCDE1 /* cursorSpeedometer */;
+			targetProxy = 12D2A8D540A0555CA898835D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		002C79943CAE5F988DF2811B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "cursorSpeedometer needs your location to show GPS speed and trip distance while riding.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cursorspeedometer.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		00D02C020CC2576C909D1D60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		37B08F74E64A51469CAFA745 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		49148AF892BD5764A5033FCA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "cursorSpeedometer needs your location to show GPS speed and trip distance while riding.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cursorspeedometer.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B70D581EA8C25AA4BD97484E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cursorspeedometer.appTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/cursorSpeedometer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/cursorSpeedometer";
+			};
+			name = Debug;
+		};
+		F50E43914C2055A69848602E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cursorspeedometer.appTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/cursorSpeedometer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/cursorSpeedometer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C4ECB75CDAC5C7A91AF989D /* Build configuration list for PBXNativeTarget "cursorSpeedometerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B70D581EA8C25AA4BD97484E /* Debug */,
+				F50E43914C2055A69848602E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5F3AFAEE6D055D23968672FA /* Build configuration list for PBXNativeTarget "cursorSpeedometer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				002C79943CAE5F988DF2811B /* Debug */,
+				49148AF892BD5764A5033FCA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9FC8408808A45B9CA9072378 /* Build configuration list for PBXProject "cursorSpeedometer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00D02C020CC2576C909D1D60 /* Debug */,
+				37B08F74E64A51469CAFA745 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1B2C3D4E5F6478990ABCDE5 /* Project object */;
+}

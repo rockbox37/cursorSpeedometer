@@ -1,0 +1,54 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Story vBRIEF for swarm work targeting #1342",
+    "updated": "2026-05-25T17:52:06.659198+00:00"
+  },
+  "plan": {
+    "title": "swarm: unify Phase 6 sub-agent spawning + tests/refactor (slices 4+5 of #1342)",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Unify sub-agent spawning for review-cycle pollers behind the platform adapter. Complete tests, refactor, and documentation updates.",
+      "ProblemStatement": "See GitHub issue #1342 for full context and TDD plan.",
+      "Goals": "Implement the assigned slice(s) from the TDD plan in #1342 using the hybrid workaround approach.",
+      "UserStories": "As a user of Grok Build, I want the swarm skill to support non-Warp environments natively."
+    },
+    "items": [
+      {
+        "title": "Make Phase 6 poller spawning use detected platform mechanism",
+        "status": "completed",
+        "narrative": {
+          "Acceptance": "Completed as part of #1342 slice work; see linked PR."
+        }
+      },
+      {
+        "title": "Add comprehensive tests for new platform paths",
+        "status": "completed",
+        "narrative": {
+          "Acceptance": "Completed as part of #1342 slice work; see linked PR."
+        }
+      },
+      {
+        "title": "Extract shared runtime adapter if beneficial",
+        "status": "completed",
+        "narrative": {
+          "Acceptance": "Completed as part of #1342 slice work; see linked PR."
+        }
+      },
+      {
+        "title": "Update anti-patterns, prompt examples, and workaround section",
+        "status": "completed",
+        "narrative": {
+          "Acceptance": "Completed as part of #1342 slice work; see linked PR."
+        }
+      }
+    ],
+    "references": [
+      {
+        "type": "github-issue",
+        "uri": "https://github.com/deftai/directive/issues/1342"
+      }
+    ],
+    "updated": "2026-05-25T20:03:15Z"
+  }
+}

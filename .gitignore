@@ -1,0 +1,20 @@
+# Xcode / iOS
+**/xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+
+# macOS
+.DS_Store
+
+# Deft framework: ignore local-only caches and scratch directories
+.deft-cache/
+vbrief/.eval/candidates.jsonl
+vbrief/.eval/summary-history.jsonl
+vbrief/.eval/scope-lifecycle.jsonl
+vbrief/.eval/decompositions/
+vbrief/.eval/doctor-state.json
+vbrief/*.lock
+.deft/core.bak-*/
+.deft/*.bak-*
+*.premigrate.*
