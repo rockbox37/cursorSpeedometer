@@ -31,6 +31,7 @@
 		A24940A8A3E45B4EBF14B7E3 /* SolarScheduleServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */; };
 		B35443CE57E8573AAD9ED2F4 /* ThemeAutoSwitcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */; };
 		CCAF880248965504B21AE138 /* BrightnessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DA977EAE365AD7A11A0857 /* BrightnessController.swift */; };
+		D0A5F3562B7C5A4F87B93E11 /* AppClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EFB0102E20508D9229287E /* AppClockView.swift */; };
 		DEA03F49E73C5D2BAE605FC0 /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77651616CA6A57FA967047DD /* Resources/Assets.xcassets */; };
 		E4E371C3ECAD554ABAF0ACDD /* Resources/LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -70,6 +71,7 @@
 		D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cursorSpeedometerApp.swift; sourceTree = "<group>"; };
 		DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTheme.swift; sourceTree = "<group>"; };
 		DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngine.swift; sourceTree = "<group>"; };
+		E3EFB0102E20508D9229287E /* AppClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppClockView.swift; sourceTree = "<group>"; };
 		E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessControllerTests.swift; sourceTree = "<group>"; };
 		EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleServiceTests.swift; sourceTree = "<group>"; };
 		F44DA22C252350A692710CEF /* DisplayThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayThemeTests.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 		02584DD1B4F35EB1822BAAF8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E3EFB0102E20508D9229287E /* AppClockView.swift */,
 				9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */,
 				F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */,
 				5A81492851E35EB49BD6C88A /* RideView.swift */,
@@ -320,6 +323,7 @@
 				914C143038B359EE826F452C /* ThemeAutoSwitcher.swift in Sources */,
 				3F9585F69119531AA010C95B /* AppSettings.swift in Sources */,
 				A247931BCF495FAA9C8B3728 /* RideViewModel.swift in Sources */,
+				D0A5F3562B7C5A4F87B93E11 /* AppClockView.swift in Sources */,
 				5972A68EA1D05FEBA03563CF /* BrandHeaderView.swift in Sources */,
 				9F8C27C4F6565A04AB3E5DD6 /* GPSSignalStatusView.swift in Sources */,
 				054104FAB3725A79AABEE836 /* RideView.swift in Sources */,

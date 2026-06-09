@@ -8,13 +8,20 @@ struct BrandHeaderView: View {
     }
 
     var body: some View {
-        Text("MotoSpeedy")
-            .font(.caption.weight(.bold))
-            .tracking(0.8)
-            .textCase(.uppercase)
-            .foregroundStyle(palette.accentColor)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 3)
-            .background(palette.backgroundColor)
+        ZStack {
+            Text("MotoSpeedy")
+                .font(.caption.weight(.bold))
+                .tracking(0.8)
+                .textCase(.uppercase)
+                .foregroundStyle(palette.accentColor)
+
+            HStack {
+                Spacer()
+                AppClockView(palette: palette)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 3)
+        .background(palette.backgroundColor)
     }
 }
