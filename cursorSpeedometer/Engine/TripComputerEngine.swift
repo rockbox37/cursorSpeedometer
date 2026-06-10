@@ -26,24 +26,54 @@ struct TripComputerEngine: Sendable {
     static let staleSampleSeconds = 1.0
     /// Snap to zero when GPS reports movement but position barely changed.
     static let stationaryDistanceMeters = 1.0
+    /// Ignore cached GPS fixes older than this when processing.
+    static let maxSampleAgeSeconds = 3.0
+    /// Gaps longer than this re-anchor without contributing speed or distance.
+    static let resumeGapSeconds = 5.0
+    /// Hard ceiling for motorcycle / e-bike use (~200 km/h).
+    static let maxPlausibleSpeedMps = 55.0
+    /// Derived speed wildly above GPS usually means a position glitch.
+    static let derivedSpikeMultiplier = 2.5
 
-    func process(sample: LocationSample, state: TripComputerState) -> TripComputerState {
+    func process(
+        sample: LocationSample,
+        state: TripComputerState,
+        now: Date = Date()
+    ) -> TripComputerState {
         guard sample.horizontalAccuracy <= Self.maxAccuracyMeters,
               sample.horizontalAccuracy >= 0 else {
             return state
         }
 
-        var updated = state
-        let candidateSpeed = resolvedSpeed(from: sample, previous: state.lastSample)
-        let effectiveSpeed = candidateSpeed < Self.jitterThresholdMps ? 0 : candidateSpeed
+        if now.timeIntervalSince(sample.timestamp) > Self.maxSampleAgeSeconds {
+            return anchorSample(sample, state: state)
+        }
 
         if let previous = state.lastSample {
-            let delta = sample.timestamp.timeIntervalSince(previous.timestamp)
-            if delta > 0, effectiveSpeed > 0 {
-                let distance = effectiveSpeed * delta
-                updated.tripDistanceMeters += distance
-                updated.odometerMeters += distance
+            let gap = sample.timestamp.timeIntervalSince(previous.timestamp)
+            if gap <= 0 || gap > Self.resumeGapSeconds {
+                return anchorSample(sample, state: state)
             }
+        } else {
+            return anchorSample(sample, state: state)
+        }
+
+        let previous = state.lastSample!
+        let delta = sample.timestamp.timeIntervalSince(previous.timestamp)
+        let components = speedComponents(from: sample, previous: previous)
+
+        if isPositionSpike(components: components) {
+            return anchorSample(sample, state: state)
+        }
+
+        var updated = state
+        let candidateSpeed = min(components.resolved, Self.maxPlausibleSpeedMps)
+        let effectiveSpeed = candidateSpeed < Self.jitterThresholdMps ? 0 : candidateSpeed
+
+        if effectiveSpeed > 0 {
+            let distance = effectiveSpeed * delta
+            updated.tripDistanceMeters += distance
+            updated.odometerMeters += distance
         }
 
         updated.currentSpeedMps = effectiveSpeed
@@ -57,6 +87,13 @@ struct TripComputerEngine: Sendable {
             updated.averageSpeedMps = updated.speedSumMps / Double(updated.speedSampleCount)
         }
 
+        updated.lastSample = sample
+        return updated
+    }
+
+    private func anchorSample(_ sample: LocationSample, state: TripComputerState) -> TripComputerState {
+        var updated = state
+        updated.currentSpeedMps = 0
         updated.lastSample = sample
         return updated
     }
@@ -89,16 +126,18 @@ struct TripComputerEngine: Sendable {
         return updated
     }
 
-    private func resolvedSpeed(from sample: LocationSample, previous: LocationSample?) -> Double {
+    private struct SpeedComponents {
+        let resolved: Double
+        let derived: Double
+        let gps: Double
+    }
+
+    private func speedComponents(from sample: LocationSample, previous: LocationSample) -> SpeedComponents {
         let gpsSpeed = sample.speedMetersPerSecond >= 0 ? sample.speedMetersPerSecond : 0
-
-        guard let previous else {
-            return gpsSpeed
-        }
-
         let delta = sample.timestamp.timeIntervalSince(previous.timestamp)
+
         guard delta > 0 else {
-            return gpsSpeed
+            return SpeedComponents(resolved: gpsSpeed, derived: gpsSpeed, gps: gpsSpeed)
         }
 
         let distance = coordinateDistanceMeters(
@@ -109,16 +148,31 @@ struct TripComputerEngine: Sendable {
         )
 
         if distance < Self.stationaryDistanceMeters {
-            return 0
+            return SpeedComponents(resolved: 0, derived: 0, gps: gpsSpeed)
         }
 
         let derivedSpeed = distance / delta
-
-        if gpsSpeed <= 0 {
-            return derivedSpeed
+        let resolvedSpeed = if gpsSpeed <= 0 {
+            derivedSpeed
+        } else {
+            min(gpsSpeed, derivedSpeed)
         }
 
-        return min(gpsSpeed, derivedSpeed)
+        return SpeedComponents(resolved: resolvedSpeed, derived: derivedSpeed, gps: gpsSpeed)
+    }
+
+    private func isPositionSpike(components: SpeedComponents) -> Bool {
+        if components.derived > Self.maxPlausibleSpeedMps {
+            return true
+        }
+
+        if components.gps > 0,
+           components.derived > components.gps * Self.derivedSpikeMultiplier,
+           components.derived > Self.jitterThresholdMps {
+            return true
+        }
+
+        return false
     }
 
     private func coordinateDistanceMeters(

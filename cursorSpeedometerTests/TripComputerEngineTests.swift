@@ -14,28 +14,52 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLongitude: -122.0
         )
 
-        let result = engine.process(sample: sample, state: TripComputerState())
+        let result = engine.process(sample: sample, state: TripComputerState(), now: baseDate)
         XCTAssertEqual(result.currentSpeedMps, 0)
     }
 
+    func testFirstSampleAnchorsWithoutSpeedOrMax() {
+        let sample = LocationSample(
+            speedMetersPerSecond: 80,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+
+        let result = engine.process(sample: sample, state: TripComputerState(), now: baseDate)
+
+        XCTAssertEqual(result.currentSpeedMps, 0)
+        XCTAssertEqual(result.maxSpeedMps, 0)
+        XCTAssertEqual(result.lastSample, sample)
+    }
+
     func testTracksMaxAndAverageSpeed() {
-        let first = LocationSample(
+        let anchor = LocationSample(
             speedMetersPerSecond: 10,
             timestamp: baseDate,
             horizontalAccuracy: 5,
             coordinateLatitude: 37.0,
             coordinateLongitude: -122.0
         )
-        let second = LocationSample(
-            speedMetersPerSecond: 20,
+        let moderate = LocationSample(
+            speedMetersPerSecond: 10,
             timestamp: baseDate.addingTimeInterval(1),
             horizontalAccuracy: 5,
             coordinateLatitude: 37.00009,
             coordinateLongitude: -122.0
         )
+        let fast = LocationSample(
+            speedMetersPerSecond: 20,
+            timestamp: baseDate.addingTimeInterval(3),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00045,
+            coordinateLongitude: -122.0
+        )
 
-        var state = engine.process(sample: first, state: TripComputerState())
-        state = engine.process(sample: second, state: state)
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moderate, state: state, now: baseDate.addingTimeInterval(1))
+        state = engine.process(sample: fast, state: state, now: baseDate.addingTimeInterval(3))
 
         XCTAssertEqual(state.maxSpeedMps, 20, accuracy: 0.01)
         XCTAssertEqual(state.averageSpeedMps, 15, accuracy: 0.01)
@@ -57,8 +81,8 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLongitude: -122.0
         )
 
-        var state = engine.process(sample: first, state: TripComputerState())
-        state = engine.process(sample: second, state: state)
+        var state = engine.process(sample: first, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: second, state: state, now: baseDate.addingTimeInterval(2))
 
         XCTAssertEqual(state.tripDistanceMeters, 20, accuracy: 0.5)
         XCTAssertEqual(state.odometerMeters, 20, accuracy: 0.5)
@@ -80,10 +104,136 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLongitude: -122.0
         )
 
-        var state = engine.process(sample: moving, state: TripComputerState())
-        state = engine.process(sample: stopped, state: state)
+        var state = engine.process(sample: moving, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: stopped, state: state, now: baseDate.addingTimeInterval(1))
 
         XCTAssertEqual(state.currentSpeedMps, 0, accuracy: 0.01)
+    }
+
+    func testStaleCachedSampleReAnchorsInsteadOfFreezing() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 6,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        let moving = LocationSample(
+            speedMetersPerSecond: 6,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.000054,
+            coordinateLongitude: -122.0
+        )
+        let stale = LocationSample(
+            speedMetersPerSecond: 25,
+            timestamp: baseDate.addingTimeInterval(2),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00027,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+        XCTAssertEqual(state.currentSpeedMps, 6, accuracy: 0.1)
+
+        state = engine.process(sample: stale, state: state, now: baseDate.addingTimeInterval(10))
+
+        XCTAssertEqual(state.currentSpeedMps, 0)
+        XCTAssertEqual(state.maxSpeedMps, 6, accuracy: 0.1)
+        XCTAssertEqual(state.lastSample, stale)
+    }
+
+    func testResumeAfterGapDoesNotSpikeMaxSpeed() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        let moving = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00009,
+            coordinateLongitude: -122.0
+        )
+        let spike = LocationSample(
+            speedMetersPerSecond: 90,
+            timestamp: baseDate.addingTimeInterval(30),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.01,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+        state = engine.process(sample: spike, state: state, now: baseDate.addingTimeInterval(30))
+
+        XCTAssertEqual(state.currentSpeedMps, 0)
+        XCTAssertEqual(state.maxSpeedMps, 10, accuracy: 0.01)
+    }
+
+    func testPositionJumpSpikeReAnchorsWithoutCorruptingMax() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        let moving = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00009,
+            coordinateLongitude: -122.0
+        )
+        let jump = LocationSample(
+            speedMetersPerSecond: 5,
+            timestamp: baseDate.addingTimeInterval(2),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00072,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+        state = engine.process(sample: jump, state: state, now: baseDate.addingTimeInterval(2))
+
+        XCTAssertEqual(state.currentSpeedMps, 0)
+        XCTAssertEqual(state.maxSpeedMps, 10, accuracy: 0.01)
+    }
+
+    func testCruisingSpeedTracksWithoutArtificialCap() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 11.2,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+
+        for second in 1...5 {
+            let sample = LocationSample(
+                speedMetersPerSecond: 11.2,
+                timestamp: baseDate.addingTimeInterval(Double(second)),
+                horizontalAccuracy: 5,
+                coordinateLatitude: 37.0 + 0.0001 * Double(second),
+                coordinateLongitude: -122.0
+            )
+            state = engine.process(
+                sample: sample,
+                state: state,
+                now: baseDate.addingTimeInterval(Double(second))
+            )
+        }
+
+        XCTAssertEqual(state.currentSpeedMps, 11.2, accuracy: 0.5)
+        XCTAssertEqual(state.maxSpeedMps, 11.2, accuracy: 0.5)
     }
 
     func testStaleSampleTimeoutClearsSpeed() {
@@ -95,7 +245,7 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLongitude: -122.0
         )
 
-        var state = engine.process(sample: sample, state: TripComputerState())
+        var state = engine.process(sample: sample, state: TripComputerState(), now: baseDate)
         state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(2))
 
         XCTAssertEqual(state.currentSpeedMps, 0)
@@ -123,7 +273,7 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLongitude: -122.0
         )
 
-        let result = engine.process(sample: sample, state: TripComputerState())
+        let result = engine.process(sample: sample, state: TripComputerState(), now: baseDate)
         XCTAssertEqual(result.currentSpeedMps, 0)
     }
 }

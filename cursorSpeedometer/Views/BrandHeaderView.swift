@@ -2,9 +2,18 @@ import SwiftUI
 
 struct BrandHeaderView: View {
     @ObservedObject var settings: AppSettings
+    @ObservedObject var locationService: LocationService
 
     private var palette: ThemePalette {
         ThemePalette.palette(for: settings.activeTheme)
+    }
+
+    private var gpsStatus: GPSSignalStatus {
+        GPSSignalStatus.resolve(
+            authorization: locationService.authorizationState,
+            horizontalAccuracy: locationService.latestSample?.horizontalAccuracy,
+            lastFixDate: locationService.latestSample?.timestamp
+        )
     }
 
     var body: some View {
@@ -15,7 +24,8 @@ struct BrandHeaderView: View {
                 .textCase(.uppercase)
                 .foregroundStyle(palette.accentColor)
 
-            HStack {
+            HStack(alignment: .center) {
+                GPSSignalStatusView(status: gpsStatus, palette: palette)
                 Spacer()
                 AppClockView(palette: palette)
             }
