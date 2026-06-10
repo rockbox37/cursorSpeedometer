@@ -19,8 +19,13 @@ final class RideViewModel: ObservableObject {
     }
 
     func handleSample(_ sample: LocationSample) {
-        state = engine.process(sample: sample, state: state)
+        state = engine.process(sample: sample, state: state, now: Date())
         settings.persistedOdometerMeters = state.odometerMeters
+    }
+
+    func prepareForResume() {
+        state.currentSpeedMps = 0
+        state.lastSample = nil
     }
 
     func resetTrip() {

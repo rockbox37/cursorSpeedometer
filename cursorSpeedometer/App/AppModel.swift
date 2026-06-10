@@ -13,6 +13,7 @@ final class AppModel: ObservableObject {
     let brightnessRunner = BrightnessControllerRunner()
 
     private var cancellables = Set<AnyCancellable>()
+    private var wasInBackground = false
 
     init() {
         let viewModel = RideViewModel(settings: settings)
@@ -36,9 +37,17 @@ final class AppModel: ObservableObject {
     func onScenePhaseChange(_ phase: ScenePhase) {
         switch phase {
         case .active:
+            if wasInBackground {
+                rideViewModel.prepareForResume()
+                wasInBackground = false
+            }
             refreshAdaptiveControllers()
             applyRideMode()
-        case .inactive, .background:
+        case .inactive:
+            themeController.stop()
+            brightnessRunner.stop()
+        case .background:
+            wasInBackground = true
             themeController.stop()
             brightnessRunner.stop()
         @unknown default:
