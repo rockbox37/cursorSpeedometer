@@ -40,7 +40,10 @@ struct RootView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            BrandHeaderView(settings: appModel.settings)
+            BrandHeaderView(
+                settings: appModel.settings,
+                locationService: appModel.locationService
+            )
 
             TabView {
                 RideView(

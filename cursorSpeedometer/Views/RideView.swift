@@ -19,7 +19,7 @@ struct RideView: View {
                 .allowsHitTesting(false)
 
             VStack(spacing: 24) {
-                rideHeader
+                rideModeIndicator
                 speedDisplay
                 statsGrid
                 controls
@@ -31,19 +31,11 @@ struct RideView: View {
         }
     }
 
-    private var gpsStatus: GPSSignalStatus {
-        GPSSignalStatus.resolve(
-            authorization: locationService.authorizationState,
-            horizontalAccuracy: locationService.latestSample?.horizontalAccuracy,
-            lastFixDate: locationService.latestSample?.timestamp
-        )
-    }
-
-    private var rideHeader: some View {
-        HStack(alignment: .center) {
-            GPSSignalStatusView(status: gpsStatus, palette: palette)
-            Spacer()
-            if settings.rideModeEnabled {
+    @ViewBuilder
+    private var rideModeIndicator: some View {
+        if settings.rideModeEnabled {
+            HStack {
+                Spacer()
                 Label("Ride", systemImage: "bolt.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(palette.accentColor)
