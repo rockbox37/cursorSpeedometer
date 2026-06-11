@@ -31,6 +31,7 @@ final class AppModel: ObservableObject {
 
     func onAppear() {
         locationService.requestPermissionIfNeeded()
+        applyRideMode()
         refreshAdaptiveControllers()
     }
 
