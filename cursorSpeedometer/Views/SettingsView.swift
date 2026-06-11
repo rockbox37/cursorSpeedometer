@@ -86,6 +86,10 @@ struct SettingsView: View {
                     }
                     #endif
                 }
+
+                Section("About") {
+                    AboutSectionView()
+                }
             }
             .navigationTitle("Settings")
             .confirmationDialog(
