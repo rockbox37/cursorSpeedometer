@@ -1,0 +1,42 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:deft-directive-build",
+    "description": "Cancelled scope vBRIEF for the Lean Angle premium feature (audit trail)",
+    "created": "2026-06-11T00:05:00-04:00",
+    "updated": "2026-06-11T00:05:00-04:00",
+    "timezone": "America/New_York"
+  },
+  "plan": {
+    "id": "lean-angle-premium",
+    "title": "Lean Angle Premium Feature (Cancelled)",
+    "status": "cancelled",
+    "narratives": {
+      "Overview": "Premium Lean Angle feature for MotoSpeedy: a real-time, rear-axial motorcycle indicator tilting with the bike, a signed live lean angle in degrees from vertical, and per-session max-left/max-right tracking, gated behind a lifetime in-app purchase (force-unlocked during testing).",
+      "Outcome": "Cancelled. The feature was fully implemented on branch feat/lean-angle and proposed in PR #9 (https://github.com/rockbox37/cursorSpeedometer/pull/9), but never merged to main. Per a product decision the feature was removed before reaching the shipping app; PR #9 was closed without merge and the branch deleted. No lean-angle code exists on main.",
+      "Reflection": "Implementation (LeanAngleEngine, LeanAngleService, LeanAngleEntitlementStore, LeanAngleViewModel, LeanAngleView, AppSettings persistence, ride/settings integration, and LeanAngleEngineTests) is preserved in the closed PR #9 history if the feature is ever revived. This vBRIEF is retained in vbrief/cancelled/ as the audit trail for that decision.",
+      "Lessons": "Track features through the Deft vBRIEF lifecycle from the start so cancellation is a clean state transition rather than ad-hoc branch cleanup."
+    },
+    "items": [
+      {
+        "id": "lean-angle-implementation",
+        "title": "Lean angle feature implementation (engine, sensor, entitlement, view model, UI, tests)",
+        "status": "cancelled"
+      }
+    ],
+    "tags": [
+      "feature",
+      "premium",
+      "lean-angle",
+      "cancelled"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/pull/9",
+        "type": "x-vbrief/github-pr",
+        "title": "PR #9: Add Lean Angle premium feature (closed without merge)"
+      }
+    ],
+    "updated": "2026-06-11T04:07:34Z"
+  }
+}

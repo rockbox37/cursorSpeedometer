@@ -4,7 +4,7 @@
     "author": "agent:deft-directive-setup",
     "description": "Project identity gestalt",
     "created": "2026-06-07T00:00:00Z",
-    "updated": "2026-06-09T05:02:33Z"
+    "updated": "2026-06-11T04:07:48Z"
   },
   "plan": {
     "title": "cursorSpeedometer",
@@ -29,6 +29,22 @@
         "metadata": {
           "source_path": "completed/2026-06-07-gps-trip-computer-mvp.vbrief.json",
           "lifecycle_folder": "completed"
+        }
+      },
+      {
+        "id": "2026-06-11-lean-angle-premium-cancelled",
+        "title": "Lean Angle Premium Feature (Cancelled)",
+        "status": "cancelled",
+        "metadata": {
+          "source_path": "cancelled/2026-06-11-lean-angle-premium-cancelled.vbrief.json",
+          "lifecycle_folder": "cancelled",
+          "references": [
+            {
+              "uri": "https://github.com/rockbox37/cursorSpeedometer/pull/9",
+              "type": "x-vbrief/github-pr",
+              "title": "PR #9: Add Lean Angle premium feature (closed without merge)"
+            }
+          ]
         }
       }
     ],
