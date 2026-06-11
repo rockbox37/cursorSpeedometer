@@ -4,7 +4,7 @@
     "author": "agent:deft-directive-setup",
     "description": "Project identity gestalt",
     "created": "2026-06-07T00:00:00Z",
-    "updated": "2026-06-09T05:02:33Z"
+    "updated": "2026-06-11T03:59:23Z"
   },
   "plan": {
     "title": "cursorSpeedometer",
@@ -28,6 +28,15 @@
         "status": "completed",
         "metadata": {
           "source_path": "completed/2026-06-07-gps-trip-computer-mvp.vbrief.json",
+          "lifecycle_folder": "completed"
+        }
+      },
+      {
+        "id": "2026-06-10-lean-angle-premium-feature",
+        "title": "Lean Angle Premium Feature",
+        "status": "completed",
+        "metadata": {
+          "source_path": "completed/2026-06-10-lean-angle-premium-feature.vbrief.json",
           "lifecycle_folder": "completed"
         }
       }

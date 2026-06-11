@@ -1,0 +1,71 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:deft-directive-build",
+    "description": "Scope vBRIEF for the Lean Angle premium feature (testing phase, IAP deferred)",
+    "created": "2026-06-10T23:50:00-04:00",
+    "updated": "2026-06-10T23:50:00-04:00",
+    "timezone": "America/New_York"
+  },
+  "plan": {
+    "id": "lean-angle-premium",
+    "title": "Lean Angle Premium Feature",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Add a premium Lean Angle feature to MotoSpeedy: a real-time, rear-axial motorcycle indicator that tilts with the bike, a signed live lean angle in degrees from vertical (negative = left, positive = right), and per-session max-left / max-right tracking for track days. The feature is gated behind a lifetime in-app purchase, but during pre-launch testing it is force-unlocked via a single entitlement flag so the full experience is usable without the App Store.",
+      "Problem": "Riders — especially track-day riders — want to see and record how far they lean. MotoSpeedy currently only surfaces GPS speed and trip stats. A lean-angle readout plus session max is a differentiated, monetizable feature that uses on-device motion sensors with no additional privacy cost.",
+      "Goals": "1. Show live lean angle derived from the device IMU (CoreMotion gravity vector).\n2. Display a logo-style rear-view motorcycle graphic that leans side to side in real time.\n3. Show signed degrees from vertical (negative left / positive right).\n4. Track and display max-left and max-right lean for the active session.\n5. Allow calibration so 'upright' accounts for phone mount angle.\n6. Gate the feature behind a lifetime App Store purchase, greyed out until unlocked.\n7. During testing, default the feature to unlocked behind a single swappable flag so no App Store setup is required yet.",
+      "NonGoals": "In-app purchase wiring with StoreKit 2 and App Store Connect product setup are deferred to a follow-up scope vBRIEF for product launch. This scope ships the full feature behind a testing-unlock flag plus the greyed-out gating UI so the IAP swap is a localized change. Also out of scope: lean-angle history log, export, and Apple Watch.",
+      "FunctionalRequirements": "FR-1: MUST compute lean angle from CoreMotion device-motion gravity, with upright = 0 degrees.\nFR-2: MUST display a rear-view motorcycle graphic that rotates with the live lean angle, pivoting at the tire contact patch.\nFR-3: MUST display the live lean angle as a signed integer in degrees (negative left, positive right).\nFR-4: MUST track and display the session max-left and max-right lean angles.\nFR-5: MUST only record max lean while moving above a minimum speed (~5 mph) to avoid stationary noise.\nFR-6: MUST provide calibration that captures the current orientation as upright (0 degrees) and persists the offset across launches.\nFR-7: MUST allow the rider to reset the recorded max lean (also reset alongside Reset Trip semantics).\nFR-8: MUST gate the feature behind an entitlement: greyed-out toggle in Settings and hidden ride-screen UI when locked.\nFR-9: MUST default to unlocked during the testing phase via a single flag, with no StoreKit dependency.\nFR-10: MUST persist the user's enable/disable choice across launches.",
+      "NonFunctionalRequirements": "NFR-1: Lean readings MUST be smoothed (exponential filter) so the indicator is stable under engine vibration.\nNFR-2: Lean values MUST be clamped to a physically plausible range (+/-90 degrees) to reject sensor glitches.\nNFR-3: Core lean logic MUST be unit-testable without live motion hardware.\nNFR-4: The entitlement abstraction MUST make the future StoreKit swap a localized change (single store class).\nNFR-5: Motion updates MUST stop when the app is backgrounded to conserve battery.\nNFR-6: The feature MUST integrate with the existing Day/Night/Amber theming.",
+      "Architecture": "Mirrors the existing MVVM-ish separation:\n- LeanAngleEngine: pure Swift — gravity-vector-to-degrees, calibration offset, exponential smoothing, max-left/right tracking with a moving-speed gate (fully unit-tested).\n- LeanAngleService: wraps CMMotionManager device-motion updates (~30 Hz), publishes gravity samples.\n- LeanAngleEntitlementStore: ObservableObject gating the feature. testingUnlockOverride = true during pre-launch; purchase()/restorePurchases() are StoreKit-ready stubs.\n- LeanAngleViewModel: bridges service + engine, pulls current speed from RideViewModel for the moving-speed gate, persists calibration to AppSettings.\n- LeanAngleView: rear-view motorcycle SwiftUI Shape that rotates with live lean, signed degrees readout, max L/R stat tiles, Calibrate + Reset Max controls; theme-aware.\n- AppSettings: persists leanAngleEnabled and leanCalibrationOffset.\n- AppModel: owns the entitlement store + view model, starts/stops motion on scene phase and settings changes, wires the speed provider.\n- RideView: shows the gated lean section (unlocked AND enabled); SettingsView: greyed-out Lean Angle toggle.",
+      "ImplementationPlan": "Phase 1 — Core (done)\n- LeanAngleEngine + LeanAngleState + unit tests.\n- LeanAngleService (CoreMotion).\n- LeanAngleEntitlementStore (testing-unlocked, IAP-ready stubs).\n- LeanAngleViewModel bridging service/engine/speed.\n- AppSettings persistence (enabled + calibration offset).\n- LeanAngleView + RideView/SettingsView integration with greyed-out gating.\n\nPhase 2 — Launch (deferred, separate scope)\n- StoreKit 2 non-consumable purchase + restore + entitlement persistence.\n- App Store Connect product, privacy answers, screenshots, review notes.\n- Flip testingUnlockOverride to false.",
+      "TestingStrategy": "Unit tests for LeanAngleEngine: sign convention (left negative / right positive), gravity-to-degrees, exponential smoothing toward target, convergence over many samples, max-left/right tracking, moving-speed gate, +/-90 clamping, calibration offset subtraction, reset-max preserving calibration. Manual device testing: phone flat (0 degrees), tilt left/right, calibrate while mounted, reset max, ride at speed for realistic max capture, and verify motion stops in background. Entitlement: verify greyed-out gating when locked by flipping the testing flag, and full availability when unlocked.",
+      "Deployment": "Ships in the standard Xcode build → TestFlight → App Store pipeline. No backend. CoreMotion needs no Info.plist usage string. Lifetime IAP product and StoreKit wiring land in the deferred launch scope.",
+      "Risk": "Lean accuracy depends on a stable phone mount and correct calibration. Sensor noise/vibration is mitigated by smoothing and clamping. The deferred IAP means the feature is free during testing; the testing-unlock flag must be flipped before launch to avoid giving the premium feature away.",
+      "OpenQuestions": "1. Final IAP price tier (typical one-time unlock $2.99–$9.99).\n2. Whether to offer a free trial vs paid-only at launch.\n3. Custom rear-view motorcycle asset vs the current SwiftUI vector shape.\n4. Whether lean should freeze or hide below the moving-speed threshold (currently shown live, max not recorded)."
+    },
+    "items": [
+      {
+        "id": "lean-engine",
+        "title": "LeanAngleEngine + state + unit tests (calibration, smoothing, clamping, max L/R)",
+        "status": "completed"
+      },
+      {
+        "id": "lean-sensor",
+        "title": "LeanAngleService — CoreMotion device-motion gravity polling",
+        "status": "completed"
+      },
+      {
+        "id": "lean-entitlement",
+        "title": "LeanAngleEntitlementStore — testing-unlocked flag, StoreKit-ready stubs",
+        "status": "completed"
+      },
+      {
+        "id": "lean-viewmodel",
+        "title": "LeanAngleViewModel — bridge service/engine/speed, persist calibration",
+        "status": "completed"
+      },
+      {
+        "id": "lean-persistence",
+        "title": "AppSettings — persist leanAngleEnabled and leanCalibrationOffset",
+        "status": "completed"
+      },
+      {
+        "id": "lean-ui",
+        "title": "LeanAngleView + RideView (gated section) + SettingsView (greyed toggle)",
+        "status": "completed"
+      }
+    ],
+    "tags": [
+      "feature",
+      "premium",
+      "lean-angle",
+      "coremotion"
+    ],
+    "updated": "2026-06-11T03:59:08Z",
+    "metadata": {
+      "completedAt": "2026-06-11T03:59:08Z"
+    }
+  }
+}

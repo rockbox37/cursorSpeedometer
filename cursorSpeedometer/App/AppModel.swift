@@ -11,6 +11,8 @@ final class AppModel: ObservableObject {
     let locationService: LocationService
     let themeController = ThemeAutoSwitcherController()
     let brightnessRunner = BrightnessControllerRunner()
+    let leanEntitlement = LeanAngleEntitlementStore()
+    let leanAngleViewModel: LeanAngleViewModel
 
     private var cancellables = Set<AnyCancellable>()
     private var wasInBackground = false
@@ -20,6 +22,12 @@ final class AppModel: ObservableObject {
         rideViewModel = viewModel
         locationService = LocationService { sample in
             viewModel.handleSample(sample)
+        }
+
+        let leanViewModel = LeanAngleViewModel(service: LeanAngleService(), settings: settings)
+        leanAngleViewModel = leanViewModel
+        leanViewModel.speedProvider = { [weak viewModel] in
+            viewModel?.state.currentSpeedMps ?? 0
         }
 
         settings.objectWillChange
@@ -32,6 +40,7 @@ final class AppModel: ObservableObject {
     func onAppear() {
         locationService.requestPermissionIfNeeded()
         applyRideMode()
+        applyLeanAngle()
         refreshAdaptiveControllers()
     }
 
@@ -44,6 +53,7 @@ final class AppModel: ObservableObject {
             }
             refreshAdaptiveControllers()
             applyRideMode()
+            applyLeanAngle()
         case .inactive:
             themeController.stop()
             brightnessRunner.stop()
@@ -51,6 +61,7 @@ final class AppModel: ObservableObject {
             wasInBackground = true
             themeController.stop()
             brightnessRunner.stop()
+            leanAngleViewModel.stop()
         @unknown default:
             break
         }
@@ -58,7 +69,16 @@ final class AppModel: ObservableObject {
 
     func onSettingsChanged() {
         applyRideMode()
+        applyLeanAngle()
         refreshAdaptiveControllers()
+    }
+
+    private func applyLeanAngle() {
+        if leanEntitlement.isUnlocked && settings.leanAngleEnabled {
+            leanAngleViewModel.start()
+        } else {
+            leanAngleViewModel.stop()
+        }
     }
 
     private func refreshAdaptiveControllers() {

@@ -4,9 +4,15 @@ struct RideView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var rideViewModel: RideViewModel
     @ObservedObject var locationService: LocationService
+    @ObservedObject var leanAngleViewModel: LeanAngleViewModel
+    @ObservedObject var leanEntitlement: LeanAngleEntitlementStore
 
     private var palette: ThemePalette {
         ThemePalette.palette(for: settings.activeTheme)
+    }
+
+    private var showLeanAngle: Bool {
+        leanEntitlement.isUnlocked && settings.leanAngleEnabled
     }
 
     var body: some View {
@@ -18,16 +24,30 @@ struct RideView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            VStack(spacing: 24) {
-                rideModeIndicator
-                speedDisplay
-                statsGrid
-                controls
+            ScrollView {
+                VStack(spacing: 24) {
+                    rideModeIndicator
+                    speedDisplay
+                    statsGrid
+                    if showLeanAngle {
+                        leanAngleSection
+                    }
+                    controls
+                }
+                .padding()
             }
-            .padding()
         }
         .onAppear {
             locationService.requestPermissionIfNeeded()
+        }
+    }
+
+    private var leanAngleSection: some View {
+        VStack(spacing: 8) {
+            Text("Lean Angle")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(palette.secondaryColor)
+            LeanAngleView(viewModel: leanAngleViewModel, palette: palette)
         }
     }
 

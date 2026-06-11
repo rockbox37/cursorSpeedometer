@@ -15,6 +15,8 @@ final class AppSettings: ObservableObject {
         static let manualBrightness = "manualBrightness"
         static let odometerMeters = "odometerMeters"
         static let rideModeEnabled = "rideModeEnabled"
+        static let leanAngleEnabled = "leanAngleEnabled"
+        static let leanCalibrationOffset = "leanCalibrationOffset"
     }
 
     private let defaults: UserDefaults
@@ -51,6 +53,14 @@ final class AppSettings: ObservableObject {
         didSet { defaults.set(rideModeEnabled, forKey: Key.rideModeEnabled) }
     }
 
+    @Published var leanAngleEnabled: Bool {
+        didSet { defaults.set(leanAngleEnabled, forKey: Key.leanAngleEnabled) }
+    }
+
+    @Published var leanCalibrationOffset: Double {
+        didSet { defaults.set(leanCalibrationOffset, forKey: Key.leanCalibrationOffset) }
+    }
+
     @Published var activeTheme: ThemePreset = .day
     @Published var brightnessLevel: Double = 1.0
 
@@ -69,6 +79,8 @@ final class AppSettings: ObservableObject {
         )
         self.persistedOdometerMeters = defaults.double(forKey: Key.odometerMeters)
         self.rideModeEnabled = defaults.object(forKey: Key.rideModeEnabled) as? Bool ?? false
+        self.leanAngleEnabled = defaults.object(forKey: Key.leanAngleEnabled) as? Bool ?? false
+        self.leanCalibrationOffset = defaults.double(forKey: Key.leanCalibrationOffset)
         if self.autoThemeEnabled {
             self.resolveActiveTheme()
         } else {

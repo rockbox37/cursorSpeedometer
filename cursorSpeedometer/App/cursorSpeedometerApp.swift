@@ -23,6 +23,9 @@ struct cursorSpeedometerApp: App {
                     .onChange(of: appModel.settings.rideModeEnabled) { _ in
                         appModel.onSettingsChanged()
                     }
+                    .onChange(of: appModel.settings.leanAngleEnabled) { _ in
+                        appModel.onSettingsChanged()
+                    }
 
                 if showSplash {
                     SplashView {
@@ -49,7 +52,9 @@ struct RootView: View {
                 RideView(
                     settings: appModel.settings,
                     rideViewModel: appModel.rideViewModel,
-                    locationService: appModel.locationService
+                    locationService: appModel.locationService,
+                    leanAngleViewModel: appModel.leanAngleViewModel,
+                    leanEntitlement: appModel.leanEntitlement
                 )
                 .tabItem {
                     Label("Ride", systemImage: "speedometer")
@@ -59,6 +64,7 @@ struct RootView: View {
                     settings: appModel.settings,
                     rideViewModel: appModel.rideViewModel,
                     locationService: appModel.locationService,
+                    leanEntitlement: appModel.leanEntitlement,
                     onAdaptiveSettingsChanged: appModel.onSettingsChanged
                 )
                 .tabItem {

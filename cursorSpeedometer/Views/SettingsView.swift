@@ -7,6 +7,7 @@ struct SettingsView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var rideViewModel: RideViewModel
     @ObservedObject var locationService: LocationService
+    @ObservedObject var leanEntitlement: LeanAngleEntitlementStore
     let onAdaptiveSettingsChanged: () -> Void
     @Environment(\.openURL) private var openURL
 
@@ -68,6 +69,22 @@ struct SettingsView: View {
 
                 Section("Ride Mode") {
                     Toggle("Keep Screen Awake", isOn: $settings.rideModeEnabled)
+                }
+
+                Section {
+                    Toggle("Show Lean Angle", isOn: $settings.leanAngleEnabled)
+                        .disabled(!leanEntitlement.isUnlocked)
+                    if !leanEntitlement.isUnlocked {
+                        Text("Unlock Lean Angle Pro to track real-time and max lean (coming soon).")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                } header: {
+                    Text("Lean Angle")
+                } footer: {
+                    if leanEntitlement.isUnlocked {
+                        Text("Calibrate with your phone mounted upright on the bike for accurate readings.")
+                    }
                 }
 
                 Section("Odometer") {
