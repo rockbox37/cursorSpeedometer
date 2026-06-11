@@ -110,7 +110,7 @@ final class TripComputerEngineTests: XCTestCase {
         XCTAssertEqual(state.currentSpeedMps, 0, accuracy: 0.01)
     }
 
-    func testStaleCachedSampleReAnchorsInsteadOfFreezing() {
+    func testDelayedDeliveryDoesNotZeroSpeedBetweenUpdates() {
         let anchor = LocationSample(
             speedMetersPerSecond: 6,
             timestamp: baseDate,
@@ -125,23 +125,39 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLatitude: 37.000054,
             coordinateLongitude: -122.0
         )
-        let stale = LocationSample(
-            speedMetersPerSecond: 25,
+        let delayed = LocationSample(
+            speedMetersPerSecond: 6,
             timestamp: baseDate.addingTimeInterval(2),
             horizontalAccuracy: 5,
-            coordinateLatitude: 37.00027,
+            coordinateLatitude: 37.000108,
             coordinateLongitude: -122.0
         )
 
         var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
         state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
-        XCTAssertEqual(state.currentSpeedMps, 6, accuracy: 0.1)
+        state = engine.process(sample: delayed, state: state, now: baseDate.addingTimeInterval(4))
 
-        state = engine.process(sample: stale, state: state, now: baseDate.addingTimeInterval(10))
+        XCTAssertEqual(state.currentSpeedMps, 6, accuracy: 0.2)
+        XCTAssertEqual(state.lastSample, delayed)
+    }
 
-        XCTAssertEqual(state.currentSpeedMps, 0)
-        XCTAssertEqual(state.maxSpeedMps, 6, accuracy: 0.1)
-        XCTAssertEqual(state.lastSample, stale)
+    func testRejectsStaleCachedFixOnResume() {
+        let stale = LocationSample(
+            speedMetersPerSecond: 50,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+
+        let result = engine.process(
+            sample: stale,
+            state: TripComputerState(),
+            now: baseDate.addingTimeInterval(10)
+        )
+
+        XCTAssertNil(result.lastSample)
+        XCTAssertEqual(result.currentSpeedMps, 0)
     }
 
     func testResumeAfterGapDoesNotSpikeMaxSpeed() {
@@ -246,9 +262,34 @@ final class TripComputerEngineTests: XCTestCase {
         )
 
         var state = engine.process(sample: sample, state: TripComputerState(), now: baseDate)
-        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(2))
+        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(1.5))
+        XCTAssertEqual(state.currentSpeedMps, 15, accuracy: 0.01)
 
+        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(4))
         XCTAssertEqual(state.currentSpeedMps, 0)
+    }
+
+    func testStaleTimeoutUsesProcessingTimeNotFixTimestamp() {
+        let first = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        let second = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate.addingTimeInterval(1.2),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00009,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: first, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: second, state: state, now: baseDate.addingTimeInterval(1.2))
+        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(2.5))
+
+        XCTAssertEqual(state.currentSpeedMps, 10, accuracy: 0.1)
     }
 
     func testResetTripPreservesOdometer() {

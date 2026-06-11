@@ -26,6 +26,7 @@ final class RideViewModel: ObservableObject {
     func prepareForResume() {
         state.currentSpeedMps = 0
         state.lastSample = nil
+        state.lastProcessedAt = nil
     }
 
     func resetTrip() {

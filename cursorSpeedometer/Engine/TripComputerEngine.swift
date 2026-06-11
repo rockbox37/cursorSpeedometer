@@ -17,13 +17,15 @@ struct TripComputerState: Equatable, Sendable {
     var speedSampleCount: Int = 0
     var speedSumMps: Double = 0
     var lastSample: LocationSample?
+    var lastProcessedAt: Date?
 }
 
 struct TripComputerEngine: Sendable {
     static let jitterThresholdKmh = 2.0
     static let jitterThresholdMps = jitterThresholdKmh / 3.6
     static let maxAccuracyMeters = 50.0
-    static let staleSampleSeconds = 1.0
+    /// Clear displayed speed only after this long without a processed location update.
+    static let staleSampleSeconds = 3.0
     /// Snap to zero when GPS reports movement but position barely changed.
     static let stationaryDistanceMeters = 1.0
     /// Ignore cached GPS fixes older than this when processing.
@@ -45,17 +47,18 @@ struct TripComputerEngine: Sendable {
             return state
         }
 
-        if now.timeIntervalSince(sample.timestamp) > Self.maxSampleAgeSeconds {
-            return anchorSample(sample, state: state)
+        if state.lastSample == nil,
+           now.timeIntervalSince(sample.timestamp) > Self.maxSampleAgeSeconds {
+            return state
         }
 
         if let previous = state.lastSample {
             let gap = sample.timestamp.timeIntervalSince(previous.timestamp)
             if gap <= 0 || gap > Self.resumeGapSeconds {
-                return anchorSample(sample, state: state)
+                return anchorSample(sample, state: state, now: now)
             }
         } else {
-            return anchorSample(sample, state: state)
+            return anchorSample(sample, state: state, now: now)
         }
 
         let previous = state.lastSample!
@@ -63,7 +66,7 @@ struct TripComputerEngine: Sendable {
         let components = speedComponents(from: sample, previous: previous)
 
         if isPositionSpike(components: components) {
-            return anchorSample(sample, state: state)
+            return anchorSample(sample, state: state, now: now)
         }
 
         var updated = state
@@ -88,19 +91,21 @@ struct TripComputerEngine: Sendable {
         }
 
         updated.lastSample = sample
+        updated.lastProcessedAt = now
         return updated
     }
 
-    private func anchorSample(_ sample: LocationSample, state: TripComputerState) -> TripComputerState {
+    private func anchorSample(_ sample: LocationSample, state: TripComputerState, now: Date) -> TripComputerState {
         var updated = state
         updated.currentSpeedMps = 0
         updated.lastSample = sample
+        updated.lastProcessedAt = now
         return updated
     }
 
     func applyStaleSampleTimeout(state: TripComputerState, now: Date = Date()) -> TripComputerState {
-        guard let lastSample = state.lastSample else { return state }
-        guard now.timeIntervalSince(lastSample.timestamp) > Self.staleSampleSeconds else { return state }
+        guard let lastProcessedAt = state.lastProcessedAt else { return state }
+        guard now.timeIntervalSince(lastProcessedAt) > Self.staleSampleSeconds else { return state }
 
         var updated = state
         updated.currentSpeedMps = 0
@@ -116,7 +121,8 @@ struct TripComputerEngine: Sendable {
             odometerMeters: state.odometerMeters,
             speedSampleCount: 0,
             speedSumMps: 0,
-            lastSample: state.lastSample
+            lastSample: state.lastSample,
+            lastProcessedAt: state.lastProcessedAt
         )
     }
 
@@ -168,7 +174,7 @@ struct TripComputerEngine: Sendable {
 
         if components.gps > 0,
            components.derived > components.gps * Self.derivedSpikeMultiplier,
-           components.derived > Self.jitterThresholdMps {
+           components.derived > 8.0 {
             return true
         }
 
