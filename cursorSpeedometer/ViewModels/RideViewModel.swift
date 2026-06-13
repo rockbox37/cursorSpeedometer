@@ -41,8 +41,8 @@ final class RideViewModel: ObservableObject {
     private func startStaleSpeedCheck() {
         staleCheckTimer?.invalidate()
         staleCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            guard let self else { return }
             Task { @MainActor in
-                guard let self else { return }
                 self.state = self.engine.applyStaleSampleTimeout(state: self.state)
             }
         }

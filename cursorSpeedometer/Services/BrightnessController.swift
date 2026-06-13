@@ -55,8 +55,9 @@ final class BrightnessControllerRunner: ObservableObject {
         refresh(settings: settings, latitude: latitude, longitude: longitude)
 
         timer = Timer.scheduledTimer(withTimeInterval: BrightnessController.updateInterval, repeats: true) { [weak self] _ in
+            guard let self else { return }
             Task { @MainActor in
-                self?.refresh(settings: settings, latitude: latitude, longitude: longitude)
+                self.refresh(settings: settings, latitude: latitude, longitude: longitude)
             }
         }
     }
