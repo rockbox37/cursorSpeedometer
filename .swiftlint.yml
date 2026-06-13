@@ -1,0 +1,30 @@
+# SwiftLint configuration for cursorSpeedometer.
+# Runs with default rules; only error-severity violations fail CI (the lint
+# job runs non-strict). See .github/workflows/ios-ci.yml.
+
+included:
+  - cursorSpeedometer
+  - cursorSpeedometerTests
+
+excluded:
+  - .deft
+  - cursorSpeedometer.xcodeproj
+  - scripts
+  - build
+  - DerivedData
+
+# Generated assets symbols and storyboards are not Swift sources we author.
+disabled_rules:
+  - todo                 # tracked elsewhere; don't fail/annotate on TODOs
+  - trailing_comma       # multiline collection trailing commas are fine
+
+line_length:
+  warning: 140
+  error: 200
+  ignores_comments: true
+
+identifier_name:
+  # Allow short names common in geometry/math (e.g. m, l, ra, h, t).
+  min_length: 1
+  excluded:
+    - id

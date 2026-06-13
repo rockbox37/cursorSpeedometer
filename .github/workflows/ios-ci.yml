@@ -29,10 +29,13 @@ jobs:
       COVERAGE_MIN: "60"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Show toolchain
+      - name: Select Xcode
+        # Pin the toolchain for reproducible builds. Bump the version when you
+        # want a newer Xcode (it must exist on the runner image).
         run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
           python3 --version
 
@@ -81,7 +84,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: |
@@ -89,3 +92,17 @@ jobs:
             coverage.json
           if-no-files-found: ignore
           retention-days: 14
+
+  lint:
+    name: SwiftLint
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: SwiftLint
+        # SwiftLint ships preinstalled on the macOS runner image. Runs
+        # non-strict, so style warnings surface as annotations without failing
+        # the build; only error-severity violations fail. Add --strict once the
+        # warning backlog is clean.
+        run: swiftlint lint --reporter github-actions-logging
