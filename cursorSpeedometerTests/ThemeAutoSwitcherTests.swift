@@ -11,6 +11,7 @@ final class ThemeAutoSwitcherTests: XCTestCase {
         components.month = 6
         components.day = 21
         components.hour = 22
+        components.timeZone = timeZone
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let theme = switcher.resolvedTheme(
@@ -31,6 +32,7 @@ final class ThemeAutoSwitcherTests: XCTestCase {
         components.month = 6
         components.day = 21
         components.hour = 10
+        components.timeZone = timeZone
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let theme = switcher.resolvedTheme(
@@ -51,6 +53,7 @@ final class ThemeAutoSwitcherTests: XCTestCase {
         components.month = 6
         components.day = 21
         components.hour = 10
+        components.timeZone = timeZone
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let theme = switcher.resolvedTheme(

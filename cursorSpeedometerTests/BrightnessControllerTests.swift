@@ -39,6 +39,7 @@ final class BrightnessControllerTests: XCTestCase {
         components.month = 6
         components.day = 21
         components.hour = 12
+        components.timeZone = timeZone
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let brightness = controller.resolvedBrightness(

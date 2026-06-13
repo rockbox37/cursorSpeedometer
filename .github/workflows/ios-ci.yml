@@ -1,0 +1,90 @@
+name: iOS CI
+
+# Builds the app and runs the XCTest suite on an iOS Simulator with code
+# coverage enabled. The Xcode project is generated from source by
+# scripts/generate_xcode_project.py, so CI regenerates it to guarantee the
+# build graph matches the committed Swift files.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: macos-14
+    env:
+      PROJECT: cursorSpeedometer.xcodeproj
+      SCHEME: cursorSpeedometer
+      # Minimum app-target line coverage (percent). Report-only at 0; raise to
+      # enforce once a baseline has been measured from a green run.
+      COVERAGE_MIN: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          python3 --version
+
+      - name: Generate Xcode project
+        run: python3 scripts/generate_xcode_project.py
+
+      - name: Select iOS Simulator
+        id: sim
+        run: |
+          set -euo pipefail
+          udid=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          data = json.load(sys.stdin)["devices"]
+          for runtime, devices in data.items():
+              if "iOS" not in runtime:
+                  continue
+              for dev in devices:
+                  if dev.get("isAvailable") and dev["name"].startswith("iPhone"):
+                      print(dev["udid"])
+                      raise SystemExit(0)
+          raise SystemExit("No available iOS iPhone simulator found")
+          ')
+          echo "Selected simulator: $udid"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: Build & test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}" \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Coverage report
+        if: always()
+        run: |
+          if [ -d TestResults.xcresult ]; then
+            xcrun xccov view --report --json TestResults.xcresult > coverage.json
+            python3 scripts/check_coverage.py coverage.json "$COVERAGE_MIN"
+          else
+            echo "No result bundle produced; skipping coverage."
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            TestResults.xcresult
+            coverage.json
+          if-no-files-found: ignore
+          retention-days: 14

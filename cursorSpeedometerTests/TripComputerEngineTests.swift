@@ -253,19 +253,32 @@ final class TripComputerEngineTests: XCTestCase {
     }
 
     func testStaleSampleTimeoutClearsSpeed() {
-        let sample = LocationSample(
+        let anchor = LocationSample(
             speedMetersPerSecond: 15,
             timestamp: baseDate,
             horizontalAccuracy: 5,
             coordinateLatitude: 37.0,
             coordinateLongitude: -122.0
         )
+        // ~15 m north of the anchor over 1s yields a ~15 m/s derived speed.
+        let moving = LocationSample(
+            speedMetersPerSecond: 15,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.000135,
+            coordinateLongitude: -122.0
+        )
 
-        var state = engine.process(sample: sample, state: TripComputerState(), now: baseDate)
-        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(1.5))
-        XCTAssertEqual(state.currentSpeedMps, 15, accuracy: 0.01)
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+        XCTAssertEqual(state.currentSpeedMps, 15, accuracy: 0.2)
 
-        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(4))
+        // 1s since the last processed update: not stale yet.
+        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(2))
+        XCTAssertEqual(state.currentSpeedMps, 15, accuracy: 0.2)
+
+        // 4s since the last processed update: speed should clear.
+        state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(5))
         XCTAssertEqual(state.currentSpeedMps, 0)
     }
 
@@ -277,16 +290,20 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLatitude: 37.0,
             coordinateLongitude: -122.0
         )
+        // ~13 m north over 1.2s gives a derived speed above the 10 m/s GPS
+        // reading, so the resolved (capped at GPS) speed is 10 m/s.
         let second = LocationSample(
             speedMetersPerSecond: 10,
             timestamp: baseDate.addingTimeInterval(1.2),
             horizontalAccuracy: 5,
-            coordinateLatitude: 37.00009,
+            coordinateLatitude: 37.00012,
             coordinateLongitude: -122.0
         )
 
         var state = engine.process(sample: first, state: TripComputerState(), now: baseDate)
         state = engine.process(sample: second, state: state, now: baseDate.addingTimeInterval(1.2))
+        // 1.3s after the last processed update (baseDate+1.2): not stale, so the
+        // speed is retained even though the fix timestamp is older.
         state = engine.applyStaleSampleTimeout(state: state, now: baseDate.addingTimeInterval(2.5))
 
         XCTAssertEqual(state.currentSpeedMps, 10, accuracy: 0.1)

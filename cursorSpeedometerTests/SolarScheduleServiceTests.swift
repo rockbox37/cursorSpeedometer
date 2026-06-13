@@ -11,6 +11,7 @@ final class SolarScheduleServiceTests: XCTestCase {
         components.day = 21
         components.hour = 12
         components.minute = 0
+        components.timeZone = TimeZone(identifier: "America/Los_Angeles")!
         let calendar = Calendar(identifier: .gregorian)
         let date = calendar.date(from: components)!
 
@@ -31,6 +32,7 @@ final class SolarScheduleServiceTests: XCTestCase {
         components.day = 21
         components.hour = 0
         components.minute = 0
+        components.timeZone = TimeZone(identifier: "America/Los_Angeles")!
         let calendar = Calendar(identifier: .gregorian)
         let date = calendar.date(from: components)!
 
@@ -50,6 +52,7 @@ final class SolarScheduleServiceTests: XCTestCase {
         components.month = 6
         components.day = 21
         components.hour = 12
+        components.timeZone = TimeZone(identifier: "America/Los_Angeles")!
         let calendar = Calendar(identifier: .gregorian)
         let date = calendar.date(from: components)!
         let timeZone = TimeZone(identifier: "America/Los_Angeles")!

@@ -95,7 +95,8 @@ enum BrightnessClamp {
     }
 
     static func dimmingOpacity(for brightnessLevel: Double) -> Double {
-        clamp(1 - clamp(brightnessLevel))
+        let normalizedBrightness = Swift.min(1, Swift.max(0, brightnessLevel))
+        return Swift.min(1, Swift.max(0, 1 - normalizedBrightness))
     }
 }
 

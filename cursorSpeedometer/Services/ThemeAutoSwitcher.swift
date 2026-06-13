@@ -34,8 +34,9 @@ final class ThemeAutoSwitcherController: ObservableObject {
         refresh(settings: settings, latitude: latitude, longitude: longitude)
 
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+            guard let self else { return }
             Task { @MainActor in
-                self?.refresh(settings: settings, latitude: latitude, longitude: longitude)
+                self.refresh(settings: settings, latitude: latitude, longitude: longitude)
             }
         }
     }
