@@ -16,6 +16,11 @@ concurrency:
 permissions:
   contents: read
 
+# Opt JavaScript actions into Node 24 to clear the Node 20 deprecation
+# warnings on runners where it is not yet the default.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build-test:
     name: Build & Test

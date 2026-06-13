@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct cursorSpeedometerApp: App {
+struct CursorSpeedometerApp: App {
     @StateObject private var appModel = AppModel()
     @Environment(\.scenePhase) private var scenePhase
     @State private var showSplash = true
