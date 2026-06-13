@@ -23,9 +23,10 @@ jobs:
     env:
       PROJECT: cursorSpeedometer.xcodeproj
       SCHEME: cursorSpeedometer
-      # Minimum app-target line coverage (percent). Report-only at 0; raise to
-      # enforce once a baseline has been measured from a green run.
-      COVERAGE_MIN: "0"
+      # Minimum app-target line coverage (percent). Set ~5 points below the
+      # measured baseline (64.9%) to guard against regressions while leaving
+      # slack for normal fluctuation. Ratchet up as test coverage grows.
+      COVERAGE_MIN: "60"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
