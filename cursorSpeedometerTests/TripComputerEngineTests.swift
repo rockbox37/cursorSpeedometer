@@ -1,6 +1,7 @@
 import XCTest
 @testable import cursorSpeedometer
 
+// swiftlint:disable type_body_length - a cohesive suite of engine scenarios.
 final class TripComputerEngineTests: XCTestCase {
     private let engine = TripComputerEngine()
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
@@ -335,3 +336,4 @@ final class TripComputerEngineTests: XCTestCase {
         XCTAssertEqual(result.currentSpeedMps, 0)
     }
 }
+// swiftlint:enable type_body_length

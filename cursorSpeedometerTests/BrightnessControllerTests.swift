@@ -7,10 +7,12 @@ final class BrightnessControllerTests: XCTestCase {
 
     func testManualBrightnessUsedWhenAutoDisabled() {
         let brightness = controller.resolvedBrightness(
-            at: Date(),
-            latitude: 37.7749,
-            longitude: -122.4194,
-            timeZone: timeZone,
+            query: SolarQuery(
+                date: Date(),
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timeZone: timeZone
+            ),
             autoBrightnessEnabled: false,
             manualBrightness: 0.4,
             ambientBrightness: 1.0
@@ -21,10 +23,12 @@ final class BrightnessControllerTests: XCTestCase {
 
     func testAmbientBrightnessPreferredWhenAvailable() {
         let brightness = controller.resolvedBrightness(
-            at: Date(),
-            latitude: 37.7749,
-            longitude: -122.4194,
-            timeZone: timeZone,
+            query: SolarQuery(
+                date: Date(),
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timeZone: timeZone
+            ),
             autoBrightnessEnabled: true,
             manualBrightness: 0.4,
             ambientBrightness: 0.2
@@ -43,10 +47,12 @@ final class BrightnessControllerTests: XCTestCase {
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let brightness = controller.resolvedBrightness(
-            at: date,
-            latitude: 37.7749,
-            longitude: -122.4194,
-            timeZone: timeZone,
+            query: SolarQuery(
+                date: date,
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timeZone: timeZone
+            ),
             autoBrightnessEnabled: true,
             manualBrightness: 0.4,
             ambientBrightness: nil

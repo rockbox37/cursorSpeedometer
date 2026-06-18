@@ -5,6 +5,14 @@ struct SolarSchedule: Equatable, Sendable {
     let sunset: Date
 }
 
+/// Location and time inputs shared by solar-driven resolvers.
+struct SolarQuery: Equatable, Sendable {
+    let date: Date
+    let latitude: Double
+    let longitude: Double
+    let timeZone: TimeZone
+}
+
 struct SolarScheduleService: Sendable {
     func schedule(for date: Date, latitude: Double, longitude: Double, timeZone: TimeZone) -> SolarSchedule {
         let calendar = Calendar(identifier: .gregorian)

@@ -4,10 +4,7 @@ struct ThemeAutoSwitcher: Sendable {
     private let solarService = SolarScheduleService()
 
     func resolvedTheme(
-        at date: Date,
-        latitude: Double,
-        longitude: Double,
-        timeZone: TimeZone,
+        query: SolarQuery,
         autoThemeEnabled: Bool,
         pinnedTheme: ThemePreset
     ) -> ThemePreset {
@@ -16,10 +13,10 @@ struct ThemeAutoSwitcher: Sendable {
         }
 
         let isDay = solarService.isDaytime(
-            at: date,
-            latitude: latitude,
-            longitude: longitude,
-            timeZone: timeZone
+            at: query.date,
+            latitude: query.latitude,
+            longitude: query.longitude,
+            timeZone: query.timeZone
         )
         return isDay ? .day : .night
     }
