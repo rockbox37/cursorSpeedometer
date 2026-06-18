@@ -8,7 +8,10 @@ struct AboutSectionView: View {
         VStack(spacing: 12) {
             brandingHeader
 
-            Text("MotoSpeedy: Made for riders like you! MotoSpeedy will never track your location, capture or sell your personal information.")
+            Text(
+                "MotoSpeedy: Made for riders like you! MotoSpeedy will never "
+                    + "track your location, capture or sell your personal information."
+            )
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

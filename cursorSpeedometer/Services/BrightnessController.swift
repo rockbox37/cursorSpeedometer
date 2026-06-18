@@ -10,10 +10,7 @@ struct BrightnessController: Sendable {
     static let updateInterval: TimeInterval = 1.0
 
     func resolvedBrightness(
-        at date: Date,
-        latitude: Double,
-        longitude: Double,
-        timeZone: TimeZone,
+        query: SolarQuery,
         autoBrightnessEnabled: Bool,
         manualBrightness: Double,
         ambientBrightness: Double?
@@ -27,10 +24,10 @@ struct BrightnessController: Sendable {
         }
 
         let isDay = solarService.isDaytime(
-            at: date,
-            latitude: latitude,
-            longitude: longitude,
-            timeZone: timeZone
+            at: query.date,
+            latitude: query.latitude,
+            longitude: query.longitude,
+            timeZone: query.timeZone
         )
         return isDay ? Self.maxBrightness : Self.minBrightness
     }
@@ -75,10 +72,12 @@ final class BrightnessControllerRunner: ObservableObject {
         #endif
 
         settings.updateBrightnessLevel(controller.resolvedBrightness(
-            at: Date(),
-            latitude: latitude,
-            longitude: longitude,
-            timeZone: .current,
+            query: SolarQuery(
+                date: Date(),
+                latitude: latitude,
+                longitude: longitude,
+                timeZone: .current
+            ),
             autoBrightnessEnabled: settings.autoBrightnessEnabled,
             manualBrightness: settings.manualBrightness,
             ambientBrightness: ambient

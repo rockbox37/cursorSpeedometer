@@ -95,10 +95,12 @@ final class AppSettings: ObservableObject {
         at date: Date = Date()
     ) {
         activeTheme = ThemeAutoSwitcher().resolvedTheme(
-            at: date,
-            latitude: latitude,
-            longitude: longitude,
-            timeZone: .current,
+            query: SolarQuery(
+                date: date,
+                latitude: latitude,
+                longitude: longitude,
+                timeZone: .current
+            ),
             autoThemeEnabled: autoThemeEnabled,
             pinnedTheme: pinnedTheme
         )

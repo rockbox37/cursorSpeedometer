@@ -113,7 +113,7 @@ jobs:
           swiftlint version
 
       - name: SwiftLint
-        # Runs non-strict, so style warnings surface as annotations without
-        # failing the build; only error-severity violations fail. Add --strict
-        # once the warning backlog is clean.
-        run: swiftlint lint --reporter github-actions-logging
+        # --strict treats warnings as errors so style regressions fail the
+        # build. The tree is currently clean; relax to a non-strict run if a
+        # legitimate warning needs to land before it can be fixed.
+        run: swiftlint lint --strict --reporter github-actions-logging

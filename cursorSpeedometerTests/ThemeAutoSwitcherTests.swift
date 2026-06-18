@@ -15,10 +15,12 @@ final class ThemeAutoSwitcherTests: XCTestCase {
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let theme = switcher.resolvedTheme(
-            at: date,
-            latitude: 37.7749,
-            longitude: -122.4194,
-            timeZone: timeZone,
+            query: SolarQuery(
+                date: date,
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timeZone: timeZone
+            ),
             autoThemeEnabled: true,
             pinnedTheme: .day
         )
@@ -36,10 +38,12 @@ final class ThemeAutoSwitcherTests: XCTestCase {
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let theme = switcher.resolvedTheme(
-            at: date,
-            latitude: 37.7749,
-            longitude: -122.4194,
-            timeZone: timeZone,
+            query: SolarQuery(
+                date: date,
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timeZone: timeZone
+            ),
             autoThemeEnabled: true,
             pinnedTheme: .night
         )
@@ -57,10 +61,12 @@ final class ThemeAutoSwitcherTests: XCTestCase {
         let date = Calendar(identifier: .gregorian).date(from: components)!
 
         let theme = switcher.resolvedTheme(
-            at: date,
-            latitude: 37.7749,
-            longitude: -122.4194,
-            timeZone: timeZone,
+            query: SolarQuery(
+                date: date,
+                latitude: 37.7749,
+                longitude: -122.4194,
+                timeZone: timeZone
+            ),
             autoThemeEnabled: false,
             pinnedTheme: .amber
         )
