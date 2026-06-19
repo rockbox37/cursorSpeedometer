@@ -1,7 +1,8 @@
 import XCTest
 @testable import cursorSpeedometer
 
-// swiftlint:disable type_body_length - a cohesive suite of engine scenarios.
+// A cohesive suite of engine scenarios; length is intentional.
+// swiftlint:disable type_body_length file_length
 final class TripComputerEngineTests: XCTestCase {
     private let engine = TripComputerEngine()
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
@@ -192,7 +193,7 @@ final class TripComputerEngineTests: XCTestCase {
         XCTAssertEqual(state.maxSpeedMps, 10, accuracy: 0.01)
     }
 
-    func testPositionJumpSpikeReAnchorsWithoutCorruptingMax() {
+    func testPositionJumpKeepsGpsSpeedWithoutCorruptingMax() {
         let anchor = LocationSample(
             speedMetersPerSecond: 10,
             timestamp: baseDate,
@@ -207,6 +208,7 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLatitude: 37.00009,
             coordinateLongitude: -122.0
         )
+        // Position glitches ~70 m forward in 1s, but the Doppler reading is a sane 5 m/s.
         let jump = LocationSample(
             speedMetersPerSecond: 5,
             timestamp: baseDate.addingTimeInterval(2),
@@ -219,8 +221,115 @@ final class TripComputerEngineTests: XCTestCase {
         state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
         state = engine.process(sample: jump, state: state, now: baseDate.addingTimeInterval(2))
 
-        XCTAssertEqual(state.currentSpeedMps, 0)
+        // The trusted Doppler speed is shown instead of flashing 0, and the position
+        // glitch never inflates max speed.
+        XCTAssertEqual(state.currentSpeedMps, 5, accuracy: 0.01)
         XCTAssertEqual(state.maxSpeedMps, 10, accuracy: 0.01)
+    }
+
+    func testNearDuplicateFixAtSpeedDoesNotFlashZero() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 10.7,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        // ~10.7 m north of the anchor over 1s establishes a cruising speed.
+        let moving = LocationSample(
+            speedMetersPerSecond: 10.7,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0000964,
+            coordinateLongitude: -122.0
+        )
+        // GPS still reports ~24 mph but the reported position barely moved (a jittery
+        // or coalesced fix). The displayed speed must hold, not drop to 0.
+        let duplicate = LocationSample(
+            speedMetersPerSecond: 10.7,
+            timestamp: baseDate.addingTimeInterval(2),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00009645,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+        state = engine.process(sample: duplicate, state: state, now: baseDate.addingTimeInterval(2))
+
+        XCTAssertEqual(state.currentSpeedMps, 10.7, accuracy: 0.3)
+    }
+
+    func testDisplayedSpeedTracksGpsNotLaggierDerived() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        // Reported position advanced only ~8 m (derived ~8 m/s) while the Doppler
+        // reading is the more responsive 10 m/s. The display should follow the Doppler.
+        let moving = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00007207,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+
+        XCTAssertEqual(state.currentSpeedMps, 10, accuracy: 0.3)
+    }
+
+    func testInvalidDopplerFallsBackToDerivedSpeed() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        // Doppler is unavailable (negative). Position advanced ~10 m over 1s.
+        let moving = LocationSample(
+            speedMetersPerSecond: -1,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00009009,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: moving, state: state, now: baseDate.addingTimeInterval(1))
+
+        XCTAssertEqual(state.currentSpeedMps, 10, accuracy: 0.5)
+    }
+
+    func testEgregiousDopplerSpikeFallsBackToDerived() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 10,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        // Doppler glitches to 50 m/s but position only moved ~10 m (derived ~10 m/s),
+        // so the spike is rejected and max speed is not corrupted.
+        let spike = LocationSample(
+            speedMetersPerSecond: 50,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.00009009,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: spike, state: state, now: baseDate.addingTimeInterval(1))
+
+        XCTAssertEqual(state.currentSpeedMps, 10, accuracy: 0.5)
+        XCTAssertEqual(state.maxSpeedMps, 10, accuracy: 0.5)
     }
 
     func testCruisingSpeedTracksWithoutArtificialCap() {
@@ -336,4 +445,4 @@ final class TripComputerEngineTests: XCTestCase {
         XCTAssertEqual(result.currentSpeedMps, 0)
     }
 }
-// swiftlint:enable type_body_length
+// swiftlint:enable type_body_length file_length

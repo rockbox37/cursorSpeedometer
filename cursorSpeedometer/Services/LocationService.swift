@@ -24,7 +24,7 @@ final class LocationService: NSObject, ObservableObject {
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         manager.distanceFilter = kCLDistanceFilterNone
         manager.pausesLocationUpdatesAutomatically = false
-        manager.activityType = .fitness
+        manager.activityType = .otherNavigation
         updateAuthorizationState()
     }
 
@@ -72,9 +72,10 @@ extension LocationService: CLLocationManagerDelegate {
 
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        let speed = location.speed >= 0 ? location.speed : 0
+        // Preserve the raw Doppler speed; a negative value signals "no valid speed"
+        // so the engine can fall back to position-derived speed.
         let sample = LocationSample(
-            speedMetersPerSecond: speed,
+            speedMetersPerSecond: location.speed,
             timestamp: location.timestamp,
             horizontalAccuracy: location.horizontalAccuracy,
             coordinateLatitude: location.coordinate.latitude,

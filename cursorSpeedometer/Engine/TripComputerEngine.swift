@@ -26,8 +26,12 @@ struct TripComputerEngine: Sendable {
     static let maxAccuracyMeters = 50.0
     /// Clear displayed speed only after this long without a processed location update.
     static let staleSampleSeconds = 3.0
-    /// Snap to zero when GPS reports movement but position barely changed.
+    /// Position delta below this counts as "barely moved" for stationary detection.
     static let stationaryDistanceMeters = 1.0
+    /// Below this GPS speed a tiny position delta is treated as stationary creep and
+    /// snapped to zero; at or above it we trust the Doppler reading (so a duplicate
+    /// fix at speed never flashes 0 mph).
+    static let stationaryCreepSpeedMps = 2.5
     /// Ignore cached GPS fixes older than this when processing.
     static let maxSampleAgeSeconds = 3.0
     /// Gaps longer than this re-anchor without contributing speed or distance.
@@ -36,6 +40,9 @@ struct TripComputerEngine: Sendable {
     static let maxPlausibleSpeedMps = 55.0
     /// Derived speed wildly above GPS usually means a position glitch.
     static let derivedSpikeMultiplier = 2.5
+    /// A GPS Doppler reading both this far above and a multiple of the position-derived
+    /// speed is treated as a Doppler glitch, so we fall back to the position truth.
+    static let gpsSpikeMarginMps = 10.0
 
     func process(
         sample: LocationSample,
@@ -47,25 +54,29 @@ struct TripComputerEngine: Sendable {
             return state
         }
 
-        if state.lastSample == nil,
-           now.timeIntervalSince(sample.timestamp) > Self.maxSampleAgeSeconds {
-            return state
-        }
-
-        if let previous = state.lastSample {
-            let gap = sample.timestamp.timeIntervalSince(previous.timestamp)
-            if gap <= 0 || gap > Self.resumeGapSeconds {
-                return anchorSample(sample, state: state, now: now)
+        guard let previous = state.lastSample else {
+            // First fix: drop a stale cached fix, otherwise anchor at zero so a cold
+            // start or resume never reports a spurious speed.
+            if now.timeIntervalSince(sample.timestamp) > Self.maxSampleAgeSeconds {
+                return state
             }
-        } else {
             return anchorSample(sample, state: state, now: now)
         }
 
-        let previous = state.lastSample!
         let delta = sample.timestamp.timeIntervalSince(previous.timestamp)
+        if delta <= 0 {
+            // Duplicate or out-of-order fix: hold the last good speed instead of
+            // flashing zero.
+            return state
+        }
+        if delta > Self.resumeGapSeconds {
+            return anchorSample(sample, state: state, now: now)
+        }
+
         let components = speedComponents(from: sample, previous: previous)
 
-        if isPositionSpike(components: components) {
+        // Without a valid Doppler reading we rely on position; reject position glitches.
+        if !components.gpsValid, isPositionSpike(components: components) {
             return anchorSample(sample, state: state, now: now)
         }
 
@@ -136,14 +147,16 @@ struct TripComputerEngine: Sendable {
         let resolved: Double
         let derived: Double
         let gps: Double
+        let gpsValid: Bool
     }
 
     private func speedComponents(from sample: LocationSample, previous: LocationSample) -> SpeedComponents {
-        let gpsSpeed = sample.speedMetersPerSecond >= 0 ? sample.speedMetersPerSecond : 0
+        let gpsValid = sample.speedMetersPerSecond >= 0
+        let gpsSpeed = gpsValid ? sample.speedMetersPerSecond : 0
         let delta = sample.timestamp.timeIntervalSince(previous.timestamp)
 
         guard delta > 0 else {
-            return SpeedComponents(resolved: gpsSpeed, derived: gpsSpeed, gps: gpsSpeed)
+            return SpeedComponents(resolved: gpsSpeed, derived: gpsSpeed, gps: gpsSpeed, gpsValid: gpsValid)
         }
 
         let distance = coordinateDistanceMeters(
@@ -152,19 +165,34 @@ struct TripComputerEngine: Sendable {
             toLatitude: sample.coordinateLatitude,
             toLongitude: sample.coordinateLongitude
         )
-
-        if distance < Self.stationaryDistanceMeters {
-            return SpeedComponents(resolved: 0, derived: 0, gps: gpsSpeed)
-        }
-
         let derivedSpeed = distance / delta
-        let resolvedSpeed = if gpsSpeed <= 0 {
-            derivedSpeed
-        } else {
-            min(gpsSpeed, derivedSpeed)
+
+        // Snap to zero only when genuinely stopped: the position barely changed AND
+        // the GPS speed is low enough to be stationary creep. A near-duplicate fix at
+        // real speed keeps its Doppler reading instead of dropping to 0.
+        let stationary = distance < Self.stationaryDistanceMeters
+            && (!gpsValid || gpsSpeed < Self.stationaryCreepSpeedMps)
+        if stationary {
+            return SpeedComponents(resolved: 0, derived: derivedSpeed, gps: gpsSpeed, gpsValid: gpsValid)
         }
 
-        return SpeedComponents(resolved: resolvedSpeed, derived: derivedSpeed, gps: gpsSpeed)
+        let resolvedSpeed: Double
+        if !gpsValid {
+            // No Doppler reading: fall back to the position-derived speed.
+            resolvedSpeed = derivedSpeed
+        } else if derivedSpeed > Self.stationaryCreepSpeedMps
+            && gpsSpeed > derivedSpeed * Self.derivedSpikeMultiplier
+            && gpsSpeed - derivedSpeed > Self.gpsSpikeMarginMps {
+            // Egregious Doppler spike far above a credible position-derived speed:
+            // trust position. (A near-zero derived speed means the *position* glitched,
+            // not the Doppler reading, so that case keeps the GPS speed below.)
+            resolvedSpeed = derivedSpeed
+        } else {
+            // Trust the responsive GPS Doppler speed for the displayed value.
+            resolvedSpeed = gpsSpeed
+        }
+
+        return SpeedComponents(resolved: resolvedSpeed, derived: derivedSpeed, gps: gpsSpeed, gpsValid: gpsValid)
     }
 
     private func isPositionSpike(components: SpeedComponents) -> Bool {
