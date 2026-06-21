@@ -28,6 +28,8 @@ final class WeatherServiceTests: XCTestCase {
             unit: .celsius
         )
         XCTAssertTrue(snapshot.rainExpectedSoon)
+        // First qualifying bucket is index 2 -> ~3 hours out (1-based).
+        XCTAssertEqual(snapshot.rainExpectedInHours, 3)
     }
 
     func testRainExpectedWhenPrecipitationAmountMeetsThreshold() {
@@ -36,6 +38,23 @@ final class WeatherServiceTests: XCTestCase {
             unit: .fahrenheit
         )
         XCTAssertTrue(snapshot.rainExpectedSoon)
+        XCTAssertEqual(snapshot.rainExpectedInHours, 3)
+    }
+
+    func testCurrentHourRainReportsOneHour() {
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(probabilities: [80, 0, 0, 0, 0, 0]),
+            unit: .fahrenheit
+        )
+        XCTAssertEqual(snapshot.rainExpectedInHours, 1)
+    }
+
+    func testEarliestQualifyingBucketWins() {
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(probabilities: [0, 55, 90, 0, 0, 0]),
+            unit: .fahrenheit
+        )
+        XCTAssertEqual(snapshot.rainExpectedInHours, 2)
     }
 
     func testNoRainWhenBelowThresholds() {
@@ -53,11 +72,13 @@ final class WeatherServiceTests: XCTestCase {
             unit: .fahrenheit
         )
         XCTAssertFalse(snapshot.rainExpectedSoon)
+        XCTAssertNil(snapshot.rainExpectedInHours)
     }
 
     func testMissingHourlyDataMeansNoRain() {
         let snapshot = OpenMeteoMapper.snapshot(from: response(), unit: .fahrenheit)
         XCTAssertFalse(snapshot.rainExpectedSoon)
+        XCTAssertNil(snapshot.rainExpectedInHours)
     }
 
     func testNullProbabilityEntriesAreTreatedAsZero() {
@@ -66,23 +87,37 @@ final class WeatherServiceTests: XCTestCase {
             unit: .fahrenheit
         )
         XCTAssertFalse(snapshot.rainExpectedSoon)
+        XCTAssertNil(snapshot.rainExpectedInHours)
+    }
+
+    func testRainTextFormatsTimeframeWithPluralization() {
+        let oneHour = WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: 1)
+        XCTAssertEqual(oneHour.rainText, "Rain possible within ~1hr")
+
+        let threeHours = WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: 3)
+        XCTAssertEqual(threeHours.rainText, "Rain possible within ~3hrs")
+    }
+
+    func testRainTextIsNilWhenNoRainExpected() {
+        let dry = WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
+        XCTAssertNil(dry.rainText)
     }
 
     func testTemperatureTextRoundsAndAppendsSymbol() {
-        let warm = WeatherSnapshot(temperature: 66.8, unit: .fahrenheit, rainExpectedSoon: false)
+        let warm = WeatherSnapshot(temperature: 66.8, unit: .fahrenheit, rainExpectedInHours: nil)
         XCTAssertEqual(warm.temperatureText, "67°F")
 
-        let cool = WeatherSnapshot(temperature: 21.2, unit: .celsius, rainExpectedSoon: true)
+        let cool = WeatherSnapshot(temperature: 21.2, unit: .celsius, rainExpectedInHours: 2)
         XCTAssertEqual(cool.temperatureText, "21°C")
     }
 
     private func warning(fahrenheit: Double) -> TemperatureWarning {
-        WeatherSnapshot(temperature: fahrenheit, unit: .fahrenheit, rainExpectedSoon: false)
+        WeatherSnapshot(temperature: fahrenheit, unit: .fahrenheit, rainExpectedInHours: nil)
             .temperatureWarning
     }
 
     private func warning(celsius: Double) -> TemperatureWarning {
-        WeatherSnapshot(temperature: celsius, unit: .celsius, rainExpectedSoon: false)
+        WeatherSnapshot(temperature: celsius, unit: .celsius, rainExpectedInHours: nil)
             .temperatureWarning
     }
 
@@ -113,10 +148,10 @@ final class WeatherServiceTests: XCTestCase {
     }
 
     func testTemperatureFahrenheitConversion() {
-        let celsius = WeatherSnapshot(temperature: 0, unit: .celsius, rainExpectedSoon: false)
+        let celsius = WeatherSnapshot(temperature: 0, unit: .celsius, rainExpectedInHours: nil)
         XCTAssertEqual(celsius.temperatureFahrenheit, 32, accuracy: 0.001)
 
-        let fahrenheit = WeatherSnapshot(temperature: 50, unit: .fahrenheit, rainExpectedSoon: false)
+        let fahrenheit = WeatherSnapshot(temperature: 50, unit: .fahrenheit, rainExpectedInHours: nil)
         XCTAssertEqual(fahrenheit.temperatureFahrenheit, 50, accuracy: 0.001)
     }
 

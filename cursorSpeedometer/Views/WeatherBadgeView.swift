@@ -9,26 +9,32 @@ struct WeatherBadgeView: View {
 
     var body: some View {
         if let snapshot {
-            HStack(spacing: 8) {
-                Image(systemName: "thermometer.medium")
-                    .font(.title3)
-                    .foregroundStyle(palette.secondaryColor)
-
-                Text(snapshot.temperatureText)
-                    .font(.system(size: 32, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(temperatureColor(for: snapshot.temperatureWarning))
-
-                warningBadge(for: snapshot.temperatureWarning)
-
-                if snapshot.rainExpectedSoon {
-                    Image(systemName: "cloud.rain.fill")
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 8) {
+                    Image(systemName: "thermometer.medium")
                         .font(.title3)
-                        .foregroundStyle(palette.accentColor)
-                        .accessibilityLabel("Rain expected within 6 hours")
+                        .foregroundStyle(palette.secondaryColor)
+
+                    Text(snapshot.temperatureText)
+                        .font(.system(size: 32, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(temperatureColor(for: snapshot.temperatureWarning))
+
+                    warningBadge(for: snapshot.temperatureWarning)
+                }
+                .accessibilityElement(children: .combine)
+
+                if let rainText = snapshot.rainText {
+                    HStack(spacing: 4) {
+                        Image(systemName: "cloud.rain.fill")
+                        Text(rainText)
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(palette.accentColor)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(rainText)
                 }
             }
-            .accessibilityElement(children: .combine)
         }
     }
 
