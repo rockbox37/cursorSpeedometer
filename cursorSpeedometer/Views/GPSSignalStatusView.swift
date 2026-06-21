@@ -6,7 +6,7 @@ struct GPSSignalStatusView: View {
 
     var body: some View {
         HStack(spacing: 5) {
-            Image(systemName: "satellite")
+            Image(systemName: "location.fill")
                 .font(.caption2)
             Text("GPS")
                 .font(.caption2.weight(.medium))

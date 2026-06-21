@@ -1,0 +1,37 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Bugfix vBRIEF: replace the invalid 'satellite' SF Symbol in the GPS status view with the valid 'location.fill'",
+    "created": "2026-06-21T03:55:00Z",
+    "updated": "2026-06-21T03:55:00Z"
+  },
+  "plan": {
+    "id": "fix-gps-satellite-symbol",
+    "title": "Fix invalid GPS status SF Symbol",
+    "status": "completed",
+    "narratives": {
+      "Overview": "GPSSignalStatusView renders its icon with Image(systemName: \"satellite\"), but there is no SF Symbol named 'satellite'. At runtime the symbol fails to resolve, logging 'No symbol named satellite found in system symbol set' and rendering a blank glyph.",
+      "Problem": "The GPS indicator shows no icon and the Xcode console is spammed with symbol-not-found warnings.",
+      "Goals": "1. Use a valid SF Symbol so the GPS indicator renders an icon. 2. Eliminate the console warning.",
+      "FunctionalRequirements": "FR-1: The GPS status view MUST use a valid SF Symbol that resolves on the deployment target.\nFR-2: The console warning about the missing 'satellite' symbol MUST no longer appear.",
+      "Architecture": "Single-symbol change in GPSSignalStatusView: replace 'satellite' with 'location.fill'.",
+      "TestingStrategy": "Build succeeds and the existing test suite stays green; the symbol fix is verified by build + on-device/console observation (no console warning, icon visible)."
+    },
+    "items": [
+      {
+        "title": "Use location.fill in the GPS status view",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "GPSSignalStatusView uses Image(systemName: \"location.fill\"); the icon renders and no symbol-not-found warning is logged."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "completedAt": "2026-06-21T03:44:58Z"
+    },
+    "updated": "2026-06-21T03:44:58Z"
+  }
+}
