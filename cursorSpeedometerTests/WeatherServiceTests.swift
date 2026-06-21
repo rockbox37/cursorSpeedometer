@@ -76,6 +76,50 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(cool.temperatureText, "21°C")
     }
 
+    private func warning(fahrenheit: Double) -> TemperatureWarning {
+        WeatherSnapshot(temperature: fahrenheit, unit: .fahrenheit, rainExpectedSoon: false)
+            .temperatureWarning
+    }
+
+    private func warning(celsius: Double) -> TemperatureWarning {
+        WeatherSnapshot(temperature: celsius, unit: .celsius, rainExpectedSoon: false)
+            .temperatureWarning
+    }
+
+    func testNoWarningAboveColdThreshold() {
+        XCTAssertEqual(warning(fahrenheit: 41), .none)
+        XCTAssertEqual(warning(fahrenheit: 72), .none)
+    }
+
+    func testColdWarningAtOrBelowFortyButAboveFreeze() {
+        XCTAssertEqual(warning(fahrenheit: 40), .cold)
+        XCTAssertEqual(warning(fahrenheit: 38), .cold)
+        XCTAssertEqual(warning(fahrenheit: 37.5), .cold)
+    }
+
+    func testFreezeWarningAtOrBelowThirtySeven() {
+        XCTAssertEqual(warning(fahrenheit: 37), .freezing)
+        XCTAssertEqual(warning(fahrenheit: 30), .freezing)
+        XCTAssertEqual(warning(fahrenheit: 0), .freezing)
+    }
+
+    func testWarningThresholdsHoldInCelsius() {
+        // 10°C = 50°F (none), ~4.4°C = 40°F (cold), ~2.8°C = 37°F (freezing).
+        XCTAssertEqual(warning(celsius: 10), .none)
+        XCTAssertEqual(warning(celsius: 4), .cold)
+        XCTAssertEqual(warning(celsius: 3), .cold)
+        XCTAssertEqual(warning(celsius: 2), .freezing)
+        XCTAssertEqual(warning(celsius: -5), .freezing)
+    }
+
+    func testTemperatureFahrenheitConversion() {
+        let celsius = WeatherSnapshot(temperature: 0, unit: .celsius, rainExpectedSoon: false)
+        XCTAssertEqual(celsius.temperatureFahrenheit, 32, accuracy: 0.001)
+
+        let fahrenheit = WeatherSnapshot(temperature: 50, unit: .fahrenheit, rainExpectedSoon: false)
+        XCTAssertEqual(fahrenheit.temperatureFahrenheit, 50, accuracy: 0.001)
+    }
+
     func testSpeedUnitMapsToTemperatureUnit() {
         XCTAssertEqual(SpeedUnit.imperial.temperatureUnit, .fahrenheit)
         XCTAssertEqual(SpeedUnit.metric.temperatureUnit, .celsius)

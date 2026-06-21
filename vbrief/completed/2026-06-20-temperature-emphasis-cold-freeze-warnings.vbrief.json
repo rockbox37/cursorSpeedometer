@@ -1,0 +1,58 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: enlarge the ride-screen temperature and add cold (<=40F) and conspicuous freeze (<=37F) warnings",
+    "created": "2026-06-21T02:55:00Z",
+    "updated": "2026-06-21T02:55:00Z"
+  },
+  "plan": {
+    "id": "temperature-emphasis-cold-freeze-warnings",
+    "title": "Temperature emphasis + cold/freeze warnings",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Builds on the weather badge (PR #18) that shows the current temperature and a 6-hour rain warning in the top-left of the ride screen. This scope makes the temperature far more prominent and adds cold-weather safety cues for riders, who are acutely affected by low temperatures and road-icing risk.",
+      "Problem": "The current temperature is small and easy to miss, and there is no warning for cold or potentially-icy conditions — conditions that materially affect rider safety and grip.",
+      "Goals": "1. Make the temperature value on the ride screen roughly twice as large.\n2. Show a cold-weather warning when the temperature is 40F or below.\n3. Show a conspicuous freeze warning, with a snowflake icon, when the temperature is 37F or below.\n4. Evaluate thresholds correctly regardless of whether the user displays Fahrenheit or Celsius.",
+      "FunctionalRequirements": "FR-1: The temperature value MUST render approximately 100% larger than its previous size while staying theme-colored and legible.\nFR-2: When the current temperature is <= 40F (or the Celsius equivalent), a cold-weather warning indicator MUST appear with the temperature.\nFR-3: When the current temperature is <= 37F (or the Celsius equivalent), a conspicuous freeze warning including a snowflake icon MUST appear and take visual priority over the cold indicator (a freezing reading is not also shown as merely 'cold').\nFR-4: Warning thresholds MUST be evaluated against a canonical Fahrenheit value so they behave identically in F and C display modes.",
+      "Architecture": "No new services. Add a pure TemperatureWarning derivation (none/cold/freezing) on WeatherSnapshot, computed from the stored temperature normalized to Fahrenheit and compared against named thresholds (cold 40F, freeze 37F). WeatherBadgeView is updated to (a) render the temperature at ~2x size and (b) render the cold indicator / conspicuous snowflake freeze warning based on the derived level. Thresholds live as constants on WeatherSnapshot so they are testable without UI.",
+      "TestingStrategy": "Unit-test the pure TemperatureWarning logic across boundaries in both units: 41F->none, 40F->cold, 38F->cold, 37F->freezing, 30F->freezing, and Celsius equivalents (e.g. 10C->none, 3C->cold, 2C->freezing). The font-size and icon presentation are validated by build + manual/on-device review since they are not unit-testable."
+    },
+    "items": [
+      {
+        "title": "Enlarge the temperature display (~2x)",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "The temperature value on the ride screen renders at roughly twice its previous size, stays theme-colored, and does not break the top-bar layout."
+        }
+      },
+      {
+        "title": "Cold-weather warning at <= 40F",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "When the current temperature is 40F or below (or the Celsius equivalent), a cold indicator appears alongside the temperature."
+        }
+      },
+      {
+        "title": "Conspicuous freeze warning with snowflake at <= 37F",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "When the current temperature is 37F or below (or the Celsius equivalent), a conspicuous freeze warning with a snowflake icon appears and takes visual priority over the cold indicator."
+        }
+      },
+      {
+        "title": "Unit-correct thresholds with unit tests",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Warning level is derived from a canonical Fahrenheit value; boundary behavior is unit-tested in both Fahrenheit and Celsius."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "completedAt": "2026-06-21T02:59:16Z"
+    },
+    "updated": "2026-06-21T02:59:16Z"
+  }
+}
