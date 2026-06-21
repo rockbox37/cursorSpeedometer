@@ -190,6 +190,20 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(SpeedUnit.metric.temperatureUnit, .celsius)
     }
 
+    func testSettingsOptionLabelNamesAllControlledUnits() {
+        let imperial = SpeedUnit.imperial.settingsOptionLabel
+        XCTAssertTrue(imperial.contains("Imperial"))
+        XCTAssertTrue(imperial.contains("mph"))
+        XCTAssertTrue(imperial.contains("mi"))
+        XCTAssertTrue(imperial.contains(TemperatureUnit.fahrenheit.symbol))
+
+        let metric = SpeedUnit.metric.settingsOptionLabel
+        XCTAssertTrue(metric.contains("Metric"))
+        XCTAssertTrue(metric.contains("km/h"))
+        XCTAssertTrue(metric.contains("km"))
+        XCTAssertTrue(metric.contains(TemperatureUnit.celsius.symbol))
+    }
+
     func testMakeURLContainsExpectedQueryItems() throws {
         let url = try XCTUnwrap(
             OpenMeteoWeatherService.makeURL(latitude: 37.5, longitude: -122.25, unit: .celsius)

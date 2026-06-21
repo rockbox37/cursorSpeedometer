@@ -15,13 +15,17 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Units") {
-                    Picker("Speed & Distance", selection: $settings.speedUnit) {
+                Section {
+                    Picker("Speed, Distance & Temperature", selection: $settings.speedUnit) {
                         ForEach(SpeedUnit.allCases, id: \.self) { unit in
-                            Text(unit == .imperial ? "Imperial (mph/mi)" : "Metric (km/h/km)")
+                            Text(unit.settingsOptionLabel)
                                 .tag(unit)
                         }
                     }
+                } header: {
+                    Text("Units")
+                } footer: {
+                    Text(unitsFooterText)
                 }
 
                 Section("Display Theme") {
@@ -103,6 +107,13 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
+    }
+
+    private var unitsFooterText: String {
+        let fahrenheit = TemperatureUnit.fahrenheit.symbol
+        let celsius = TemperatureUnit.celsius.symbol
+        return "Temperature on the ride screen follows this selection — "
+            + "Imperial shows \(fahrenheit), Metric shows \(celsius)."
     }
 
     private var locationStatusText: String {
