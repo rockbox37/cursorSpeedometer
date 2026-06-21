@@ -4,6 +4,7 @@ struct RideView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var rideViewModel: RideViewModel
     @ObservedObject var locationService: LocationService
+    @ObservedObject var weatherController: WeatherController
 
     private var palette: ThemePalette {
         ThemePalette.palette(for: settings.activeTheme)
@@ -19,7 +20,7 @@ struct RideView: View {
                 .allowsHitTesting(false)
 
             VStack(spacing: 24) {
-                rideModeIndicator
+                topBar
                 speedDisplay
                 statsGrid
                 controls
@@ -31,16 +32,17 @@ struct RideView: View {
         }
     }
 
-    @ViewBuilder
-    private var rideModeIndicator: some View {
-        if settings.rideModeEnabled {
-            HStack {
-                Spacer()
+    private var topBar: some View {
+        HStack(alignment: .center) {
+            WeatherBadgeView(snapshot: weatherController.snapshot, palette: palette)
+            Spacer()
+            if settings.rideModeEnabled {
                 Label("Ride", systemImage: "bolt.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(palette.accentColor)
             }
         }
+        .frame(maxWidth: .infinity, minHeight: 20)
     }
 
     private var speedDisplay: some View {

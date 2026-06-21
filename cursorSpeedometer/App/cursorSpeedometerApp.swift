@@ -49,7 +49,8 @@ struct RootView: View {
                 RideView(
                     settings: appModel.settings,
                     rideViewModel: appModel.rideViewModel,
-                    locationService: appModel.locationService
+                    locationService: appModel.locationService,
+                    weatherController: appModel.weatherController
                 )
                 .tabItem {
                     Label("Ride", systemImage: "speedometer")

@@ -11,6 +11,7 @@ final class AppModel: ObservableObject {
     let locationService: LocationService
     let themeController = ThemeAutoSwitcherController()
     let brightnessRunner = BrightnessControllerRunner()
+    let weatherController = WeatherController()
 
     private var cancellables = Set<AnyCancellable>()
     private var wasInBackground = false
@@ -27,12 +28,31 @@ final class AppModel: ObservableObject {
                 self?.objectWillChange.send()
             }
             .store(in: &cancellables)
+
+        weatherController.setUnit(settings.speedUnit.temperatureUnit)
+
+        locationService.$coordinate
+            .compactMap { $0 }
+            .sink { [weak self] coordinate in
+                self?.weatherController.updateLocation(
+                    latitude: coordinate.latitude,
+                    longitude: coordinate.longitude
+                )
+            }
+            .store(in: &cancellables)
+
+        settings.$speedUnit
+            .sink { [weak self] unit in
+                self?.weatherController.setUnit(unit.temperatureUnit)
+            }
+            .store(in: &cancellables)
     }
 
     func onAppear() {
         locationService.requestPermissionIfNeeded()
         applyRideMode()
         refreshAdaptiveControllers()
+        weatherController.start()
     }
 
     func onScenePhaseChange(_ phase: ScenePhase) {
@@ -44,6 +64,7 @@ final class AppModel: ObservableObject {
             }
             refreshAdaptiveControllers()
             applyRideMode()
+            weatherController.start()
         case .inactive:
             themeController.stop()
             brightnessRunner.stop()
@@ -51,6 +72,7 @@ final class AppModel: ObservableObject {
             wasInBackground = true
             themeController.stop()
             brightnessRunner.stop()
+            weatherController.stop()
         @unknown default:
             break
         }
