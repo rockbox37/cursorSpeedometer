@@ -9,6 +9,7 @@ private enum ThemeDefaults {
 final class AppSettings: ObservableObject {
     private enum Key {
         static let speedUnit = "speedUnit"
+        static let temperaturePreference = "temperaturePreference"
         static let pinnedTheme = "pinnedTheme"
         static let autoThemeEnabled = "autoThemeEnabled"
         static let autoBrightnessEnabled = "autoBrightnessEnabled"
@@ -21,6 +22,16 @@ final class AppSettings: ObservableObject {
 
     @Published var speedUnit: SpeedUnit {
         didSet { defaults.set(speedUnit.rawValue, forKey: Key.speedUnit) }
+    }
+
+    @Published var temperaturePreference: TemperaturePreference {
+        didSet { defaults.set(temperaturePreference.rawValue, forKey: Key.temperaturePreference) }
+    }
+
+    /// Concrete temperature unit to display, honoring the preference (or the
+    /// Speed & Distance system when the preference is automatic).
+    var resolvedTemperatureUnit: TemperatureUnit {
+        temperaturePreference.resolvedUnit(following: speedUnit)
     }
 
     @Published var pinnedTheme: ThemePreset {
@@ -61,6 +72,9 @@ final class AppSettings: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         self.speedUnit = SpeedUnit(rawValue: defaults.string(forKey: Key.speedUnit) ?? "") ?? .imperial
+        self.temperaturePreference = TemperaturePreference(
+            rawValue: defaults.string(forKey: Key.temperaturePreference) ?? ""
+        ) ?? .automatic
         self.pinnedTheme = ThemePreset(rawValue: defaults.string(forKey: Key.pinnedTheme) ?? "") ?? .day
         self.autoThemeEnabled = defaults.object(forKey: Key.autoThemeEnabled) as? Bool ?? true
         self.autoBrightnessEnabled = defaults.object(forKey: Key.autoBrightnessEnabled) as? Bool ?? true

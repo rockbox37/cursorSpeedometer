@@ -1,0 +1,58 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: let the rider control the temperature unit independently of speed/distance via an Automatic/Fahrenheit/Celsius preference",
+    "created": "2026-06-21T04:20:00Z",
+    "updated": "2026-06-21T04:20:00Z"
+  },
+  "plan": {
+    "id": "independent-temperature-unit",
+    "title": "Independent temperature unit control",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Today the ride-screen temperature unit is coupled to the Speed & Distance (imperial/metric) selection. This scope adds a dedicated Temperature control in Settings so riders can choose Fahrenheit or Celsius independently, while keeping the convenient coupled behavior as the default via an 'Automatic' option.",
+      "Problem": "Some riders want, e.g., mph for speed but °C for temperature (or vice versa). The current single Units toggle does not allow that.",
+      "Goals": "1. Add a Temperature preference with Automatic, Fahrenheit, and Celsius.\n2. Default to Automatic so existing behavior (temperature follows Speed & Distance) is preserved with no migration surprise.\n3. When set to Fahrenheit or Celsius, the temperature unit is fixed regardless of the Speed & Distance selection.",
+      "FunctionalRequirements": "FR-1: A TemperaturePreference (automatic | fahrenheit | celsius) MUST be persisted, defaulting to automatic.\nFR-2: The resolved temperature unit MUST be speedUnit.temperatureUnit when automatic, else the explicitly chosen unit.\nFR-3: The weather display MUST update immediately when either the Speed & Distance unit or the Temperature preference changes.\nFR-4: Settings MUST present a separate Temperature picker, and the Speed & Distance picker MUST no longer imply it controls temperature.\nFR-5: Existing users (no stored preference) MUST keep their current behavior (automatic).",
+      "Architecture": "Add TemperaturePreference (alongside TemperatureUnit) with a resolvedUnit(following:) method. AppSettings gains a persisted temperaturePreference (default automatic) and a resolvedTemperatureUnit computed property. AppModel drives WeatherController.setUnit from the resolved unit, subscribing to both speedUnit and temperaturePreference. SettingsView's Units section gets a second picker (Temperature) and a footer that reflects the effective unit when Automatic. SpeedUnit.settingsOptionLabel reverts to speed/distance-only wording.",
+      "TestingStrategy": "Unit-test TemperaturePreference.resolvedUnit across all combinations (automatic+imperial->F, automatic+metric->C, fahrenheit->F, celsius->C). Update the SpeedUnit label test to assert speed/distance wording only. Settings presentation and live updates verified by build + on-device review."
+    },
+    "items": [
+      {
+        "title": "TemperaturePreference model with resolution",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "TemperaturePreference(automatic/fahrenheit/celsius) resolves to the correct TemperatureUnit given the current SpeedUnit, covered by unit tests."
+        }
+      },
+      {
+        "title": "Persist preference and resolve in AppSettings",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "AppSettings persists temperaturePreference (default automatic) and exposes resolvedTemperatureUnit."
+        }
+      },
+      {
+        "title": "Drive weather unit from the resolved preference",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Changing either the Speed & Distance unit or the Temperature preference updates the displayed temperature unit immediately."
+        }
+      },
+      {
+        "title": "Settings UI for the Temperature picker",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Settings shows a separate Temperature picker (Automatic/Fahrenheit/Celsius) with a footer reflecting the effective unit; the Speed & Distance picker no longer implies temperature control."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "completedAt": "2026-06-21T04:21:06Z"
+    },
+    "updated": "2026-06-21T04:21:06Z"
+  }
+}
