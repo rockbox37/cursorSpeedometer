@@ -1,0 +1,51 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: refresh the weather every 4 minutes when the temperature is within 5F of freezing (or colder), instead of the standard 15-minute cadence",
+    "created": "2026-06-21T03:40:00Z",
+    "updated": "2026-06-21T03:40:00Z"
+  },
+  "plan": {
+    "id": "near-freezing-fast-refresh",
+    "title": "Faster weather refresh near freezing",
+    "status": "completed",
+    "narratives": {
+      "Overview": "The ride screen weather refreshes on a fixed 15-minute timer while foregrounded (WeatherController). Near freezing, conditions and icing risk can change quickly, so riders benefit from fresher data.",
+      "Problem": "A 15-minute cadence can leave a rider with stale temperature/icing information in exactly the conditions where it matters most — at or near freezing.",
+      "Goals": "1. When the current temperature is within 5F of freezing (32F) or colder, refresh every 4 minutes.\n2. Otherwise keep the standard 15-minute cadence.\n3. Stay within Open-Meteo's free-tier rate limits (10,000/day, 5,000/hour, 600/min).",
+      "FunctionalRequirements": "FR-1: When the latest reading is at or below 37F (freezing 32F + 5F margin), or the Celsius equivalent, the refresh interval MUST be 4 minutes.\nFR-2: When the latest reading is above that threshold, the refresh interval MUST be the standard 15 minutes.\nFR-3: The cadence MUST adapt automatically as readings cross the threshold in either direction, without requiring app restart.\nFR-4: The fast cadence MUST remain well within Open-Meteo free-tier limits (one lightweight call per refresh; ~15 calls/hour only while foregrounded).",
+      "Architecture": "Add a pure isNearOrBelowFreezing flag to WeatherSnapshot, computed from the canonical Fahrenheit value vs. a freezing point (32F) plus a near-freezing margin (5F). WeatherController gains two named intervals (standardRefreshInterval=900s, nearFreezingRefreshInterval=240s) and reschedules its repeating timer to the interval implied by the most recent snapshot after every successful fetch. The currently-active interval is exposed (private(set)) for testing.",
+      "TestingStrategy": "Unit-test WeatherSnapshot.isNearOrBelowFreezing across boundaries in F and C (38F->false, 37F->true, 33F->true, 0F->true; 3C->false, 2C->true). Unit-test WeatherController selects the 4-minute interval after a near-freezing snapshot and the 15-minute interval after a warm snapshot, using the existing fake provider."
+    },
+    "items": [
+      {
+        "title": "Near-freezing detection on the snapshot model",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "WeatherSnapshot exposes isNearOrBelowFreezing, true at or below freezing+5F (canonical Fahrenheit), with unit-tested boundaries in F and C."
+        }
+      },
+      {
+        "title": "Adaptive refresh cadence in WeatherController",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "WeatherController refreshes every 4 minutes when the latest snapshot is near/below freezing and every 15 minutes otherwise, adapting automatically as readings cross the threshold."
+        }
+      },
+      {
+        "title": "Tests for adaptive interval selection",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Tests confirm the active interval is 240s after a near-freezing reading and 900s after a warm reading."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "completedAt": "2026-06-21T03:32:15Z"
+    },
+    "updated": "2026-06-21T03:32:15Z"
+  }
+}

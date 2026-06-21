@@ -147,6 +147,36 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(warning(celsius: -5), .freezing)
     }
 
+    private func nearFreezing(fahrenheit: Double) -> Bool {
+        WeatherSnapshot(temperature: fahrenheit, unit: .fahrenheit, rainExpectedInHours: nil)
+            .isNearOrBelowFreezing
+    }
+
+    private func nearFreezing(celsius: Double) -> Bool {
+        WeatherSnapshot(temperature: celsius, unit: .celsius, rainExpectedInHours: nil)
+            .isNearOrBelowFreezing
+    }
+
+    func testNotNearFreezingAboveMargin() {
+        // Freezing 32°F + 5°F margin = 37°F threshold.
+        XCTAssertFalse(nearFreezing(fahrenheit: 38))
+        XCTAssertFalse(nearFreezing(fahrenheit: 60))
+    }
+
+    func testNearFreezingAtOrBelowThreshold() {
+        XCTAssertTrue(nearFreezing(fahrenheit: 37))
+        XCTAssertTrue(nearFreezing(fahrenheit: 33))
+        XCTAssertTrue(nearFreezing(fahrenheit: 32))
+        XCTAssertTrue(nearFreezing(fahrenheit: 0))
+    }
+
+    func testNearFreezingThresholdHoldsInCelsius() {
+        // 3°C = 37.4°F (above), 2°C = 35.6°F (within margin).
+        XCTAssertFalse(nearFreezing(celsius: 3))
+        XCTAssertTrue(nearFreezing(celsius: 2))
+        XCTAssertTrue(nearFreezing(celsius: -5))
+    }
+
     func testTemperatureFahrenheitConversion() {
         let celsius = WeatherSnapshot(temperature: 0, unit: .celsius, rainExpectedInHours: nil)
         XCTAssertEqual(celsius.temperatureFahrenheit, 32, accuracy: 0.001)

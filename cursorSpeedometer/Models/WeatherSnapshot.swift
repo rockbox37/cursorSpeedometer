@@ -13,6 +13,10 @@ struct WeatherSnapshot: Equatable, Sendable {
     static let coldThresholdFahrenheit = 40.0
     /// At or below this (in °F) the rider sees a conspicuous freeze warning.
     static let freezeThresholdFahrenheit = 37.0
+    /// Freezing point in °F.
+    static let freezingPointFahrenheit = 32.0
+    /// Within this many °F of freezing (or colder) counts as "near freezing".
+    static let nearFreezingMarginFahrenheit = 5.0
 
     let temperature: Double
     let unit: TemperatureUnit
@@ -43,6 +47,12 @@ struct WeatherSnapshot: Equatable, Sendable {
         case .fahrenheit: temperature
         case .celsius: temperature * 9 / 5 + 32
         }
+    }
+
+    /// True when the temperature is within 5°F of freezing or colder, where
+    /// icing risk warrants more frequent weather refreshes.
+    var isNearOrBelowFreezing: Bool {
+        temperatureFahrenheit <= Self.freezingPointFahrenheit + Self.nearFreezingMarginFahrenheit
     }
 
     /// Cold-weather severity; freezing takes priority over cold.
