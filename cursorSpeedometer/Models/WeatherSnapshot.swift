@@ -1,7 +1,19 @@
 import Foundation
 
+/// Cold-weather severity derived from the current temperature.
+enum TemperatureWarning: Equatable, Sendable {
+    case none
+    case cold
+    case freezing
+}
+
 /// A point-in-time weather reading for the rider's current location.
 struct WeatherSnapshot: Equatable, Sendable {
+    /// At or below this (in °F) the rider sees a cold-weather warning.
+    static let coldThresholdFahrenheit = 40.0
+    /// At or below this (in °F) the rider sees a conspicuous freeze warning.
+    static let freezeThresholdFahrenheit = 37.0
+
     let temperature: Double
     let unit: TemperatureUnit
     /// True when measurable rain is expected within the forecast window.
@@ -10,5 +22,26 @@ struct WeatherSnapshot: Equatable, Sendable {
     /// Rounded temperature with its unit symbol, e.g. "72°F".
     var temperatureText: String {
         "\(Int(temperature.rounded()))\(unit.symbol)"
+    }
+
+    /// Temperature normalized to Fahrenheit so thresholds compare identically
+    /// regardless of the rider's display unit.
+    var temperatureFahrenheit: Double {
+        switch unit {
+        case .fahrenheit: temperature
+        case .celsius: temperature * 9 / 5 + 32
+        }
+    }
+
+    /// Cold-weather severity; freezing takes priority over cold.
+    var temperatureWarning: TemperatureWarning {
+        let fahrenheit = temperatureFahrenheit
+        if fahrenheit <= Self.freezeThresholdFahrenheit {
+            return .freezing
+        }
+        if fahrenheit <= Self.coldThresholdFahrenheit {
+            return .cold
+        }
+        return .none
     }
 }
