@@ -190,18 +190,47 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(SpeedUnit.metric.temperatureUnit, .celsius)
     }
 
-    func testSettingsOptionLabelNamesAllControlledUnits() {
+    func testSettingsOptionLabelNamesSpeedAndDistance() {
         let imperial = SpeedUnit.imperial.settingsOptionLabel
         XCTAssertTrue(imperial.contains("Imperial"))
         XCTAssertTrue(imperial.contains("mph"))
         XCTAssertTrue(imperial.contains("mi"))
-        XCTAssertTrue(imperial.contains(TemperatureUnit.fahrenheit.symbol))
 
         let metric = SpeedUnit.metric.settingsOptionLabel
         XCTAssertTrue(metric.contains("Metric"))
         XCTAssertTrue(metric.contains("km/h"))
         XCTAssertTrue(metric.contains("km"))
-        XCTAssertTrue(metric.contains(TemperatureUnit.celsius.symbol))
+    }
+
+    func testAutomaticPreferenceFollowsSpeedUnit() {
+        XCTAssertEqual(TemperaturePreference.automatic.resolvedUnit(following: .imperial), .fahrenheit)
+        XCTAssertEqual(TemperaturePreference.automatic.resolvedUnit(following: .metric), .celsius)
+    }
+
+    func testExplicitPreferenceIgnoresSpeedUnit() {
+        XCTAssertEqual(TemperaturePreference.fahrenheit.resolvedUnit(following: .imperial), .fahrenheit)
+        XCTAssertEqual(TemperaturePreference.fahrenheit.resolvedUnit(following: .metric), .fahrenheit)
+        XCTAssertEqual(TemperaturePreference.celsius.resolvedUnit(following: .imperial), .celsius)
+        XCTAssertEqual(TemperaturePreference.celsius.resolvedUnit(following: .metric), .celsius)
+    }
+
+    @MainActor
+    func testAppSettingsResolvesAndPersistsTemperaturePreference() {
+        let suite = "test.temperature.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertEqual(settings.temperaturePreference, .automatic)
+
+        settings.speedUnit = .metric
+        XCTAssertEqual(settings.resolvedTemperatureUnit, .celsius)
+
+        settings.temperaturePreference = .fahrenheit
+        XCTAssertEqual(settings.resolvedTemperatureUnit, .fahrenheit)
+
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertEqual(reloaded.temperaturePreference, .fahrenheit)
     }
 
     func testMakeURLContainsExpectedQueryItems() throws {

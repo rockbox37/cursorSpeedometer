@@ -16,10 +16,16 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    Picker("Speed, Distance & Temperature", selection: $settings.speedUnit) {
+                    Picker("Speed & Distance", selection: $settings.speedUnit) {
                         ForEach(SpeedUnit.allCases, id: \.self) { unit in
                             Text(unit.settingsOptionLabel)
                                 .tag(unit)
+                        }
+                    }
+                    Picker("Temperature", selection: $settings.temperaturePreference) {
+                        ForEach(TemperaturePreference.allCases, id: \.self) { preference in
+                            Text(preference.displayName)
+                                .tag(preference)
                         }
                     }
                 } header: {
@@ -110,10 +116,13 @@ struct SettingsView: View {
     }
 
     private var unitsFooterText: String {
-        let fahrenheit = TemperatureUnit.fahrenheit.symbol
-        let celsius = TemperatureUnit.celsius.symbol
-        return "Temperature on the ride screen follows this selection — "
-            + "Imperial shows \(fahrenheit), Metric shows \(celsius)."
+        let effective = settings.resolvedTemperatureUnit.symbol
+        switch settings.temperaturePreference {
+        case .automatic:
+            return "Temperature follows Speed & Distance — currently \(effective)."
+        case .fahrenheit, .celsius:
+            return "Temperature is fixed to \(effective), regardless of Speed & Distance."
+        }
     }
 
     private var locationStatusText: String {

@@ -26,12 +26,11 @@ enum SpeedUnit: String, CaseIterable, Codable, Sendable {
         }
     }
 
-    /// Picker label for Settings, naming every measurement this selection
-    /// controls — speed, distance, and temperature.
+    /// Picker label for the Settings Speed & Distance option.
     var settingsOptionLabel: String {
         switch self {
-        case .imperial: "Imperial (mph/mi, \(TemperatureUnit.fahrenheit.symbol))"
-        case .metric: "Metric (km/h/km, \(TemperatureUnit.celsius.symbol))"
+        case .imperial: "Imperial (mph/mi)"
+        case .metric: "Metric (km/h/km)"
         }
     }
 

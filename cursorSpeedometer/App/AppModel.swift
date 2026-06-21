@@ -29,7 +29,7 @@ final class AppModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        weatherController.setUnit(settings.speedUnit.temperatureUnit)
+        weatherController.setUnit(settings.resolvedTemperatureUnit)
 
         locationService.$coordinate
             .compactMap { $0 }
@@ -41,9 +41,21 @@ final class AppModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        // Drive the weather unit from the resolved preference, reacting to either
+        // the Speed & Distance system or the Temperature preference changing.
         settings.$speedUnit
-            .sink { [weak self] unit in
-                self?.weatherController.setUnit(unit.temperatureUnit)
+            .sink { [weak self] speedUnit in
+                guard let self else { return }
+                let resolved = self.settings.temperaturePreference.resolvedUnit(following: speedUnit)
+                self.weatherController.setUnit(resolved)
+            }
+            .store(in: &cancellables)
+
+        settings.$temperaturePreference
+            .sink { [weak self] preference in
+                guard let self else { return }
+                let resolved = preference.resolvedUnit(following: self.settings.speedUnit)
+                self.weatherController.setUnit(resolved)
             }
             .store(in: &cancellables)
     }
