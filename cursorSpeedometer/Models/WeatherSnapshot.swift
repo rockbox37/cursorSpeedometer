@@ -16,8 +16,20 @@ struct WeatherSnapshot: Equatable, Sendable {
 
     let temperature: Double
     let unit: TemperatureUnit
+    /// Hours until rain is expected within the forecast window (1-based: the
+    /// current hour counts as ~1), or nil when no rain is expected.
+    let rainExpectedInHours: Int?
+
     /// True when measurable rain is expected within the forecast window.
-    let rainExpectedSoon: Bool
+    var rainExpectedSoon: Bool { rainExpectedInHours != nil }
+
+    /// Rider-facing rain cue with a timeframe, e.g. "Rain possible within ~3hrs",
+    /// or nil when no rain is expected.
+    var rainText: String? {
+        guard let hours = rainExpectedInHours else { return nil }
+        let unitLabel = hours == 1 ? "hr" : "hrs"
+        return "Rain possible within ~\(hours)\(unitLabel)"
+    }
 
     /// Rounded temperature with its unit symbol, e.g. "72°F".
     var temperatureText: String {

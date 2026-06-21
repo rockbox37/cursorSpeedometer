@@ -44,17 +44,27 @@ enum OpenMeteoMapper {
     static let forecastWindowHours = 6
 
     static func snapshot(from response: OpenMeteoResponse, unit: TemperatureUnit) -> WeatherSnapshot {
-        let probabilities = (response.hourly?.precipitationProbability ?? []).prefix(forecastWindowHours)
-        let amounts = (response.hourly?.precipitation ?? []).prefix(forecastWindowHours)
-
-        let rainByProbability = probabilities.contains { ($0 ?? 0) >= rainProbabilityThreshold }
-        let rainByAmount = amounts.contains { ($0 ?? 0) >= rainAmountThresholdMm }
+        let probabilities = response.hourly?.precipitationProbability ?? []
+        let amounts = response.hourly?.precipitation ?? []
 
         return WeatherSnapshot(
             temperature: response.current.temperature2m,
             unit: unit,
-            rainExpectedSoon: rainByProbability || rainByAmount
+            rainExpectedInHours: hoursUntilRain(probabilities: probabilities, amounts: amounts)
         )
+    }
+
+    /// Returns the 1-based hour of the first upcoming bucket that meets the rain
+    /// thresholds (the current hour counts as ~1), or nil if none does in the window.
+    private static func hoursUntilRain(probabilities: [Int?], amounts: [Double?]) -> Int? {
+        for index in 0..<forecastWindowHours {
+            let probability = index < probabilities.count ? (probabilities[index] ?? 0) : 0
+            let amount = index < amounts.count ? (amounts[index] ?? 0) : 0
+            if probability >= rainProbabilityThreshold || amount >= rainAmountThresholdMm {
+                return index + 1
+            }
+        }
+        return nil
     }
 }
 

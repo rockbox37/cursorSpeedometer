@@ -22,7 +22,7 @@ final class WeatherControllerTests: XCTestCase {
     }
 
     func testUpdateLocationFetchesSnapshot() async {
-        let expected = WeatherSnapshot(temperature: 70, unit: .fahrenheit, rainExpectedSoon: true)
+        let expected = WeatherSnapshot(temperature: 70, unit: .fahrenheit, rainExpectedInHours: 2)
         let controller = WeatherController(
             provider: FakeWeatherProvider { _ in expected },
             unit: .fahrenheit
@@ -37,7 +37,7 @@ final class WeatherControllerTests: XCTestCase {
     func testNoFetchWithoutLocation() async {
         let controller = WeatherController(
             provider: FakeWeatherProvider { unit in
-                WeatherSnapshot(temperature: 1, unit: unit, rainExpectedSoon: false)
+                WeatherSnapshot(temperature: 1, unit: unit, rainExpectedInHours: nil)
             }
         )
 
@@ -54,7 +54,7 @@ final class WeatherControllerTests: XCTestCase {
                 WeatherSnapshot(
                     temperature: unit == .celsius ? 21 : 70,
                     unit: unit,
-                    rainExpectedSoon: false
+                    rainExpectedInHours: nil
                 )
             },
             unit: .fahrenheit

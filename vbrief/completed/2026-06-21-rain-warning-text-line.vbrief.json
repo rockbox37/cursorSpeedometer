@@ -1,0 +1,51 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: show the rain warning as visible text with a timeframe ('Rain possible within ~Xhrs') on its own line under the temperature",
+    "created": "2026-06-21T03:10:00Z",
+    "updated": "2026-06-21T03:10:00Z"
+  },
+  "plan": {
+    "id": "rain-warning-text-line",
+    "title": "Rain warning text line with timeframe",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Builds on the weather badge (PR #18/#19) on the ride screen. Today rain is conveyed only by a small cloud icon with a non-specific accessibility label ('within 6 hours'). Riders glancing at the screen have no visible, time-bound rain cue.",
+      "Problem": "The rain warning is icon-only and carries no timeframe, so it is easy to miss and gives no sense of urgency. A rider needs to know rain is coming AND roughly how soon to decide whether to keep riding.",
+      "Goals": "1. Replace the icon-only cue with visible text 'Rain possible within ~Xhrs'.\n2. Derive X from the actual hours until the first qualifying rainy hourly bucket.\n3. Place the rain cue on its own line directly under the temperature.",
+      "FunctionalRequirements": "FR-1: When rain is expected within the forecast window, the badge MUST show visible text reading 'Rain possible within ~Xhrs', where X is the number of hours until rain.\nFR-2: X MUST be derived from the index of the first hourly bucket that meets the existing probability/amount thresholds (1-based: the current hour counts as ~1hr).\nFR-3: The rain cue MUST render on a new line beneath the temperature row, not inline with the temperature.\nFR-4: When no rain is expected within the window, no rain line is shown.",
+      "Architecture": "Replace WeatherSnapshot.rainExpectedSoon (Bool) with rainExpectedInHours (Int?), where nil means no rain in the window. Add a computed rainExpectedSoon (rainExpectedInHours != nil) for back-compat and a rainText display string. OpenMeteoMapper computes the 1-based index of the first hourly bucket meeting the probability or amount threshold. WeatherBadgeView becomes a VStack: temperature row on top, rain text line below.",
+      "TestingStrategy": "Unit-test OpenMeteoMapper: first qualifying bucket by probability and by amount yields the correct 1-based hour; no qualifying bucket yields nil; thresholds at boundaries still apply. Unit-test WeatherSnapshot.rainText formatting (singular vs plural, nil when no rain) and rainExpectedSoon derivation. Layout is validated by build + on-device review."
+    },
+    "items": [
+      {
+        "title": "Compute hours-to-rain in the mapper + snapshot model",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "WeatherSnapshot carries rainExpectedInHours (Int?, 1-based, nil when none); OpenMeteoMapper sets it from the first qualifying hourly bucket; rainExpectedSoon remains available as a derived value."
+        }
+      },
+      {
+        "title": "Render rain text line under the temperature",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "WeatherBadgeView shows 'Rain possible within ~Xhrs' on its own line beneath the temperature when rain is expected, and shows nothing rain-related otherwise."
+        }
+      },
+      {
+        "title": "Unit tests for hours-to-rain and rainText",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Tests cover first-qualifying-bucket selection (probability and amount), nil when no rain, and rainText formatting including pluralization."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "completedAt": "2026-06-21T03:15:38Z"
+    },
+    "updated": "2026-06-21T03:15:38Z"
+  }
+}
