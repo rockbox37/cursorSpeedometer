@@ -68,4 +68,52 @@ final class WeatherControllerTests: XCTestCase {
         await waitUntil { controller.snapshot?.unit == .celsius }
         XCTAssertEqual(controller.snapshot?.temperature, 21)
     }
+
+    func testWarmReadingUsesStandardRefreshInterval() async {
+        let controller = WeatherController(
+            provider: FakeWeatherProvider { _ in
+                WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
+            },
+            unit: .fahrenheit
+        )
+
+        controller.start()
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { controller.snapshot != nil }
+
+        XCTAssertEqual(controller.activeRefreshInterval, WeatherController.standardRefreshInterval)
+        controller.stop()
+    }
+
+    func testNearFreezingReadingUsesFasterRefreshInterval() async {
+        let controller = WeatherController(
+            provider: FakeWeatherProvider { _ in
+                WeatherSnapshot(temperature: 35, unit: .fahrenheit, rainExpectedInHours: nil)
+            },
+            unit: .fahrenheit
+        )
+
+        controller.start()
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { controller.snapshot != nil }
+
+        XCTAssertEqual(controller.activeRefreshInterval, WeatherController.nearFreezingRefreshInterval)
+        controller.stop()
+    }
+
+    func testStopClearsActiveRefreshInterval() async {
+        let controller = WeatherController(
+            provider: FakeWeatherProvider { _ in
+                WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
+            },
+            unit: .fahrenheit
+        )
+
+        controller.start()
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { controller.activeRefreshInterval != nil }
+
+        controller.stop()
+        XCTAssertNil(controller.activeRefreshInterval)
+    }
 }
