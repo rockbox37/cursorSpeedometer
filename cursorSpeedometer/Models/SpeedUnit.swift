@@ -18,6 +18,14 @@ enum SpeedUnit: String, CaseIterable, Codable, Sendable {
         }
     }
 
+    /// Temperature scale paired with this distance/speed system.
+    var temperatureUnit: TemperatureUnit {
+        switch self {
+        case .imperial: .fahrenheit
+        case .metric: .celsius
+        }
+    }
+
     func formatSpeed(metersPerSecond: Double) -> String {
         let value = switch self {
         case .imperial: metersPerSecond * 2.23694
