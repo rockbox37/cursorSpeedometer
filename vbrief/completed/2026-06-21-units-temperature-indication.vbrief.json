@@ -1,0 +1,45 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: make the Settings > Units selection explicitly indicate that it also controls the temperature unit (closes #23)",
+    "created": "2026-06-21T04:05:00Z",
+    "updated": "2026-06-21T04:05:00Z"
+  },
+  "plan": {
+    "id": "units-temperature-indication",
+    "title": "Indicate temperature follows the Units selection",
+    "status": "completed",
+    "narratives": {
+      "Overview": "In Settings, the Units section presents the imperial/metric toggle only in terms of speed & distance, but the ride-screen temperature also follows this selection (imperial -> F, metric -> C). That coupling is currently invisible to the user (GitHub issue #23).",
+      "Problem": "Users cannot tell from the UI that the Units choice also changes the temperature unit, which is undiscoverable and potentially confusing.",
+      "Goals": "1. Make it explicit that the Units selection controls temperature as well as speed and distance.\n2. Keep the existing coupled behavior (no independent temperature override in this scope).",
+      "FunctionalRequirements": "FR-1: The Units picker MUST communicate that it controls speed, distance, AND temperature.\nFR-2: Each option MUST concretely show the temperature scale it implies (Imperial -> F, Metric -> C).\nFR-3: No change to the underlying behavior: temperature still follows speedUnit.temperatureUnit.",
+      "Architecture": "Add a pure settingsOptionLabel to SpeedUnit that names all controlled measurements, e.g. 'Imperial (mph/mi, F)' / 'Metric (km/h/km, C)'. Update SettingsView's Units section to use that label, rename the picker row to include Temperature, and add a section footer stating temperature follows the selection.",
+      "TestingStrategy": "Unit-test SpeedUnit.settingsOptionLabel for both cases (contains speed, distance, and temperature symbols). The footer/picker presentation is verified by build + on-device review."
+    },
+    "items": [
+      {
+        "title": "Add settingsOptionLabel to SpeedUnit",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "SpeedUnit exposes a label that includes speed, distance, and temperature units for both imperial and metric, covered by a unit test."
+        }
+      },
+      {
+        "title": "Indicate temperature coupling in the Units section",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "The Settings Units section uses the inclusive option labels, a picker row naming temperature, and a footer stating temperature follows this selection."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 23,
+      "completedAt": "2026-06-21T03:58:32Z"
+    },
+    "updated": "2026-06-21T03:58:32Z"
+  }
+}

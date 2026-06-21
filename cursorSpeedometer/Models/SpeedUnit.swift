@@ -26,6 +26,15 @@ enum SpeedUnit: String, CaseIterable, Codable, Sendable {
         }
     }
 
+    /// Picker label for Settings, naming every measurement this selection
+    /// controls — speed, distance, and temperature.
+    var settingsOptionLabel: String {
+        switch self {
+        case .imperial: "Imperial (mph/mi, \(TemperatureUnit.fahrenheit.symbol))"
+        case .metric: "Metric (km/h/km, \(TemperatureUnit.celsius.symbol))"
+        }
+    }
+
     func formatSpeed(metersPerSecond: Double) -> String {
         let value = switch self {
         case .imperial: metersPerSecond * 2.23694
