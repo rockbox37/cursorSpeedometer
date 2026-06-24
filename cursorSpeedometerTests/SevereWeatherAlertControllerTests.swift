@@ -2,15 +2,15 @@ import XCTest
 @testable import cursorSpeedometer
 
 private struct FakeAlertProvider: AlertProvider {
-    let result: @Sendable () -> ThunderstormAlert?
+    let result: @Sendable () -> SevereWeatherAlert?
 
-    func fetchActiveThunderstormAlert(latitude: Double, longitude: Double) async throws -> ThunderstormAlert? {
+    func fetchActiveAlert(latitude: Double, longitude: Double) async throws -> SevereWeatherAlert? {
         result()
     }
 }
 
 @MainActor
-final class ThunderstormAlertControllerTests: XCTestCase {
+final class SevereWeatherAlertControllerTests: XCTestCase {
     private func waitUntil(
         _ condition: @escaping () -> Bool,
         timeout: TimeInterval = 2
@@ -22,8 +22,8 @@ final class ThunderstormAlertControllerTests: XCTestCase {
     }
 
     func testUpdateLocationFetchesAlert() async {
-        let expected = ThunderstormAlert(level: .warning, event: "Severe Thunderstorm Warning")
-        let controller = ThunderstormAlertController(provider: FakeAlertProvider { expected })
+        let expected = SevereWeatherAlert(category: .tornado, level: .warning, event: "Tornado Warning")
+        let controller = SevereWeatherAlertController(provider: FakeAlertProvider { expected })
 
         controller.updateLocation(latitude: 37, longitude: -122)
         await waitUntil { controller.alert != nil }
@@ -32,9 +32,9 @@ final class ThunderstormAlertControllerTests: XCTestCase {
     }
 
     func testNoFetchWithoutLocation() async {
-        let controller = ThunderstormAlertController(
+        let controller = SevereWeatherAlertController(
             provider: FakeAlertProvider {
-                ThunderstormAlert(level: .watch, event: "Severe Thunderstorm Watch")
+                SevereWeatherAlert(category: .thunderstorm, level: .watch, event: "Severe Thunderstorm Watch")
             }
         )
 
@@ -46,7 +46,7 @@ final class ThunderstormAlertControllerTests: XCTestCase {
     }
 
     func testClearsAlertWhenNoneActive() async {
-        let controller = ThunderstormAlertController(provider: FakeAlertProvider { nil })
+        let controller = SevereWeatherAlertController(provider: FakeAlertProvider { nil })
 
         controller.updateLocation(latitude: 37, longitude: -122)
         await waitUntil({ controller.alert != nil }, timeout: 0.3)

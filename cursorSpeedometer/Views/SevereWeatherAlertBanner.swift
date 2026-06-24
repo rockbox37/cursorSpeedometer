@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Conspicuous main-screen banner shown while a thunderstorm watch/warning is active.
-struct ThunderstormAlertBanner: View {
-    let alert: ThunderstormAlert?
+/// Conspicuous main-screen banner shown while a severe-weather watch/warning is active.
+struct SevereWeatherAlertBanner: View {
+    let alert: SevereWeatherAlert?
 
     private static let warningColor = Color(red: 0.85, green: 0.12, blue: 0.12)
     private static let watchColor = Color(red: 0.95, green: 0.62, blue: 0.0)
@@ -10,7 +10,7 @@ struct ThunderstormAlertBanner: View {
     var body: some View {
         if let alert {
             HStack(spacing: 8) {
-                Image(systemName: "cloud.bolt.rain.fill")
+                Image(systemName: alert.category.iconName)
                     .font(.title3.weight(.bold))
                 Text(alert.text)
                     .font(.subheadline.weight(.bold))
@@ -24,11 +24,11 @@ struct ThunderstormAlertBanner: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(color(for: alert.level), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(alert.text), thunderstorm alert active")
+            .accessibilityLabel("\(alert.text), severe weather alert active")
         }
     }
 
-    private func color(for level: ThunderstormAlertLevel) -> Color {
+    private func color(for level: SevereWeatherAlertLevel) -> Color {
         switch level {
         case .warning: Self.warningColor
         case .watch: Self.watchColor

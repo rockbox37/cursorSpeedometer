@@ -11,50 +11,89 @@ final class NWSAlertServiceTests: XCTestCase {
     }
 
     func testWarningTakesPriorityOverWatch() {
-        let alert = NWSAlertMapper.thunderstormAlert(from: response([
+        let alert = NWSAlertMapper.alert(from: response([
             (event: "Severe Thunderstorm Watch", messageType: "Alert"),
             (event: "Severe Thunderstorm Warning", messageType: "Alert")
         ]))
         XCTAssertEqual(alert?.level, .warning)
+        XCTAssertEqual(alert?.category, .thunderstorm)
         XCTAssertEqual(alert?.event, "Severe Thunderstorm Warning")
     }
 
     func testWatchDetectedWhenNoWarning() {
-        let alert = NWSAlertMapper.thunderstormAlert(from: response([
+        let alert = NWSAlertMapper.alert(from: response([
             (event: "Severe Thunderstorm Watch", messageType: "Alert")
         ]))
         XCTAssertEqual(alert?.level, .watch)
     }
 
+    func testTornadoWarningDetected() {
+        let alert = NWSAlertMapper.alert(from: response([
+            (event: "Tornado Warning", messageType: "Alert")
+        ]))
+        XCTAssertEqual(alert?.category, .tornado)
+        XCTAssertEqual(alert?.level, .warning)
+    }
+
+    func testTornadoWatchDetected() {
+        let alert = NWSAlertMapper.alert(from: response([
+            (event: "Tornado Watch", messageType: "Alert")
+        ]))
+        XCTAssertEqual(alert?.category, .tornado)
+        XCTAssertEqual(alert?.level, .watch)
+    }
+
+    func testTornadoWarningOutranksThunderstormWarning() {
+        let alert = NWSAlertMapper.alert(from: response([
+            (event: "Severe Thunderstorm Warning", messageType: "Alert"),
+            (event: "Tornado Warning", messageType: "Alert")
+        ]))
+        XCTAssertEqual(alert?.category, .tornado)
+        XCTAssertEqual(alert?.level, .warning)
+    }
+
+    func testThunderstormWarningOutranksTornadoWatch() {
+        // A warning (imminent) outranks a watch even when the watch is a tornado.
+        let alert = NWSAlertMapper.alert(from: response([
+            (event: "Tornado Watch", messageType: "Alert"),
+            (event: "Severe Thunderstorm Warning", messageType: "Alert")
+        ]))
+        XCTAssertEqual(alert?.category, .thunderstorm)
+        XCTAssertEqual(alert?.level, .warning)
+    }
+
     func testCanceledAlertsAreIgnored() {
-        let alert = NWSAlertMapper.thunderstormAlert(from: response([
-            (event: "Severe Thunderstorm Warning", messageType: "Cancel")
+        let alert = NWSAlertMapper.alert(from: response([
+            (event: "Tornado Warning", messageType: "Cancel")
         ]))
         XCTAssertNil(alert)
     }
 
-    func testNonThunderstormEventsAreIgnored() {
-        let alert = NWSAlertMapper.thunderstormAlert(from: response([
+    func testNonSevereEventsAreIgnored() {
+        let alert = NWSAlertMapper.alert(from: response([
             (event: "Flood Warning", messageType: "Alert"),
             (event: "Heat Advisory", messageType: "Alert")
         ]))
         XCTAssertNil(alert)
     }
 
-    func testThunderstormStatementWithoutWatchOrWarningIsIgnored() {
-        let alert = NWSAlertMapper.thunderstormAlert(from: response([
+    func testStatementWithoutWatchOrWarningIsIgnored() {
+        let alert = NWSAlertMapper.alert(from: response([
             (event: "Severe Thunderstorm Statement", messageType: "Alert")
         ]))
         XCTAssertNil(alert)
     }
 
     func testEmptyFeaturesYieldNoAlert() {
-        XCTAssertNil(NWSAlertMapper.thunderstormAlert(from: response([])))
+        XCTAssertNil(NWSAlertMapper.alert(from: response([])))
     }
 
     func testAlertTextFallsBackWhenEventEmpty() {
-        XCTAssertEqual(ThunderstormAlert(level: .warning, event: "").text, "Thunderstorm Warning")
-        XCTAssertEqual(ThunderstormAlert(level: .watch, event: "").text, "Thunderstorm Watch")
+        XCTAssertEqual(SevereWeatherAlert(category: .tornado, level: .warning, event: "").text, "Tornado Warning")
+        XCTAssertEqual(
+            SevereWeatherAlert(category: .thunderstorm, level: .watch, event: "").text,
+            "Thunderstorm Watch"
+        )
     }
 
     func testMakeURLContainsPointAndHost() throws {
@@ -74,9 +113,10 @@ final class NWSAlertServiceTests: XCTestCase {
         NWSStubURLProtocol.lastUserAgent = nil
         let service = NWSAlertService(session: Self.stubbedSession())
 
-        let alert = try await service.fetchActiveThunderstormAlert(latitude: 37, longitude: -122)
+        let alert = try await service.fetchActiveAlert(latitude: 37, longitude: -122)
 
         XCTAssertEqual(alert?.level, .warning)
+        XCTAssertEqual(alert?.category, .thunderstorm)
         XCTAssertEqual(NWSStubURLProtocol.lastUserAgent, NWSAlertService.userAgent)
     }
 
@@ -86,7 +126,7 @@ final class NWSAlertServiceTests: XCTestCase {
         let service = NWSAlertService(session: Self.stubbedSession())
 
         do {
-            _ = try await service.fetchActiveThunderstormAlert(latitude: 37, longitude: -122)
+            _ = try await service.fetchActiveAlert(latitude: 37, longitude: -122)
             XCTFail("Expected fetch to throw on a 500 response")
         } catch {
             // Expected.

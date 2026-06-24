@@ -1,0 +1,52 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: add NWS tornado watch/warning alerts alongside thunderstorm alerts by generalizing the alert model to severe weather",
+    "created": "2026-06-24T03:45:00Z",
+    "updated": "2026-06-24T03:45:00Z"
+  },
+  "plan": {
+    "id": "tornado-alerts",
+    "title": "NWS tornado watch/warning alerts",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Extends the NWS alerts feature (PR #29) so the ride screen also surfaces active tornado watches and warnings, not just thunderstorms. The alert model is generalized from thunderstorm-only to a severe-weather model with a category (thunderstorm | tornado) and level (watch | warning).",
+      "Problem": "Tornadoes are the most dangerous severe-weather hazard for a rider, but the app currently only flags thunderstorm watches/warnings.",
+      "Goals": "1. Detect active tornado watches and warnings from NWS.\n2. Show them with a tornado icon and text on the main screen.\n3. Rank alerts so the most dangerous active alert is shown (warnings over watches; within a level, tornado over thunderstorm).",
+      "FunctionalRequirements": "FR-1: The NWS mapper MUST detect tornado watches and warnings in addition to thunderstorm watches/warnings, ignoring canceled and non-watch/warning events.\nFR-2: When multiple alerts are active, the displayed alert MUST be the highest priority, where warning > watch and, within a level, tornado > thunderstorm.\nFR-3: A tornado alert MUST render with a tornado icon distinct from the thunderstorm icon.\nFR-4: Existing thunderstorm behavior MUST be preserved.",
+      "Architecture": "Generalize ThunderstormAlert into SevereWeatherAlert(category, level, event) with a combined priority (level.priority*10 + category.priority). NWSAlertMapper classifies events into tornado/thunderstorm and watch/warning and selects the highest priority. Rename the controller/banner/provider method to severe-weather naming. The banner picks its SF Symbol from the category (tornado -> \"tornado\", thunderstorm -> \"cloud.bolt.rain.fill\") and color from the level (warning red, watch amber).",
+      "TestingStrategy": "Unit-test the mapper for: tornado warning beats thunderstorm warning; tornado warning beats tornado watch; tornado watch vs thunderstorm warning (warning wins); tornado watch detected; canceled tornado ignored; plus the existing thunderstorm cases. Update controller tests to the new type. Banner presentation verified by build + on-device review."
+    },
+    "items": [
+      {
+        "title": "Generalize to SevereWeatherAlert with category",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "SevereWeatherAlert carries category (thunderstorm|tornado) and level (watch|warning) with a combined priority; covered by unit tests."
+        }
+      },
+      {
+        "title": "Detect tornado alerts in the NWS mapper",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "The mapper classifies tornado and thunderstorm watches/warnings and returns the highest-priority active alert."
+        }
+      },
+      {
+        "title": "Tornado presentation on the banner",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "An active tornado alert renders with a tornado icon and its text, colored by severity."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 28,
+      "completedAt": "2026-06-24T03:48:22Z"
+    },
+    "updated": "2026-06-24T03:48:22Z"
+  }
+}
