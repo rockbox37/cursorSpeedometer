@@ -31,6 +31,7 @@ final class AppModel: ObservableObject {
             .store(in: &cancellables)
 
         weatherController.setUnit(settings.resolvedTemperatureUnit)
+        weatherController.setWindowHours(settings.rainWarningWindowHours)
 
         locationService.$coordinate
             .compactMap { $0 }
@@ -61,6 +62,12 @@ final class AppModel: ObservableObject {
                 guard let self else { return }
                 let resolved = preference.resolvedUnit(following: self.settings.speedUnit)
                 self.weatherController.setUnit(resolved)
+            }
+            .store(in: &cancellables)
+
+        settings.$rainWarningWindowHours
+            .sink { [weak self] hours in
+                self?.weatherController.setWindowHours(hours)
             }
             .store(in: &cancellables)
     }

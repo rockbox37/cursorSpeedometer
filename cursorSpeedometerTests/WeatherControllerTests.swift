@@ -2,10 +2,15 @@ import XCTest
 @testable import cursorSpeedometer
 
 private struct FakeWeatherProvider: WeatherProvider {
-    let snapshotForUnit: @Sendable (TemperatureUnit) -> WeatherSnapshot
+    let snapshotForUnit: @Sendable (TemperatureUnit, Int) -> WeatherSnapshot
 
-    func fetch(latitude: Double, longitude: Double, unit: TemperatureUnit) async throws -> WeatherSnapshot {
-        snapshotForUnit(unit)
+    func fetch(
+        latitude: Double,
+        longitude: Double,
+        unit: TemperatureUnit,
+        windowHours: Int
+    ) async throws -> WeatherSnapshot {
+        snapshotForUnit(unit, windowHours)
     }
 }
 
@@ -24,7 +29,7 @@ final class WeatherControllerTests: XCTestCase {
     func testUpdateLocationFetchesSnapshot() async {
         let expected = WeatherSnapshot(temperature: 70, unit: .fahrenheit, rainExpectedInHours: 2)
         let controller = WeatherController(
-            provider: FakeWeatherProvider { _ in expected },
+            provider: FakeWeatherProvider { _, _ in expected },
             unit: .fahrenheit
         )
 
@@ -36,7 +41,7 @@ final class WeatherControllerTests: XCTestCase {
 
     func testNoFetchWithoutLocation() async {
         let controller = WeatherController(
-            provider: FakeWeatherProvider { unit in
+            provider: FakeWeatherProvider { unit, _ in
                 WeatherSnapshot(temperature: 1, unit: unit, rainExpectedInHours: nil)
             }
         )
@@ -50,7 +55,7 @@ final class WeatherControllerTests: XCTestCase {
 
     func testSetUnitRefetchesWithNewUnit() async {
         let controller = WeatherController(
-            provider: FakeWeatherProvider { unit in
+            provider: FakeWeatherProvider { unit, _ in
                 WeatherSnapshot(
                     temperature: unit == .celsius ? 21 : 70,
                     unit: unit,
@@ -69,9 +74,27 @@ final class WeatherControllerTests: XCTestCase {
         XCTAssertEqual(controller.snapshot?.temperature, 21)
     }
 
+    func testSetWindowHoursRefetchesWithNewWindow() async {
+        // Echo the requested window back as rainExpectedInHours so we can assert it.
+        let controller = WeatherController(
+            provider: FakeWeatherProvider { unit, windowHours in
+                WeatherSnapshot(temperature: 70, unit: unit, rainExpectedInHours: windowHours)
+            },
+            unit: .fahrenheit,
+            windowHours: 6
+        )
+
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { controller.snapshot?.rainExpectedInHours == 6 }
+
+        controller.setWindowHours(3)
+        await waitUntil { controller.snapshot?.rainExpectedInHours == 3 }
+        XCTAssertEqual(controller.snapshot?.rainExpectedInHours, 3)
+    }
+
     func testWarmReadingUsesStandardRefreshInterval() async {
         let controller = WeatherController(
-            provider: FakeWeatherProvider { _ in
+            provider: FakeWeatherProvider { _, _ in
                 WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
             },
             unit: .fahrenheit
@@ -87,7 +110,7 @@ final class WeatherControllerTests: XCTestCase {
 
     func testNearFreezingReadingUsesFasterRefreshInterval() async {
         let controller = WeatherController(
-            provider: FakeWeatherProvider { _ in
+            provider: FakeWeatherProvider { _, _ in
                 WeatherSnapshot(temperature: 35, unit: .fahrenheit, rainExpectedInHours: nil)
             },
             unit: .fahrenheit
@@ -103,7 +126,7 @@ final class WeatherControllerTests: XCTestCase {
 
     func testStopClearsActiveRefreshInterval() async {
         let controller = WeatherController(
-            provider: FakeWeatherProvider { _ in
+            provider: FakeWeatherProvider { _, _ in
                 WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
             },
             unit: .fahrenheit
