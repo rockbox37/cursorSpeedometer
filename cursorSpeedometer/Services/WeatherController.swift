@@ -18,11 +18,17 @@ final class WeatherController: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var coordinate: (latitude: Double, longitude: Double)?
     private var unit: TemperatureUnit
+    private var windowHours: Int
     private var isRunning = false
 
-    init(provider: WeatherProvider = OpenMeteoWeatherService(), unit: TemperatureUnit = .fahrenheit) {
+    init(
+        provider: WeatherProvider = OpenMeteoWeatherService(),
+        unit: TemperatureUnit = .fahrenheit,
+        windowHours: Int = OpenMeteoMapper.defaultForecastWindowHours
+    ) {
         self.provider = provider
         self.unit = unit
+        self.windowHours = OpenMeteoMapper.clampWindowHours(windowHours)
     }
 
     /// Begin (or resume) periodic refreshes. Safe to call repeatedly.
@@ -57,9 +63,18 @@ final class WeatherController: ObservableObject {
         fetch()
     }
 
+    /// Update the rain look-ahead window and refresh to reflect the new horizon.
+    func setWindowHours(_ hours: Int) {
+        let clamped = OpenMeteoMapper.clampWindowHours(hours)
+        guard clamped != windowHours else { return }
+        windowHours = clamped
+        fetch()
+    }
+
     private func fetch() {
         guard let coordinate else { return }
         let unit = self.unit
+        let windowHours = self.windowHours
         let latitude = coordinate.latitude
         let longitude = coordinate.longitude
 
@@ -67,7 +82,12 @@ final class WeatherController: ObservableObject {
         fetchTask = Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let result = try await self.provider.fetch(latitude: latitude, longitude: longitude, unit: unit)
+                let result = try await self.provider.fetch(
+                    latitude: latitude,
+                    longitude: longitude,
+                    unit: unit,
+                    windowHours: windowHours
+                )
                 guard !Task.isCancelled else { return }
                 self.snapshot = result
                 // Adapt the cadence as readings cross the near-freezing threshold.

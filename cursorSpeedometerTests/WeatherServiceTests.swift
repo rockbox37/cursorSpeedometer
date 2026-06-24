@@ -1,6 +1,7 @@
 import XCTest
 @testable import cursorSpeedometer
 
+// swiftlint:disable type_body_length
 final class WeatherServiceTests: XCTestCase {
     private func response(
         temperature: Double = 70,
@@ -73,6 +74,37 @@ final class WeatherServiceTests: XCTestCase {
         )
         XCTAssertFalse(snapshot.rainExpectedSoon)
         XCTAssertNil(snapshot.rainExpectedInHours)
+    }
+
+    func testLargerWindowExtendsDetection() {
+        // Rain only in the 8th hour: ignored at the default 6h window, found at 8h.
+        let probabilities: [Int?] = [0, 0, 0, 0, 0, 0, 0, 90]
+        XCTAssertNil(
+            OpenMeteoMapper.snapshot(from: response(probabilities: probabilities), unit: .fahrenheit)
+                .rainExpectedInHours
+        )
+        let widened = OpenMeteoMapper.snapshot(
+            from: response(probabilities: probabilities),
+            unit: .fahrenheit,
+            windowHours: 8
+        )
+        XCTAssertEqual(widened.rainExpectedInHours, 8)
+    }
+
+    func testSmallerWindowShrinksDetection() {
+        // Rain in the 5th hour is ignored once the window is narrowed to 3 hours.
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(probabilities: [0, 0, 0, 0, 90, 0]),
+            unit: .fahrenheit,
+            windowHours: 3
+        )
+        XCTAssertNil(snapshot.rainExpectedInHours)
+    }
+
+    func testWindowHoursClampedToBounds() {
+        XCTAssertEqual(OpenMeteoMapper.clampWindowHours(0), OpenMeteoMapper.minForecastWindowHours)
+        XCTAssertEqual(OpenMeteoMapper.clampWindowHours(99), OpenMeteoMapper.maxForecastWindowHours)
+        XCTAssertEqual(OpenMeteoMapper.clampWindowHours(5), 5)
     }
 
     func testMissingHourlyDataMeansNoRain() {
@@ -245,6 +277,26 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(reloaded.temperaturePreference, .fahrenheit)
     }
 
+    @MainActor
+    func testAppSettingsClampsAndPersistsRainWindow() {
+        let suite = "test.rainwindow.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertEqual(settings.rainWarningWindowHours, OpenMeteoMapper.defaultForecastWindowHours)
+
+        settings.rainWarningWindowHours = 99
+        XCTAssertEqual(settings.rainWarningWindowHours, OpenMeteoMapper.maxForecastWindowHours)
+
+        settings.rainWarningWindowHours = 0
+        XCTAssertEqual(settings.rainWarningWindowHours, OpenMeteoMapper.minForecastWindowHours)
+
+        settings.rainWarningWindowHours = 4
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertEqual(reloaded.rainWarningWindowHours, 4)
+    }
+
     func testMakeURLContainsExpectedQueryItems() throws {
         let url = try XCTUnwrap(
             OpenMeteoWeatherService.makeURL(latitude: 37.5, longitude: -122.25, unit: .celsius)
@@ -261,6 +313,17 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(items["forecast_hours"], "6")
         XCTAssertEqual(items["hourly"], "precipitation_probability,precipitation")
         XCTAssertEqual(items["current"], "temperature_2m")
+    }
+
+    func testMakeURLUsesConfiguredWindow() throws {
+        let url = try XCTUnwrap(
+            OpenMeteoWeatherService.makeURL(latitude: 1, longitude: 2, unit: .fahrenheit, windowHours: 9)
+        )
+        let components = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let items = Dictionary(
+            uniqueKeysWithValues: (components.queryItems ?? []).map { ($0.name, $0.value) }
+        )
+        XCTAssertEqual(items["forecast_hours"], "9")
     }
 
     func testFetchDecodesSnapshotFromPayload() async throws {
@@ -304,6 +367,7 @@ final class WeatherServiceTests: XCTestCase {
     }
     """
 }
+// swiftlint:enable type_body_length
 
 class StubURLProtocol: URLProtocol {
     nonisolated(unsafe) static var responseData: Data?

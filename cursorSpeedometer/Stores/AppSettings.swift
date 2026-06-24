@@ -16,6 +16,7 @@ final class AppSettings: ObservableObject {
         static let manualBrightness = "manualBrightness"
         static let odometerMeters = "odometerMeters"
         static let rideModeEnabled = "rideModeEnabled"
+        static let rainWarningWindowHours = "rainWarningWindowHours"
     }
 
     private let defaults: UserDefaults
@@ -62,6 +63,16 @@ final class AppSettings: ObservableObject {
         didSet { defaults.set(rideModeEnabled, forKey: Key.rideModeEnabled) }
     }
 
+    /// Look-ahead window (in hours) for the "Rain possible within ~Xhrs" warning,
+    /// clamped to the supported bounds.
+    @Published var rainWarningWindowHours: Int {
+        didSet {
+            let clamped = OpenMeteoMapper.clampWindowHours(rainWarningWindowHours)
+            if clamped != rainWarningWindowHours { rainWarningWindowHours = clamped; return }
+            defaults.set(rainWarningWindowHours, forKey: Key.rainWarningWindowHours)
+        }
+    }
+
     @Published var activeTheme: ThemePreset = .day
     @Published var brightnessLevel: Double = 1.0
 
@@ -83,6 +94,10 @@ final class AppSettings: ObservableObject {
         )
         self.persistedOdometerMeters = defaults.double(forKey: Key.odometerMeters)
         self.rideModeEnabled = defaults.object(forKey: Key.rideModeEnabled) as? Bool ?? false
+        self.rainWarningWindowHours = OpenMeteoMapper.clampWindowHours(
+            defaults.object(forKey: Key.rainWarningWindowHours) as? Int
+                ?? OpenMeteoMapper.defaultForecastWindowHours
+        )
         if self.autoThemeEnabled {
             self.resolveActiveTheme()
         } else {

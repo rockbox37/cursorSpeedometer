@@ -34,6 +34,19 @@ struct SettingsView: View {
                     Text(unitsFooterText)
                 }
 
+                Section {
+                    Stepper(
+                        value: $settings.rainWarningWindowHours,
+                        in: OpenMeteoMapper.minForecastWindowHours...OpenMeteoMapper.maxForecastWindowHours
+                    ) {
+                        Text("Rain warning window: ~\(settings.rainWarningWindowHours) \(rainWindowUnitLabel)")
+                    }
+                } header: {
+                    Text("Weather Warnings")
+                } footer: {
+                    Text("Warn when rain is expected within this many hours ahead.")
+                }
+
                 Section("Display Theme") {
                     Toggle("Auto Theme (Day at sunrise, Night at sunset)", isOn: Binding(
                         get: { settings.autoThemeEnabled },
@@ -113,6 +126,10 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
+    }
+
+    private var rainWindowUnitLabel: String {
+        settings.rainWarningWindowHours == 1 ? "hr" : "hrs"
     }
 
     private var unitsFooterText: String {

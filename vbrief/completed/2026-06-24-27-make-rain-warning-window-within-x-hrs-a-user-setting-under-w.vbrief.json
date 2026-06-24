@@ -1,0 +1,56 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #27"
+  },
+  "plan": {
+    "id": "rain-warning-window-setting",
+    "title": "Make rain warning window (within ~X hrs) a user setting under Weather Warnings",
+    "status": "completed",
+    "narratives": {
+      "Description": "Make rain warning window (within ~X hrs) a user setting under Weather Warnings",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/27",
+      "Overview": "## Request\nLet the user configure the rain warning look-ahead window (the \"within ~X hrs\" horizon) in Settings.\n\n### Current behavior\nThe forecast window is a hard-coded constant — `OpenMeteoMapper.forecastWindowHours = 6` — used both for the API request (`forecast_hours`) and for the \"hours until rain\" calculation. There is no UI to change it.\n\n### Desired behavior\n- Add a **Weather Warnings** section in Settings.\n- Within it, expose a control for the **rain warning window** (e.g. a stepper or picker for the number of hours, such as 1–12).\n- Persist the choice (UserDefaults via `AppSettings`) and feed it into the weather fetch/mapping so the \"Rain possible within ~Xhrs\" cue and the underlying request both respect it.\n\n### Notes / open questions\n- Suggested default: keep 6 hours.\n- Decide sensible min/max bounds (Open-Meteo `forecast_hours` supports small windows; cap appropriately).\n- This section can later hold other warning thresholds (cold/freeze, thunderstorm) for consistency.",
+      "FunctionalRequirements": "FR-1: AppSettings MUST persist a rain warning window in hours, clamped to 1-12, defaulting to 6.\nFR-2: A new 'Weather Warnings' Settings section MUST expose a stepper for the window.\nFR-3: Changing the window MUST update both the Open-Meteo request (forecast_hours) and the 'within ~Xhrs' calculation, refreshing the current reading.",
+      "Architecture": "Add AppSettings.rainWarningWindowHours (UserDefaults-backed, clamped 1-12, default 6). Thread the value through WeatherProvider.fetch(..., windowHours:), OpenMeteoWeatherService.makeURL(..., windowHours:), and OpenMeteoMapper.snapshot(..., windowHours:)/hoursUntilRain(..., windowHours:). WeatherController holds the current window with setWindowHours(_:) that refetches. AppModel seeds the controller from settings and adds a Combine sink on settings.$rainWarningWindowHours. SettingsView adds a 'Weather Warnings' section with a Stepper bound to settings.rainWarningWindowHours.",
+      "TestingStrategy": "Unit tests: AppSettings clamps and persists the window; OpenMeteoMapper respects a custom window (finds/ignores rain outside it); makeURL emits the chosen forecast_hours; WeatherController.setWindowHours triggers a refetch. Build on the simulator and confirm the Settings stepper + live cue update."
+    },
+    "items": [
+      {
+        "title": "Persist a clamped rain warning window in AppSettings",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "rainWarningWindowHours persists across launches, clamps to 1-12, defaults to 6."
+        }
+      },
+      {
+        "title": "Thread the window through the weather fetch + mapping",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "The Open-Meteo request and the 'within ~Xhrs' calc both use the configured window."
+        }
+      },
+      {
+        "title": "Weather Warnings Settings section",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "A stepper under 'Weather Warnings' changes the window and the cue updates."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 27,
+      "completedAt": "2026-06-24T04:52:05Z"
+    },
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/27",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #27: Make rain warning window (within ~X hrs) a user setting under Weather Warnings"
+      }
+    ],
+    "updated": "2026-06-24T04:52:05Z"
+  }
+}
