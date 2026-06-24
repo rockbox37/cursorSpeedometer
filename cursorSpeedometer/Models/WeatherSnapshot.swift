@@ -28,11 +28,23 @@ struct WeatherSnapshot: Equatable, Sendable {
     var rainExpectedSoon: Bool { rainExpectedInHours != nil }
 
     /// Rider-facing rain cue with a timeframe, e.g. "Rain possible within ~3hrs",
-    /// or nil when no rain is expected.
+    /// or nil when no rain is expected. Used for the combined accessibility label.
     var rainText: String? {
+        guard let primary = rainPrimaryText, let secondary = rainSecondaryText else { return nil }
+        return "\(primary) \(secondary)"
+    }
+
+    /// First line of the rain cue, e.g. "Rain possible", or nil when no rain is expected.
+    var rainPrimaryText: String? {
+        rainExpectedInHours == nil ? nil : "Rain possible"
+    }
+
+    /// Second line of the rain cue with the timeframe, e.g. "within ~3hrs",
+    /// or nil when no rain is expected.
+    var rainSecondaryText: String? {
         guard let hours = rainExpectedInHours else { return nil }
         let unitLabel = hours == 1 ? "hr" : "hrs"
-        return "Rain possible within ~\(hours)\(unitLabel)"
+        return "within ~\(hours)\(unitLabel)"
     }
 
     /// Rounded temperature with its unit symbol, e.g. "72°F".

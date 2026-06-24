@@ -77,6 +77,10 @@ struct ThemePalette: Equatable, Sendable {
         }
     }
 
+    var isDayPreset: Bool {
+        self == ThemePalette.palette(for: .day)
+    }
+
     var usesRedChannelOnly: Bool {
         self == ThemePalette.palette(for: .night)
     }

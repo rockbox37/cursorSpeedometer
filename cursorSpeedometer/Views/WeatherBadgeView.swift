@@ -6,6 +6,8 @@ struct WeatherBadgeView: View {
 
     private static let coldColor = Color(red: 0.10, green: 0.45, blue: 0.90)
     private static let freezeColor = Color(red: 0.55, green: 0.85, blue: 1.0)
+    /// Red used for the rain warning in the Day theme, for contrast on a bright background.
+    private static let daytimeRainColor = Color(red: 0.85, green: 0.12, blue: 0.12)
 
     var body: some View {
         if let snapshot {
@@ -24,18 +26,27 @@ struct WeatherBadgeView: View {
                 }
                 .accessibilityElement(children: .combine)
 
-                    if let rainText = snapshot.rainText {
-                    HStack(spacing: 4) {
-                        Image(systemName: "cloud.rain.fill")
-                        Text(rainText)
+                    if let primary = snapshot.rainPrimaryText, let secondary = snapshot.rainSecondaryText {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "cloud.rain.fill")
+                            Text(primary)
+                        }
+                        Text(secondary)
                     }
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(palette.accentColor)
+                    .foregroundStyle(rainColor)
                     .accessibilityElement(children: .combine)
-                    .accessibilityLabel(rainText)
+                    .accessibilityLabel(snapshot.rainText ?? "\(primary) \(secondary)")
                 }
             }
         }
+    }
+
+    /// Red in the Day theme for contrast; the accent color otherwise (Night/Amber
+    /// palettes are already red/amber).
+    private var rainColor: Color {
+        palette.isDayPreset ? Self.daytimeRainColor : palette.accentColor
     }
 
     private func temperatureColor(for warning: TemperatureWarning) -> Color {

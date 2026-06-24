@@ -1,0 +1,44 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: daytime red + two-line layout for the rain warning (issue #26 remainder)",
+    "created": "2026-06-24T04:30:00Z",
+    "updated": "2026-06-24T04:30:00Z"
+  },
+  "plan": {
+    "id": "rain-warning-daytime-style",
+    "title": "Rain warning daytime red + two lines",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Completes issue #26 on top of the 50%-larger rain line already in PR #31: in the Day theme the rain warning is colored red (instead of the blue accent) for contrast against the bright background, and the cue is split across two lines.",
+      "Goals": "1. Day theme: rain warning text is red, not blue.\n2. The cue reads on two lines: 'Rain possible' then 'within ~Xhrs'.\n3. Night/Amber styling is unchanged (their palettes are already red/amber).",
+      "FunctionalRequirements": "FR-1: In the Day theme the rain warning MUST render red; in Night/Amber it MUST keep the existing accent color.\nFR-2: The rain cue MUST render on two lines: line 1 the 'Rain possible' message (with the rain icon), line 2 the 'within ~Xhrs' timeframe.\nFR-3: The rain line MUST stay beneath the temperature row.",
+      "Architecture": "Add ThemePalette.isDayPreset to detect the Day palette. Split WeatherSnapshot.rainText into rainPrimaryText ('Rain possible') and rainSecondaryText ('within ~Xhrs'); keep rainText for the combined accessibility label. WeatherBadgeView renders a two-line VStack and chooses a red color when palette.isDayPreset, otherwise palette.accentColor.",
+      "TestingStrategy": "Unit-test rainPrimaryText/rainSecondaryText (including pluralization and nil when no rain) and ThemePalette.isDayPreset. Verify the badge visually on the simulator across themes."
+    },
+    "items": [
+      {
+        "title": "Day-theme red rain warning",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Rain warning is red in Day, accent in Night/Amber."
+        }
+      },
+      {
+        "title": "Two-line rain cue",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "'Rain possible' and 'within ~Xhrs' render on separate lines."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 26,
+      "completedAt": "2026-06-24T04:25:03Z"
+    },
+    "updated": "2026-06-24T04:25:03Z"
+  }
+}
