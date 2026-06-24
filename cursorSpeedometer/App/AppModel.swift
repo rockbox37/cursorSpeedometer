@@ -12,7 +12,7 @@ final class AppModel: ObservableObject {
     let themeController = ThemeAutoSwitcherController()
     let brightnessRunner = BrightnessControllerRunner()
     let weatherController = WeatherController()
-    let alertController = ThunderstormAlertController()
+    let alertController = SevereWeatherAlertController()
 
     private var cancellables = Set<AnyCancellable>()
     private var wasInBackground = false

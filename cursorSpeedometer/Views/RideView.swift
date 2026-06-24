@@ -5,7 +5,7 @@ struct RideView: View {
     @ObservedObject var rideViewModel: RideViewModel
     @ObservedObject var locationService: LocationService
     @ObservedObject var weatherController: WeatherController
-    @ObservedObject var alertController: ThunderstormAlertController
+    @ObservedObject var alertController: SevereWeatherAlertController
 
     private var palette: ThemePalette {
         ThemePalette.palette(for: settings.activeTheme)
@@ -22,7 +22,7 @@ struct RideView: View {
 
             VStack(spacing: 24) {
                 topBar
-                ThunderstormAlertBanner(alert: alertController.alert)
+                SevereWeatherAlertBanner(alert: alertController.alert)
                 speedDisplay
                 statsGrid
                 controls

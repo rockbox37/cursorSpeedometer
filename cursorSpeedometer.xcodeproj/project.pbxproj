@@ -7,104 +7,114 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4390AA741D545B3485D93718 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F35C634B06522481CFB1CC /* AppModel.swift */; };
-		71D750748A88589BB6BCFE82 /* cursorSpeedometerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */; };
-		4A04FEAA15595EB194BCD9E9 /* TripComputerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */; };
-		678B834DF77D5EEF8FDCA6CE /* DisplayTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */; };
-		49E6CB270DF453AA98F8FD86 /* GPSSignalStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF536A9FCEC5A82BB2F8F18 /* GPSSignalStatus.swift */; };
-		24F6E8BFEA8A57B9B795FAD3 /* SpeedUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */; };
-		FFCCB4A8D52455B4BFB5338A /* TemperatureUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340DCB213FD7506E9984F887 /* TemperatureUnit.swift */; };
-		6601C8F7E07F5458A70942D4 /* ThunderstormAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D61F9FAA61B56D09C77287D /* ThunderstormAlert.swift */; };
-		0D00771235EE538B9678DD29 /* WeatherSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2488C60332D51BFB68323B0 /* WeatherSnapshot.swift */; };
-		CCAF880248965504B21AE138 /* BrightnessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DA977EAE365AD7A11A0857 /* BrightnessController.swift */; };
-		4D056AF11BBB5F0197191B1C /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7141B3F6C60F5BF8B451BF7B /* LocationService.swift */; };
-		9B3302092D0454AD8EE48A91 /* NWSAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DCA1C013EC5BD58EB8FCE7 /* NWSAlertService.swift */; };
-		08ADE2517F9054F89F0B5AF5 /* SolarScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */; };
-		914C143038B359EE826F452C /* ThemeAutoSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */; };
-		2955C6EC32D35E08874D3BEB /* ThunderstormAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389E765FA5925E0BB7F9C283 /* ThunderstormAlertController.swift */; };
-		B67E6DDEB45E56ADB44296C4 /* WeatherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAB3E921007B53DD8056BDD1 /* WeatherController.swift */; };
-		961115411002538FB62AF1A3 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D43FBC8E99B5434BE19FF17 /* WeatherService.swift */; };
-		3F9585F69119531AA010C95B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3655E9F13E665948AC686625 /* AppSettings.swift */; };
-		A247931BCF495FAA9C8B3728 /* RideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D88B521B5F5C35B4F1225A /* RideViewModel.swift */; };
-		1FE676DF943F5DBB9DE99F2D /* AboutSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE79D52CED3544095840E85 /* AboutSectionView.swift */; };
-		D0A5F3562B7C5A4F87B93E11 /* AppClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EFB0102E20508D9229287E /* AppClockView.swift */; };
-		5972A68EA1D05FEBA03563CF /* BrandHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */; };
-		9F8C27C4F6565A04AB3E5DD6 /* GPSSignalStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */; };
+		018E4B0C237A5805A0BA5998 /* SevereWeatherAlertControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A2EFD045D750B39077FA1E /* SevereWeatherAlertControllerTests.swift */; };
 		054104FAB3725A79AABEE836 /* RideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A81492851E35EB49BD6C88A /* RideView.swift */; };
-		4A2C1B18394A5153B1E0AA60 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D548BD21B9051D9A56B78B4 /* SettingsView.swift */; };
-		1D52CD11C79657F6A9534C50 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269BE46840305D1CBED21DE0 /* SplashView.swift */; };
-		7EDE3D95671F5CC4A4258115 /* StatTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493232F3FB32521A81427802 /* StatTile.swift */; };
-		4622C93CF83B5A948B5AF12A /* ThunderstormAlertBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319ABBB73D43586DB9A080C5 /* ThunderstormAlertBanner.swift */; };
+		08ADE2517F9054F89F0B5AF5 /* SolarScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */; };
+		0D00771235EE538B9678DD29 /* WeatherSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2488C60332D51BFB68323B0 /* WeatherSnapshot.swift */; };
 		11AD662044B554CDAA502A6D /* WeatherBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C08B1ADE3556088238BD98 /* WeatherBadgeView.swift */; };
-		DEA03F49E73C5D2BAE605FC0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77651616CA6A57FA967047DD /* Assets.xcassets */; };
-		E4E371C3ECAD554ABAF0ACDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 797665576C2E5D7692DB3455 /* LaunchScreen.storyboard */; };
-		78270220E8C457FA87E536FD /* BrightnessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */; };
-		8B176E8A0F85541698374AC9 /* DisplayThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44DA22C252350A692710CEF /* DisplayThemeTests.swift */; };
+		130A44752ABA554192D822FD /* WeatherControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957F8ABFCEC453A99E0EC0A7 /* WeatherControllerTests.swift */; };
 		1A85EF19F0885737A8A3DFF4 /* GPSSignalStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EC2D0E8AAB50A7B721E454 /* GPSSignalStatusTests.swift */; };
+		1D52CD11C79657F6A9534C50 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269BE46840305D1CBED21DE0 /* SplashView.swift */; };
+		1FA52121956C510A9C772CBF /* TripComputerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */; };
+		1FE676DF943F5DBB9DE99F2D /* AboutSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE79D52CED3544095840E85 /* AboutSectionView.swift */; };
+		24F6E8BFEA8A57B9B795FAD3 /* SpeedUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */; };
+		3F9585F69119531AA010C95B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3655E9F13E665948AC686625 /* AppSettings.swift */; };
+		4390AA741D545B3485D93718 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F35C634B06522481CFB1CC /* AppModel.swift */; };
+		49E6CB270DF453AA98F8FD86 /* GPSSignalStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF536A9FCEC5A82BB2F8F18 /* GPSSignalStatus.swift */; };
+		4A04FEAA15595EB194BCD9E9 /* TripComputerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */; };
+		4A2C1B18394A5153B1E0AA60 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D548BD21B9051D9A56B78B4 /* SettingsView.swift */; };
+		4D056AF11BBB5F0197191B1C /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7141B3F6C60F5BF8B451BF7B /* LocationService.swift */; };
+		5972A68EA1D05FEBA03563CF /* BrandHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */; };
+		678B834DF77D5EEF8FDCA6CE /* DisplayTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */; };
+		6D270E66F8A35C7BB5C75627 /* SevereWeatherAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C3A933338E5D45A2592F0F /* SevereWeatherAlert.swift */; };
+		71D750748A88589BB6BCFE82 /* cursorSpeedometerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */; };
+		78270220E8C457FA87E536FD /* BrightnessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */; };
 		79E4212457FE5FFD9A939CE4 /* NWSAlertServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9F0117A36158CE88DB4383 /* NWSAlertServiceTests.swift */; };
+		7EDE3D95671F5CC4A4258115 /* StatTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493232F3FB32521A81427802 /* StatTile.swift */; };
+		8B176E8A0F85541698374AC9 /* DisplayThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44DA22C252350A692710CEF /* DisplayThemeTests.swift */; };
+		8FB049A1594B5075BCE792F5 /* WeatherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF09862FE260587B9B9D1CA6 /* WeatherServiceTests.swift */; };
+		914C143038B359EE826F452C /* ThemeAutoSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */; };
+		961115411002538FB62AF1A3 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D43FBC8E99B5434BE19FF17 /* WeatherService.swift */; };
+		9B3302092D0454AD8EE48A91 /* NWSAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DCA1C013EC5BD58EB8FCE7 /* NWSAlertService.swift */; };
+		9F8C27C4F6565A04AB3E5DD6 /* GPSSignalStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */; };
+		A247931BCF495FAA9C8B3728 /* RideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D88B521B5F5C35B4F1225A /* RideViewModel.swift */; };
 		A24940A8A3E45B4EBF14B7E3 /* SolarScheduleServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */; };
 		B35443CE57E8573AAD9ED2F4 /* ThemeAutoSwitcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */; };
-		8B9C79EF29CD5679BAC03144 /* ThunderstormAlertControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079E1E64AC3E59D1A0C0C278 /* ThunderstormAlertControllerTests.swift */; };
-		1FA52121956C510A9C772CBF /* TripComputerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */; };
-		130A44752ABA554192D822FD /* WeatherControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957F8ABFCEC453A99E0EC0A7 /* WeatherControllerTests.swift */; };
-		8FB049A1594B5075BCE792F5 /* WeatherServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF09862FE260587B9B9D1CA6 /* WeatherServiceTests.swift */; };
+		B67E6DDEB45E56ADB44296C4 /* WeatherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAB3E921007B53DD8056BDD1 /* WeatherController.swift */; };
+		C9A5726F17A554BEBCEFDF5A /* SevereWeatherAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E94A0EE7A3650B9B9F44E4D /* SevereWeatherAlertController.swift */; };
+		CCAF880248965504B21AE138 /* BrightnessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DA977EAE365AD7A11A0857 /* BrightnessController.swift */; };
+		D0A5F3562B7C5A4F87B93E11 /* AppClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EFB0102E20508D9229287E /* AppClockView.swift */; };
+		DEA03F49E73C5D2BAE605FC0 /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77651616CA6A57FA967047DD /* Resources/Assets.xcassets */; };
+		E4E371C3ECAD554ABAF0ACDD /* Resources/LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */; };
+		FDBC468BBFEE5F06B4EDB7FE /* SevereWeatherAlertBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D67E1F58015026A2F66EA6 /* SevereWeatherAlertBanner.swift */; };
+		FFCCB4A8D52455B4BFB5338A /* TemperatureUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340DCB213FD7506E9984F887 /* TemperatureUnit.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		12D2A8D540A0555CA898835D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1B2C3D4E5F6478990ABCDE5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1B2C3D4E5F6478990ABCDE1;
+			remoteInfo = cursorSpeedometer;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		A1B2C3D4E5F6478990ABCDE3 /* cursorSpeedometer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cursorSpeedometer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1B2C3D4E5F6478990ABCDE4 /* cursorSpeedometerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cursorSpeedometerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		70F35C634B06522481CFB1CC /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
-		D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cursorSpeedometerApp.swift; sourceTree = "<group>"; };
-		DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngine.swift; sourceTree = "<group>"; };
-		DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTheme.swift; sourceTree = "<group>"; };
-		4AF536A9FCEC5A82BB2F8F18 /* GPSSignalStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSSignalStatus.swift; sourceTree = "<group>"; };
-		AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedUnit.swift; sourceTree = "<group>"; };
-		340DCB213FD7506E9984F887 /* TemperatureUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureUnit.swift; sourceTree = "<group>"; };
-		7D61F9FAA61B56D09C77287D /* ThunderstormAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThunderstormAlert.swift; sourceTree = "<group>"; };
-		A2488C60332D51BFB68323B0 /* WeatherSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherSnapshot.swift; sourceTree = "<group>"; };
-		04DA977EAE365AD7A11A0857 /* BrightnessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessController.swift; sourceTree = "<group>"; };
-		7141B3F6C60F5BF8B451BF7B /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		B1DCA1C013EC5BD58EB8FCE7 /* NWSAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWSAlertService.swift; sourceTree = "<group>"; };
-		1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleService.swift; sourceTree = "<group>"; };
 		02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeAutoSwitcher.swift; sourceTree = "<group>"; };
-		389E765FA5925E0BB7F9C283 /* ThunderstormAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThunderstormAlertController.swift; sourceTree = "<group>"; };
-		EAB3E921007B53DD8056BDD1 /* WeatherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherController.swift; sourceTree = "<group>"; };
+		04DA977EAE365AD7A11A0857 /* BrightnessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessController.swift; sourceTree = "<group>"; };
 		0D43FBC8E99B5434BE19FF17 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		10C3A933338E5D45A2592F0F /* SevereWeatherAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevereWeatherAlert.swift; sourceTree = "<group>"; };
+		1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleService.swift; sourceTree = "<group>"; };
+		1B9F0117A36158CE88DB4383 /* NWSAlertServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWSAlertServiceTests.swift; sourceTree = "<group>"; };
+		269BE46840305D1CBED21DE0 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		32A2EFD045D750B39077FA1E /* SevereWeatherAlertControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevereWeatherAlertControllerTests.swift; sourceTree = "<group>"; };
+		340DCB213FD7506E9984F887 /* TemperatureUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureUnit.swift; sourceTree = "<group>"; };
 		3655E9F13E665948AC686625 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
-		99D88B521B5F5C35B4F1225A /* RideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideViewModel.swift; sourceTree = "<group>"; };
+		493232F3FB32521A81427802 /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
+		4AF536A9FCEC5A82BB2F8F18 /* GPSSignalStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSSignalStatus.swift; sourceTree = "<group>"; };
 		4DE79D52CED3544095840E85 /* AboutSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSectionView.swift; sourceTree = "<group>"; };
-		E3EFB0102E20508D9229287E /* AppClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppClockView.swift; sourceTree = "<group>"; };
-		9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandHeaderView.swift; sourceTree = "<group>"; };
-		F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSSignalStatusView.swift; sourceTree = "<group>"; };
 		5A81492851E35EB49BD6C88A /* RideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideView.swift; sourceTree = "<group>"; };
 		5D548BD21B9051D9A56B78B4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		269BE46840305D1CBED21DE0 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
-		493232F3FB32521A81427802 /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
-		319ABBB73D43586DB9A080C5 /* ThunderstormAlertBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThunderstormAlertBanner.swift; sourceTree = "<group>"; };
-		87C08B1ADE3556088238BD98 /* WeatherBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherBadgeView.swift; sourceTree = "<group>"; };
-		E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessControllerTests.swift; sourceTree = "<group>"; };
-		F44DA22C252350A692710CEF /* DisplayThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayThemeTests.swift; sourceTree = "<group>"; };
-		D2EC2D0E8AAB50A7B721E454 /* GPSSignalStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSSignalStatusTests.swift; sourceTree = "<group>"; };
-		1B9F0117A36158CE88DB4383 /* NWSAlertServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWSAlertServiceTests.swift; sourceTree = "<group>"; };
-		EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleServiceTests.swift; sourceTree = "<group>"; };
+		70F35C634B06522481CFB1CC /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		7141B3F6C60F5BF8B451BF7B /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeAutoSwitcherTests.swift; sourceTree = "<group>"; };
-		079E1E64AC3E59D1A0C0C278 /* ThunderstormAlertControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThunderstormAlertControllerTests.swift; sourceTree = "<group>"; };
-		9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngineTests.swift; sourceTree = "<group>"; };
+		77651616CA6A57FA967047DD /* Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Resources/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		87C08B1ADE3556088238BD98 /* WeatherBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherBadgeView.swift; sourceTree = "<group>"; };
 		957F8ABFCEC453A99E0EC0A7 /* WeatherControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherControllerTests.swift; sourceTree = "<group>"; };
+		99D88B521B5F5C35B4F1225A /* RideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideViewModel.swift; sourceTree = "<group>"; };
+		9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngineTests.swift; sourceTree = "<group>"; };
+		9E94A0EE7A3650B9B9F44E4D /* SevereWeatherAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevereWeatherAlertController.swift; sourceTree = "<group>"; };
+		9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandHeaderView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6478990ABCDE3 /* cursorSpeedometer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cursorSpeedometer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6478990ABCDE4 /* cursorSpeedometerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cursorSpeedometerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2488C60332D51BFB68323B0 /* WeatherSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherSnapshot.swift; sourceTree = "<group>"; };
+		AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedUnit.swift; sourceTree = "<group>"; };
+		B1DCA1C013EC5BD58EB8FCE7 /* NWSAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWSAlertService.swift; sourceTree = "<group>"; };
+		D2EC2D0E8AAB50A7B721E454 /* GPSSignalStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSSignalStatusTests.swift; sourceTree = "<group>"; };
+		D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cursorSpeedometerApp.swift; sourceTree = "<group>"; };
+		DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayTheme.swift; sourceTree = "<group>"; };
 		DF09862FE260587B9B9D1CA6 /* WeatherServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherServiceTests.swift; sourceTree = "<group>"; };
-		77651616CA6A57FA967047DD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
-		797665576C2E5D7692DB3455 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Resources/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripComputerEngine.swift; sourceTree = "<group>"; };
+		E3D67E1F58015026A2F66EA6 /* SevereWeatherAlertBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevereWeatherAlertBanner.swift; sourceTree = "<group>"; };
+		E3EFB0102E20508D9229287E /* AppClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppClockView.swift; sourceTree = "<group>"; };
+		E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessControllerTests.swift; sourceTree = "<group>"; };
+		EAB3E921007B53DD8056BDD1 /* WeatherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherController.swift; sourceTree = "<group>"; };
+		EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarScheduleServiceTests.swift; sourceTree = "<group>"; };
+		F44DA22C252350A692710CEF /* DisplayThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayThemeTests.swift; sourceTree = "<group>"; };
+		F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSSignalStatusView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BD591B594D3E5E30A49C63E5 /* Frameworks */ = {
+		780910B35FE25833B1901AD0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		780910B35FE25833B1901AD0 /* Frameworks */ = {
+		BD591B594D3E5E30A49C63E5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -114,6 +124,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		02584DD1B4F35EB1822BAAF8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4DE79D52CED3544095840E85 /* AboutSectionView.swift */,
+				E3EFB0102E20508D9229287E /* AppClockView.swift */,
+				9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */,
+				F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */,
+				5A81492851E35EB49BD6C88A /* RideView.swift */,
+				5D548BD21B9051D9A56B78B4 /* SettingsView.swift */,
+				E3D67E1F58015026A2F66EA6 /* SevereWeatherAlertBanner.swift */,
+				269BE46840305D1CBED21DE0 /* SplashView.swift */,
+				493232F3FB32521A81427802 /* StatTile.swift */,
+				87C08B1ADE3556088238BD98 /* WeatherBadgeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0C9C7D4539755BEB8DB850A2 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
 		0D5BAB959FB0507687113DB9 = {
 			isa = PBXGroup;
 			children = (
@@ -123,6 +158,55 @@
 			);
 			sourceTree = "<group>";
 		};
+		15796B6635DE5BB6AB27D76E /* cursorSpeedometerTests */ = {
+			isa = PBXGroup;
+			children = (
+				E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */,
+				F44DA22C252350A692710CEF /* DisplayThemeTests.swift */,
+				D2EC2D0E8AAB50A7B721E454 /* GPSSignalStatusTests.swift */,
+				1B9F0117A36158CE88DB4383 /* NWSAlertServiceTests.swift */,
+				32A2EFD045D750B39077FA1E /* SevereWeatherAlertControllerTests.swift */,
+				EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */,
+				71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */,
+				9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */,
+				957F8ABFCEC453A99E0EC0A7 /* WeatherControllerTests.swift */,
+				DF09862FE260587B9B9D1CA6 /* WeatherServiceTests.swift */,
+			);
+			path = cursorSpeedometerTests;
+			sourceTree = "<group>";
+		};
+		70D469A10F5D57448FFF8FCD /* App */ = {
+			isa = PBXGroup;
+			children = (
+				70F35C634B06522481CFB1CC /* AppModel.swift */,
+				D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		798ABFD4D40D585BBCD31917 /* Stores */ = {
+			isa = PBXGroup;
+			children = (
+				3655E9F13E665948AC686625 /* AppSettings.swift */,
+			);
+			path = Stores;
+			sourceTree = "<group>";
+		};
+		7CEB1CA06F595616B9280624 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				04DA977EAE365AD7A11A0857 /* BrightnessController.swift */,
+				7141B3F6C60F5BF8B451BF7B /* LocationService.swift */,
+				B1DCA1C013EC5BD58EB8FCE7 /* NWSAlertService.swift */,
+				9E94A0EE7A3650B9B9F44E4D /* SevereWeatherAlertController.swift */,
+				1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */,
+				02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */,
+				EAB3E921007B53DD8056BDD1 /* WeatherController.swift */,
+				0D43FBC8E99B5434BE19FF17 /* WeatherService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		8EC8DCE6940A5E02BF01D543 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +214,19 @@
 				A1B2C3D4E5F6478990ABCDE4 /* cursorSpeedometerTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		922732F60B5D5383913EFF81 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */,
+				4AF536A9FCEC5A82BB2F8F18 /* GPSSignalStatus.swift */,
+				10C3A933338E5D45A2592F0F /* SevereWeatherAlert.swift */,
+				AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */,
+				340DCB213FD7506E9984F887 /* TemperatureUnit.swift */,
+				A2488C60332D51BFB68323B0 /* WeatherSnapshot.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		B484052401305CC9A40E970D /* cursorSpeedometer */ = {
@@ -142,105 +239,18 @@
 				798ABFD4D40D585BBCD31917 /* Stores */,
 				EF1BB98256BD551FBDCCD3FE /* ViewModels */,
 				02584DD1B4F35EB1822BAAF8 /* Views */,
-				77651616CA6A57FA967047DD /* Assets.xcassets */,
-				797665576C2E5D7692DB3455 /* LaunchScreen.storyboard */,
+				77651616CA6A57FA967047DD /* Resources/Assets.xcassets */,
+				797665576C2E5D7692DB3455 /* Resources/LaunchScreen.storyboard */,
 			);
 			path = cursorSpeedometer;
-			sourceTree = "<group>";
-		};
-		15796B6635DE5BB6AB27D76E /* cursorSpeedometerTests */ = {
-			isa = PBXGroup;
-			children = (
-				E952BA5A7FB75AECB3ECCF96 /* BrightnessControllerTests.swift */,
-				F44DA22C252350A692710CEF /* DisplayThemeTests.swift */,
-				D2EC2D0E8AAB50A7B721E454 /* GPSSignalStatusTests.swift */,
-				1B9F0117A36158CE88DB4383 /* NWSAlertServiceTests.swift */,
-				EEE87266EA985C99B9CD582C /* SolarScheduleServiceTests.swift */,
-				71D02477AE515DBC9AA724F8 /* ThemeAutoSwitcherTests.swift */,
-				079E1E64AC3E59D1A0C0C278 /* ThunderstormAlertControllerTests.swift */,
-				9A60E6BDEE49593E90460383 /* TripComputerEngineTests.swift */,
-				957F8ABFCEC453A99E0EC0A7 /* WeatherControllerTests.swift */,
-				DF09862FE260587B9B9D1CA6 /* WeatherServiceTests.swift */
-			);
-			path = cursorSpeedometerTests;
-			sourceTree = "<group>";
-		};
-		70D469A10F5D57448FFF8FCD /* App */ = {
-			isa = PBXGroup;
-			children = (
-				70F35C634B06522481CFB1CC /* AppModel.swift */,
-				D50AF4D2D28C563D81A4C6F3 /* cursorSpeedometerApp.swift */
-			);
-			path = App;
-			sourceTree = "<group>";
-		};
-		0C9C7D4539755BEB8DB850A2 /* Engine */ = {
-			isa = PBXGroup;
-			children = (
-				DFDBFC9FC0DA5C6BB9F9A451 /* TripComputerEngine.swift */
-			);
-			path = Engine;
-			sourceTree = "<group>";
-		};
-		922732F60B5D5383913EFF81 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				DA46D54CAF675F2DBC62493C /* DisplayTheme.swift */,
-				4AF536A9FCEC5A82BB2F8F18 /* GPSSignalStatus.swift */,
-				AE8373A4CA7A527E973D11FE /* SpeedUnit.swift */,
-				340DCB213FD7506E9984F887 /* TemperatureUnit.swift */,
-				7D61F9FAA61B56D09C77287D /* ThunderstormAlert.swift */,
-				A2488C60332D51BFB68323B0 /* WeatherSnapshot.swift */
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		7CEB1CA06F595616B9280624 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				04DA977EAE365AD7A11A0857 /* BrightnessController.swift */,
-				7141B3F6C60F5BF8B451BF7B /* LocationService.swift */,
-				B1DCA1C013EC5BD58EB8FCE7 /* NWSAlertService.swift */,
-				1A5A682C076E540A9B3C8A07 /* SolarScheduleService.swift */,
-				02736C95FAE25A56846E421C /* ThemeAutoSwitcher.swift */,
-				389E765FA5925E0BB7F9C283 /* ThunderstormAlertController.swift */,
-				EAB3E921007B53DD8056BDD1 /* WeatherController.swift */,
-				0D43FBC8E99B5434BE19FF17 /* WeatherService.swift */
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		798ABFD4D40D585BBCD31917 /* Stores */ = {
-			isa = PBXGroup;
-			children = (
-				3655E9F13E665948AC686625 /* AppSettings.swift */
-			);
-			path = Stores;
 			sourceTree = "<group>";
 		};
 		EF1BB98256BD551FBDCCD3FE /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				99D88B521B5F5C35B4F1225A /* RideViewModel.swift */
+				99D88B521B5F5C35B4F1225A /* RideViewModel.swift */,
 			);
 			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		02584DD1B4F35EB1822BAAF8 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				4DE79D52CED3544095840E85 /* AboutSectionView.swift */,
-				E3EFB0102E20508D9229287E /* AppClockView.swift */,
-				9F4D03BE0B78556694B15941 /* BrandHeaderView.swift */,
-				F74C4800D8DB588B9E8E6B44 /* GPSSignalStatusView.swift */,
-				5A81492851E35EB49BD6C88A /* RideView.swift */,
-				5D548BD21B9051D9A56B78B4 /* SettingsView.swift */,
-				269BE46840305D1CBED21DE0 /* SplashView.swift */,
-				493232F3FB32521A81427802 /* StatTile.swift */,
-				319ABBB73D43586DB9A080C5 /* ThunderstormAlertBanner.swift */,
-				87C08B1ADE3556088238BD98 /* WeatherBadgeView.swift */
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -324,8 +334,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEA03F49E73C5D2BAE605FC0 /* Assets.xcassets in Resources */,
-				E4E371C3ECAD554ABAF0ACDD /* LaunchScreen.storyboard in Resources */
+				DEA03F49E73C5D2BAE605FC0 /* Resources/Assets.xcassets in Resources */,
+				E4E371C3ECAD554ABAF0ACDD /* Resources/LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,16 +358,16 @@
 				4A04FEAA15595EB194BCD9E9 /* TripComputerEngine.swift in Sources */,
 				678B834DF77D5EEF8FDCA6CE /* DisplayTheme.swift in Sources */,
 				49E6CB270DF453AA98F8FD86 /* GPSSignalStatus.swift in Sources */,
+				6D270E66F8A35C7BB5C75627 /* SevereWeatherAlert.swift in Sources */,
 				24F6E8BFEA8A57B9B795FAD3 /* SpeedUnit.swift in Sources */,
 				FFCCB4A8D52455B4BFB5338A /* TemperatureUnit.swift in Sources */,
-				6601C8F7E07F5458A70942D4 /* ThunderstormAlert.swift in Sources */,
 				0D00771235EE538B9678DD29 /* WeatherSnapshot.swift in Sources */,
 				CCAF880248965504B21AE138 /* BrightnessController.swift in Sources */,
 				4D056AF11BBB5F0197191B1C /* LocationService.swift in Sources */,
 				9B3302092D0454AD8EE48A91 /* NWSAlertService.swift in Sources */,
+				C9A5726F17A554BEBCEFDF5A /* SevereWeatherAlertController.swift in Sources */,
 				08ADE2517F9054F89F0B5AF5 /* SolarScheduleService.swift in Sources */,
 				914C143038B359EE826F452C /* ThemeAutoSwitcher.swift in Sources */,
-				2955C6EC32D35E08874D3BEB /* ThunderstormAlertController.swift in Sources */,
 				B67E6DDEB45E56ADB44296C4 /* WeatherController.swift in Sources */,
 				961115411002538FB62AF1A3 /* WeatherService.swift in Sources */,
 				3F9585F69119531AA010C95B /* AppSettings.swift in Sources */,
@@ -368,10 +378,10 @@
 				9F8C27C4F6565A04AB3E5DD6 /* GPSSignalStatusView.swift in Sources */,
 				054104FAB3725A79AABEE836 /* RideView.swift in Sources */,
 				4A2C1B18394A5153B1E0AA60 /* SettingsView.swift in Sources */,
+				FDBC468BBFEE5F06B4EDB7FE /* SevereWeatherAlertBanner.swift in Sources */,
 				1D52CD11C79657F6A9534C50 /* SplashView.swift in Sources */,
 				7EDE3D95671F5CC4A4258115 /* StatTile.swift in Sources */,
-				4622C93CF83B5A948B5AF12A /* ThunderstormAlertBanner.swift in Sources */,
-				11AD662044B554CDAA502A6D /* WeatherBadgeView.swift in Sources */
+				11AD662044B554CDAA502A6D /* WeatherBadgeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,12 +393,12 @@
 				8B176E8A0F85541698374AC9 /* DisplayThemeTests.swift in Sources */,
 				1A85EF19F0885737A8A3DFF4 /* GPSSignalStatusTests.swift in Sources */,
 				79E4212457FE5FFD9A939CE4 /* NWSAlertServiceTests.swift in Sources */,
+				018E4B0C237A5805A0BA5998 /* SevereWeatherAlertControllerTests.swift in Sources */,
 				A24940A8A3E45B4EBF14B7E3 /* SolarScheduleServiceTests.swift in Sources */,
 				B35443CE57E8573AAD9ED2F4 /* ThemeAutoSwitcherTests.swift in Sources */,
-				8B9C79EF29CD5679BAC03144 /* ThunderstormAlertControllerTests.swift in Sources */,
 				1FA52121956C510A9C772CBF /* TripComputerEngineTests.swift in Sources */,
 				130A44752ABA554192D822FD /* WeatherControllerTests.swift in Sources */,
-				8FB049A1594B5075BCE792F5 /* WeatherServiceTests.swift in Sources */
+				8FB049A1594B5075BCE792F5 /* WeatherServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,17 +412,33 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXContainerItemProxy section */
-		12D2A8D540A0555CA898835D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1B2C3D4E5F6478990ABCDE5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A1B2C3D4E5F6478990ABCDE1;
-			remoteInfo = cursorSpeedometer;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin XCBuildConfiguration section */
+		002C79943CAE5F988DF2811B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "cursorSpeedometer needs your location to show GPS speed and trip distance while riding.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cursorspeedometer.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		00D02C020CC2576C909D1D60 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -445,37 +471,13 @@
 			};
 			name = Release;
 		};
-		002C79943CAE5F988DF2811B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "cursorSpeedometer needs your location to show GPS speed and trip distance while riding.";
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cursorspeedometer.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
 		49148AF892BD5764A5033FCA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "cursorSpeedometer needs your location to show GPS speed and trip distance while riding.";
@@ -501,6 +503,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
@@ -518,6 +521,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8NF944M3PN;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
@@ -532,11 +536,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9FC8408808A45B9CA9072378 /* Build configuration list for PBXProject "cursorSpeedometer" */ = {
+		0C4ECB75CDAC5C7A91AF989D /* Build configuration list for PBXNativeTarget "cursorSpeedometerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				00D02C020CC2576C909D1D60 /* Debug */,
-				37B08F74E64A51469CAFA745 /* Release */,
+				B70D581EA8C25AA4BD97484E /* Debug */,
+				F50E43914C2055A69848602E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -550,11 +554,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0C4ECB75CDAC5C7A91AF989D /* Build configuration list for PBXNativeTarget "cursorSpeedometerTests" */ = {
+		9FC8408808A45B9CA9072378 /* Build configuration list for PBXProject "cursorSpeedometer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B70D581EA8C25AA4BD97484E /* Debug */,
-				F50E43914C2055A69848602E /* Release */,
+				00D02C020CC2576C909D1D60 /* Debug */,
+				37B08F74E64A51469CAFA745 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

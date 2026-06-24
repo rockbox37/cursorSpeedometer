@@ -1,8 +1,8 @@
 import Foundation
 
-/// Fetches the active thunderstorm alert for a coordinate. Abstracted for testing.
+/// Fetches the active severe-weather alert for a coordinate. Abstracted for testing.
 protocol AlertProvider: Sendable {
-    func fetchActiveThunderstormAlert(latitude: Double, longitude: Double) async throws -> ThunderstormAlert?
+    func fetchActiveAlert(latitude: Double, longitude: Double) async throws -> SevereWeatherAlert?
 }
 
 enum AlertServiceError: Error, Equatable {
@@ -26,33 +26,45 @@ struct NWSAlertProperties: Decodable, Equatable {
     let messageType: String?
 }
 
-/// Pure translation from the NWS payload to the app's thunderstorm alert model.
+/// Pure translation from the NWS payload to the app's severe-weather alert model.
 enum NWSAlertMapper {
-    static func thunderstormAlert(from response: NWSAlertResponse) -> ThunderstormAlert? {
-        var best: ThunderstormAlert?
+    static func alert(from response: NWSAlertResponse) -> SevereWeatherAlert? {
+        var best: SevereWeatherAlert?
         for feature in response.features {
             guard let alert = alert(from: feature.properties) else { continue }
-            if best == nil || alert.level.priority > best!.level.priority {
+            if best == nil || alert.priority > best!.priority {
                 best = alert
             }
         }
         return best
     }
 
-    private static func alert(from properties: NWSAlertProperties) -> ThunderstormAlert? {
+    private static func alert(from properties: NWSAlertProperties) -> SevereWeatherAlert? {
         if properties.messageType?.caseInsensitiveCompare("Cancel") == .orderedSame {
             return nil
         }
         guard let event = properties.event else { return nil }
         let lowered = event.lowercased()
-        guard lowered.contains("thunderstorm") else { return nil }
+
+        let category: SevereWeatherCategory
+        if lowered.contains("tornado") {
+            category = .tornado
+        } else if lowered.contains("thunderstorm") {
+            category = .thunderstorm
+        } else {
+            return nil
+        }
+
+        let level: SevereWeatherAlertLevel
         if lowered.contains("warning") {
-            return ThunderstormAlert(level: .warning, event: event)
+            level = .warning
+        } else if lowered.contains("watch") {
+            level = .watch
+        } else {
+            return nil
         }
-        if lowered.contains("watch") {
-            return ThunderstormAlert(level: .watch, event: event)
-        }
-        return nil
+
+        return SevereWeatherAlert(category: category, level: level, event: event)
     }
 }
 
@@ -76,7 +88,7 @@ struct NWSAlertService: AlertProvider {
         return components?.url
     }
 
-    func fetchActiveThunderstormAlert(latitude: Double, longitude: Double) async throws -> ThunderstormAlert? {
+    func fetchActiveAlert(latitude: Double, longitude: Double) async throws -> SevereWeatherAlert? {
         guard let url = Self.makeURL(latitude: latitude, longitude: longitude) else {
             throw AlertServiceError.invalidURL
         }
@@ -91,6 +103,6 @@ struct NWSAlertService: AlertProvider {
         }
 
         let decoded = try JSONDecoder().decode(NWSAlertResponse.self, from: data)
-        return NWSAlertMapper.thunderstormAlert(from: decoded)
+        return NWSAlertMapper.alert(from: decoded)
     }
 }

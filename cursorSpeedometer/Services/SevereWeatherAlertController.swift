@@ -1,11 +1,11 @@
 import Foundation
 
 @MainActor
-final class ThunderstormAlertController: ObservableObject {
+final class SevereWeatherAlertController: ObservableObject {
     /// How often to re-check active alerts while the app is foregrounded.
     static let refreshInterval: TimeInterval = 300
 
-    @Published private(set) var alert: ThunderstormAlert?
+    @Published private(set) var alert: SevereWeatherAlert?
 
     private let provider: AlertProvider
     private var timer: Timer?
@@ -57,7 +57,7 @@ final class ThunderstormAlertController: ObservableObject {
         fetchTask = Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let result = try await self.provider.fetchActiveThunderstormAlert(
+                let result = try await self.provider.fetchActiveAlert(
                     latitude: latitude,
                     longitude: longitude
                 )
