@@ -1,0 +1,59 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: integrate the National Weather Service alerts API to show active thunderstorm watches/warnings on the ride screen (closes #28)",
+    "created": "2026-06-24T03:25:00Z",
+    "updated": "2026-06-24T03:25:00Z"
+  },
+  "plan": {
+    "id": "nws-thunderstorm-alerts",
+    "title": "NWS thunderstorm watch/warning alerts",
+    "status": "completed",
+    "narratives": {
+      "Overview": "Riders need conspicuous notice of active thunderstorm watches and warnings. Open-Meteo (our current provider) only exposes forecast weather codes, not official alerts, so this scope adds a National Weather Service alerts integration (api.weather.gov) and surfaces an active thunderstorm watch/warning on the main ride screen with a lightning-bolt icon and text.",
+      "Problem": "The app shows temperature and rain timing but gives no warning when a severe thunderstorm watch or warning is active for the rider's location — exactly the condition a motorcyclist most needs to know about.",
+      "Goals": "1. Query the free NWS active-alerts API for the rider's coordinate.\n2. Detect active thunderstorm watches and warnings and pick the most severe.\n3. Show a conspicuous lightning-bolt indicator with text on the main screen while one is active, and clear it when none is active.",
+      "FunctionalRequirements": "FR-1: The app MUST query NWS active alerts for the current coordinate using a compliant User-Agent header.\nFR-2: It MUST identify thunderstorm watches vs. warnings from the alert event, ignoring canceled alerts and non-watch/warning statements.\nFR-3: When multiple thunderstorm alerts are active, a WARNING MUST take visual priority over a WATCH.\nFR-4: An active alert MUST render a conspicuous lightning-bolt icon and the alert text on the ride screen; when none is active, nothing thunderstorm-related is shown.\nFR-5: Alerts MUST refresh periodically while foregrounded and stop when backgrounded, consistent with the existing weather flow. NWS is US-only; outside the US no alerts are expected and the indicator stays hidden.",
+      "Architecture": "Add a pure ThunderstormAlert model (level: watch|warning, event text) plus an OpenMeteo-style mapper over the NWS GeoJSON payload (NWSAlertResponse) that selects the most severe active thunderstorm alert. Add an AlertProvider protocol and NWSAlertService (URLSession, api.weather.gov/alerts/active?point=lat,lon, User-Agent + geo+json Accept). Add a ThunderstormAlertController (ObservableObject) mirroring WeatherController: periodic refresh, location updates, start/stop. Wire it through AppModel and display via a ThunderstormAlertBanner in RideView.",
+      "TestingStrategy": "Unit-test the NWS mapper: warning beats watch, watch detected, canceled alerts ignored, non-thunderstorm/non-watch-warning events ignored, empty payload -> nil. Unit-test NWSAlertService URL construction and User-Agent header, and decoding via a stubbed URLProtocol. Unit-test ThunderstormAlertController with a fake provider (fetch on first location fix, no fetch without location). Banner presentation verified by build + on-device review."
+    },
+    "items": [
+      {
+        "title": "ThunderstormAlert model + most-severe selection",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "A pure mapper turns an NWS payload into an optional ThunderstormAlert, preferring warning over watch and ignoring canceled / non-watch-warning events, covered by unit tests."
+        }
+      },
+      {
+        "title": "NWSAlertService integration",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "NWSAlertService requests api.weather.gov/alerts/active for a coordinate with a compliant User-Agent, decodes the response, and returns the active thunderstorm alert; URL/header/decoding covered by stubbed tests."
+        }
+      },
+      {
+        "title": "ThunderstormAlertController",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Controller fetches on first location fix, refreshes periodically while running, stops cleanly, and publishes the current alert; covered by fake-provider tests."
+        }
+      },
+      {
+        "title": "Main-screen thunderstorm banner",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "RideView shows a conspicuous lightning-bolt banner with the alert text when active (warning more severe than watch) and nothing when inactive."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 28,
+      "completedAt": "2026-06-24T03:33:30Z"
+    },
+    "updated": "2026-06-24T03:33:30Z"
+  }
+}
