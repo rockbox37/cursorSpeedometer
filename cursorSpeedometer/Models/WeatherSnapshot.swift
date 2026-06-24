@@ -23,6 +23,11 @@ struct WeatherSnapshot: Equatable, Sendable {
     /// Hours until rain is expected within the forecast window (1-based: the
     /// current hour counts as ~1), or nil when no rain is expected.
     let rainExpectedInHours: Int?
+    /// Hours until the forecast temperature first drops below the rider's
+    /// low-temp threshold within the configured window, or nil if it does not.
+    var lowTempExpectedInHours: Int?
+    /// The rider's low-temp threshold (in °F) used for the warning, when set.
+    var lowTempThresholdFahrenheit: Double?
 
     /// True when measurable rain is expected within the forecast window.
     var rainExpectedSoon: Bool { rainExpectedInHours != nil }
@@ -45,6 +50,25 @@ struct WeatherSnapshot: Equatable, Sendable {
         guard let hours = rainExpectedInHours else { return nil }
         let unitLabel = hours == 1 ? "hr" : "hrs"
         return "within ~\(hours)\(unitLabel)"
+    }
+
+    /// Rider-facing forecast cue for a dip below the comfort threshold, e.g.
+    /// "Temps may fall to below 50°F within 3 hours", or nil when not expected.
+    var lowTempWarningText: String? {
+        guard let hours = lowTempExpectedInHours, let thresholdFahrenheit = lowTempThresholdFahrenheit else {
+            return nil
+        }
+        let threshold = displayThreshold(thresholdFahrenheit)
+        let hourLabel = hours == 1 ? "hour" : "hours"
+        return "Temps may fall to below \(threshold)\(unit.symbol) within \(hours) \(hourLabel)"
+    }
+
+    /// The threshold rounded into the snapshot's display unit.
+    private func displayThreshold(_ fahrenheit: Double) -> Int {
+        switch unit {
+        case .fahrenheit: Int(fahrenheit.rounded())
+        case .celsius: Int(((fahrenheit - 32) * 5 / 9).rounded())
+        }
     }
 
     /// Rounded temperature with its unit symbol, e.g. "72°F".

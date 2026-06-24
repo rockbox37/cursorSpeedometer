@@ -1,12 +1,39 @@
 import Foundation
 
+/// Parameters that shape a forecast fetch: display unit, the rain look-ahead
+/// window, and the low-temperature warning window + threshold.
+struct WeatherForecastConfig: Equatable, Sendable {
+    var unit: TemperatureUnit
+    var rainWindowHours: Int
+    var lowTempWindowHours: Int
+    /// Threshold (in °F) below which a forecast dip triggers a low-temp warning,
+    /// or nil to disable the low-temp analysis.
+    var lowTempThresholdFahrenheit: Double?
+
+    init(
+        unit: TemperatureUnit = .fahrenheit,
+        rainWindowHours: Int = OpenMeteoMapper.defaultForecastWindowHours,
+        lowTempWindowHours: Int = OpenMeteoMapper.defaultForecastWindowHours,
+        lowTempThresholdFahrenheit: Double? = nil
+    ) {
+        self.unit = unit
+        self.rainWindowHours = rainWindowHours
+        self.lowTempWindowHours = lowTempWindowHours
+        self.lowTempThresholdFahrenheit = lowTempThresholdFahrenheit
+    }
+
+    /// Hours of hourly forecast the request must cover to satisfy both analyses.
+    var forecastHours: Int {
+        OpenMeteoMapper.clampWindowHours(max(rainWindowHours, lowTempWindowHours))
+    }
+}
+
 /// Fetches current weather for a coordinate. Abstracted so it can be faked in tests.
 protocol WeatherProvider: Sendable {
     func fetch(
         latitude: Double,
         longitude: Double,
-        unit: TemperatureUnit,
-        windowHours: Int
+        config: WeatherForecastConfig
     ) async throws -> WeatherSnapshot
 }
 
@@ -32,10 +59,12 @@ struct OpenMeteoCurrent: Decodable, Equatable {
 struct OpenMeteoHourly: Decodable, Equatable {
     let precipitationProbability: [Int?]?
     let precipitation: [Double?]?
+    let temperature2m: [Double?]?
 
     enum CodingKeys: String, CodingKey {
         case precipitationProbability = "precipitation_probability"
         case precipitation
+        case temperature2m = "temperature_2m"
     }
 }
 
@@ -57,13 +86,35 @@ enum OpenMeteoMapper {
         min(maxForecastWindowHours, max(minForecastWindowHours, hours))
     }
 
+    static func snapshot(from response: OpenMeteoResponse, config: WeatherForecastConfig) -> WeatherSnapshot {
+        snapshot(
+            from: response,
+            unit: config.unit,
+            windowHours: config.rainWindowHours,
+            lowTempWindowHours: config.lowTempWindowHours,
+            lowTempThresholdFahrenheit: config.lowTempThresholdFahrenheit
+        )
+    }
+
     static func snapshot(
         from response: OpenMeteoResponse,
         unit: TemperatureUnit,
-        windowHours: Int = defaultForecastWindowHours
+        windowHours: Int = defaultForecastWindowHours,
+        lowTempWindowHours: Int = defaultForecastWindowHours,
+        lowTempThresholdFahrenheit: Double? = nil
     ) -> WeatherSnapshot {
         let probabilities = response.hourly?.precipitationProbability ?? []
         let amounts = response.hourly?.precipitation ?? []
+        let temperatures = response.hourly?.temperature2m ?? []
+
+        let lowTempHours = lowTempThresholdFahrenheit.flatMap { threshold in
+            hoursUntilLowTemp(
+                temperatures: temperatures,
+                thresholdFahrenheit: threshold,
+                unit: unit,
+                windowHours: lowTempWindowHours
+            )
+        }
 
         return WeatherSnapshot(
             temperature: response.current.temperature2m,
@@ -72,7 +123,9 @@ enum OpenMeteoMapper {
                 probabilities: probabilities,
                 amounts: amounts,
                 windowHours: windowHours
-            )
+            ),
+            lowTempExpectedInHours: lowTempHours,
+            lowTempThresholdFahrenheit: lowTempThresholdFahrenheit
         )
     }
 
@@ -83,6 +136,24 @@ enum OpenMeteoMapper {
             let probability = index < probabilities.count ? (probabilities[index] ?? 0) : 0
             let amount = index < amounts.count ? (amounts[index] ?? 0) : 0
             if probability >= rainProbabilityThreshold || amount >= rainAmountThresholdMm {
+                return index + 1
+            }
+        }
+        return nil
+    }
+
+    /// Returns the 1-based hour of the first upcoming bucket whose forecast
+    /// temperature falls below the threshold, or nil if none does in the window.
+    private static func hoursUntilLowTemp(
+        temperatures: [Double?],
+        thresholdFahrenheit: Double,
+        unit: TemperatureUnit,
+        windowHours: Int
+    ) -> Int? {
+        for index in 0..<clampWindowHours(windowHours) {
+            guard index < temperatures.count, let temperature = temperatures[index] else { continue }
+            let fahrenheit = unit == .celsius ? temperature * 9 / 5 + 32 : temperature
+            if fahrenheit < thresholdFahrenheit {
                 return index + 1
             }
         }
@@ -108,7 +179,7 @@ struct OpenMeteoWeatherService: WeatherProvider {
             URLQueryItem(name: "latitude", value: String(latitude)),
             URLQueryItem(name: "longitude", value: String(longitude)),
             URLQueryItem(name: "current", value: "temperature_2m"),
-            URLQueryItem(name: "hourly", value: "precipitation_probability,precipitation"),
+            URLQueryItem(name: "hourly", value: "precipitation_probability,precipitation,temperature_2m"),
             URLQueryItem(name: "forecast_hours", value: String(OpenMeteoMapper.clampWindowHours(windowHours))),
             URLQueryItem(name: "temperature_unit", value: unit.apiValue),
             URLQueryItem(name: "timezone", value: "auto")
@@ -119,14 +190,13 @@ struct OpenMeteoWeatherService: WeatherProvider {
     func fetch(
         latitude: Double,
         longitude: Double,
-        unit: TemperatureUnit,
-        windowHours: Int = OpenMeteoMapper.defaultForecastWindowHours
+        config: WeatherForecastConfig = WeatherForecastConfig()
     ) async throws -> WeatherSnapshot {
         guard let url = Self.makeURL(
             latitude: latitude,
             longitude: longitude,
-            unit: unit,
-            windowHours: windowHours
+            unit: config.unit,
+            windowHours: config.forecastHours
         ) else {
             throw WeatherServiceError.invalidURL
         }
@@ -137,6 +207,6 @@ struct OpenMeteoWeatherService: WeatherProvider {
         }
 
         let decoded = try JSONDecoder().decode(OpenMeteoResponse.self, from: data)
-        return OpenMeteoMapper.snapshot(from: decoded, unit: unit, windowHours: windowHours)
+        return OpenMeteoMapper.snapshot(from: decoded, config: config)
     }
 }

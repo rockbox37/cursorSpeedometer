@@ -30,8 +30,15 @@ final class AppModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        configureWeatherBindings()
+    }
+
+    /// Seed the weather + alert controllers from settings and keep them in sync.
+    private func configureWeatherBindings() {
         weatherController.setUnit(settings.resolvedTemperatureUnit)
         weatherController.setWindowHours(settings.rainWarningWindowHours)
+        weatherController.setLowTempWindowHours(settings.lowTempWarningWindowHours)
+        weatherController.setLowTempThresholdFahrenheit(settings.lowTempThresholdFahrenheit)
 
         locationService.$coordinate
             .compactMap { $0 }
@@ -68,6 +75,18 @@ final class AppModel: ObservableObject {
         settings.$rainWarningWindowHours
             .sink { [weak self] hours in
                 self?.weatherController.setWindowHours(hours)
+            }
+            .store(in: &cancellables)
+
+        settings.$lowTempWarningWindowHours
+            .sink { [weak self] hours in
+                self?.weatherController.setLowTempWindowHours(hours)
+            }
+            .store(in: &cancellables)
+
+        settings.$lowTempThresholdFahrenheit
+            .sink { [weak self] fahrenheit in
+                self?.weatherController.setLowTempThresholdFahrenheit(fahrenheit)
             }
             .store(in: &cancellables)
     }

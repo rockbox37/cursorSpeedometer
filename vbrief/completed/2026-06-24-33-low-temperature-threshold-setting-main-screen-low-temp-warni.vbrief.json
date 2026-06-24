@@ -1,0 +1,68 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #33"
+  },
+  "plan": {
+    "id": "low-temp-threshold-warning",
+    "title": "Low-temperature threshold setting + main-screen Low Temp Warning",
+    "status": "completed",
+    "narratives": {
+      "Description": "Low-temperature threshold setting + main-screen Low Temp Warning",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/33",
+      "Overview": "## Request\nLet riders define a personal low-temperature comfort threshold and warn them on the main screen when the temperature is forecast to drop below it within a configurable look-ahead window.\n\n### Part 1 — Settings\nIn the **Weather Warnings** section of Settings (added in #27), add controls for a **Low Temperature Threshold**:\n- A control to set the **threshold temperature** — \"the lowest temperature you're comfortable riding in.\" Honor the user's temperature unit (°F/°C) per the Temperature preference.\n- A **look-ahead window in hours** — a stepper like the existing rain warning window (e.g. 1–12 hours).\n- Tip/explainer (footer) text describing what the threshold means.\n\n### Part 2 — Main screen\nShow a **Low Temp Warning** on the ride screen when the temperature is expected to drop **below the threshold within the configured window**. Style it consistently with the existing cold/freeze cues and the rain warning.\n\n### Current behavior\n- Settings has a Weather Warnings section with a rain warning window stepper (`AppSettings.rainWarningWindowHours`, see #27).\n- The weather snapshot only carries the *current* temperature plus hourly *precipitation* (`OpenMeteoMapper` / `WeatherSnapshot`); there is no forecast of upcoming temperatures.\n- Existing cold/freeze warnings (`TemperatureWarning`) are based on the *current* reading only, with fixed thresholds (40°F cold, 37°F freeze).\n\n### Implementation notes\n- The Open-Meteo request must also fetch hourly `temperature_2m` so we can look ahead; thread the configured window through the request/mapping like the rain window.\n- Persist the new threshold + window in `AppSettings` (UserDefaults), clamped to sensible bounds, and wire change-reactions through `AppModel` → `WeatherController` (mirror the `setWindowHours` pattern).\n- Compute \"min forecast temperature within window < threshold\" in the mapper and surface it on `WeatherSnapshot` (e.g. an optional \"low temp expected in ~Xhrs\").\n\n### Open questions\n1. **Two controls vs one:** the request names the section \"Low Temperature Threshold\" but also describes a *time window* stepper. This implies **two** inputs — a temperature value and a window in hours. Confirm both are wanted (assumed yes).\n2. **Threshold control type:** stepper vs slider, and the min/max bounds / step size (e.g. 20–60°F in 1° steps?).\n3. **Relationship to existing cold/freeze warnings:** should this forecast-based Low Temp Warning replace, complement, or be independent of the current-temperature cold/freeze cues?\n4. **Window sharing:** should the low-temp look-ahead window be its own setting, or reuse the rain warning window?",
+      "Labels": "enhancement",
+      "DecisionsConfirmed": "Per operator on 2026-06-24: (1) TWO inputs — a temperature threshold value AND a look-ahead window in hours. (2) Threshold is a STEPPER in 1-degree increments, shown in F or C per the Units Temperature setting. (3) COMPLEMENTS the existing current-temp cold/freeze cues; when shown, the warning text reads 'Temps may fall to below DD within HH hours' (DD = threshold, HH = hours until forecast reaches it). (4) The two new settings are grouped in their OWN sub-section within Weather Warnings (separate setting, not reusing the rain window).",
+      "FunctionalRequirements": "FR-1: AppSettings MUST persist a low-temp threshold (stored canonically in Fahrenheit) and a low-temp look-ahead window in hours (1-12), both clamped, defaulting to 50°F and 6h.\nFR-2: A 'Low Temperature' sub-section under Weather Warnings MUST provide a 1-degree stepper for the threshold (displayed/stepped in the resolved temperature unit) and an hours stepper, with explainer footer text.\nFR-3: The Open-Meteo request MUST fetch hourly temperature_2m over a window covering both the rain and low-temp windows.\nFR-4: When the forecast within the low-temp window drops below the threshold, the ride screen MUST show 'Temps may fall to below DD within HH hours', complementing (not replacing) the current-temp cold/freeze cues.",
+      "Architecture": "AppSettings gains lowTempThresholdFahrenheit (Double) and lowTempWarningWindowHours (Int), UserDefaults-backed and clamped. A WeatherForecastConfig (unit, rainWindowHours, lowTempWindowHours, lowTempThresholdFahrenheit) replaces the unit/windowHours args threaded through WeatherProvider.fetch and OpenMeteoMapper.snapshot. The request fetches hourly temperature_2m with forecast_hours = max(rainWindow, lowTempWindow). OpenMeteoMapper adds hoursUntilLowTemp (first bucket within the low-temp window whose temperature, normalized to F, is below the threshold). WeatherSnapshot carries lowTempExpectedInHours + lowTempThresholdFahrenheit and a lowTempWarningText computed in the display unit. WeatherController holds the config with setters; AppModel seeds it and adds Combine sinks for the two new settings. SettingsView adds a 'Low Temperature' Section; WeatherBadgeView renders the warning line.",
+      "TestingStrategy": "Unit tests: AppSettings clamp/persist for threshold + window; OpenMeteoMapper low-temp detection within/outside window and across F/C; snapshot warning-text formatting (incl. hour pluralization and unit symbol); WeatherController setters trigger refetch; makeURL includes temperature_2m and forecast_hours = max(window). Build + on-device review for the steppers and the main-screen line."
+    },
+    "items": [
+      {
+        "title": "Persist low-temp threshold + window in AppSettings",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Both persist and clamp; defaults 50°F / 6h."
+        }
+      },
+      {
+        "title": "Forecast hourly temperature + low-temp mapping",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Mapper detects when forecast within window falls below threshold; request fetches hourly temperature."
+        }
+      },
+      {
+        "title": "Low Temperature settings sub-section",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "1-degree threshold stepper (unit-aware) + hours stepper grouped under Weather Warnings."
+        }
+      },
+      {
+        "title": "Main-screen Low Temp Warning",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Shows 'Temps may fall to below DD within HH hours', complementing cold/freeze cues."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 33,
+      "completedAt": "2026-06-24T05:29:45Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/33",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #33: Low-temperature threshold setting + main-screen Low Temp Warning"
+      }
+    ],
+    "updated": "2026-06-24T05:29:45Z"
+  }
+}

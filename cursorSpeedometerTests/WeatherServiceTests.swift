@@ -1,18 +1,20 @@
 import XCTest
 @testable import cursorSpeedometer
 
-// swiftlint:disable type_body_length
+// swiftlint:disable type_body_length file_length
 final class WeatherServiceTests: XCTestCase {
     private func response(
         temperature: Double = 70,
         probabilities: [Int?]? = nil,
-        amounts: [Double?]? = nil
+        amounts: [Double?]? = nil,
+        temperatures: [Double?]? = nil
     ) -> OpenMeteoResponse {
         OpenMeteoResponse(
             current: OpenMeteoCurrent(temperature2m: temperature),
             hourly: OpenMeteoHourly(
                 precipitationProbability: probabilities,
-                precipitation: amounts
+                precipitation: amounts,
+                temperature2m: temperatures
             )
         )
     }
@@ -105,6 +107,103 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(OpenMeteoMapper.clampWindowHours(0), OpenMeteoMapper.minForecastWindowHours)
         XCTAssertEqual(OpenMeteoMapper.clampWindowHours(99), OpenMeteoMapper.maxForecastWindowHours)
         XCTAssertEqual(OpenMeteoMapper.clampWindowHours(5), 5)
+    }
+
+    func testForecastConfigCoversLargerWindow() {
+        let config = WeatherForecastConfig(rainWindowHours: 3, lowTempWindowHours: 9)
+        XCTAssertEqual(config.forecastHours, 9)
+    }
+
+    func testLowTempDetectedWithinWindow() {
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(temperatures: [60, 55, 48, 45, 44, 44]),
+            unit: .fahrenheit,
+            lowTempWindowHours: 6,
+            lowTempThresholdFahrenheit: 50
+        )
+        // First bucket below 50°F is index 2 -> ~3 hours out.
+        XCTAssertEqual(snapshot.lowTempExpectedInHours, 3)
+        XCTAssertEqual(snapshot.lowTempThresholdFahrenheit, 50)
+    }
+
+    func testLowTempOutsideWindowIgnored() {
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(temperatures: [60, 60, 60, 45]),
+            unit: .fahrenheit,
+            lowTempWindowHours: 3,
+            lowTempThresholdFahrenheit: 50
+        )
+        XCTAssertNil(snapshot.lowTempExpectedInHours)
+    }
+
+    func testLowTempNotReportedWhenThresholdNil() {
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(temperatures: [10, 10, 10]),
+            unit: .fahrenheit
+        )
+        XCTAssertNil(snapshot.lowTempExpectedInHours)
+    }
+
+    func testLowTempUsesCelsiusForecastTemps() {
+        // Threshold 50°F == 10°C; a 9°C bucket is below it.
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(temperatures: [15, 12, 9, 8]),
+            unit: .celsius,
+            lowTempWindowHours: 6,
+            lowTempThresholdFahrenheit: 50
+        )
+        XCTAssertEqual(snapshot.lowTempExpectedInHours, 3)
+    }
+
+    func testLowTempWarningTextFormatsThresholdAndHours() {
+        let single = WeatherSnapshot(
+            temperature: 70,
+            unit: .fahrenheit,
+            rainExpectedInHours: nil,
+            lowTempExpectedInHours: 1,
+            lowTempThresholdFahrenheit: 50
+        )
+        XCTAssertEqual(single.lowTempWarningText, "Temps may fall to below 50°F within 1 hour")
+
+        let celsius = WeatherSnapshot(
+            temperature: 20,
+            unit: .celsius,
+            rainExpectedInHours: nil,
+            lowTempExpectedInHours: 3,
+            lowTempThresholdFahrenheit: 50
+        )
+        // 50°F -> 10°C.
+        XCTAssertEqual(celsius.lowTempWarningText, "Temps may fall to below 10°C within 3 hours")
+    }
+
+    func testLowTempWarningTextNilWhenNotExpected() {
+        let snapshot = WeatherSnapshot(temperature: 70, unit: .fahrenheit, rainExpectedInHours: nil)
+        XCTAssertNil(snapshot.lowTempWarningText)
+    }
+
+    @MainActor
+    func testAppSettingsClampsAndPersistsLowTempControls() {
+        let suite = "test.lowtemp.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertEqual(settings.lowTempThresholdFahrenheit, AppSettings.defaultLowTempThresholdFahrenheit)
+        XCTAssertEqual(settings.lowTempWarningWindowHours, OpenMeteoMapper.defaultForecastWindowHours)
+
+        settings.lowTempThresholdFahrenheit = 999
+        XCTAssertEqual(settings.lowTempThresholdFahrenheit, AppSettings.maxLowTempThresholdFahrenheit)
+        settings.lowTempThresholdFahrenheit = -50
+        XCTAssertEqual(settings.lowTempThresholdFahrenheit, AppSettings.minLowTempThresholdFahrenheit)
+
+        settings.lowTempWarningWindowHours = 99
+        XCTAssertEqual(settings.lowTempWarningWindowHours, OpenMeteoMapper.maxForecastWindowHours)
+
+        settings.lowTempThresholdFahrenheit = 45
+        settings.lowTempWarningWindowHours = 4
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertEqual(reloaded.lowTempThresholdFahrenheit, 45)
+        XCTAssertEqual(reloaded.lowTempWarningWindowHours, 4)
     }
 
     func testMissingHourlyDataMeansNoRain() {
@@ -311,7 +410,7 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertEqual(items["longitude"], "-122.25")
         XCTAssertEqual(items["temperature_unit"], "celsius")
         XCTAssertEqual(items["forecast_hours"], "6")
-        XCTAssertEqual(items["hourly"], "precipitation_probability,precipitation")
+        XCTAssertEqual(items["hourly"], "precipitation_probability,precipitation,temperature_2m")
         XCTAssertEqual(items["current"], "temperature_2m")
     }
 
@@ -331,7 +430,11 @@ final class WeatherServiceTests: XCTestCase {
         StubURLProtocol.responseData = Data(Self.samplePayload.utf8)
         let service = OpenMeteoWeatherService(session: Self.stubbedSession())
 
-        let snapshot = try await service.fetch(latitude: 37, longitude: -122, unit: .fahrenheit)
+        let snapshot = try await service.fetch(
+            latitude: 37,
+            longitude: -122,
+            config: WeatherForecastConfig(unit: .fahrenheit)
+        )
 
         XCTAssertEqual(snapshot.temperature, 66.8, accuracy: 0.001)
         XCTAssertEqual(snapshot.unit, .fahrenheit)
@@ -344,7 +447,11 @@ final class WeatherServiceTests: XCTestCase {
         let service = OpenMeteoWeatherService(session: Self.stubbedSession())
 
         do {
-            _ = try await service.fetch(latitude: 37, longitude: -122, unit: .fahrenheit)
+            _ = try await service.fetch(
+                latitude: 37,
+                longitude: -122,
+                config: WeatherForecastConfig(unit: .fahrenheit)
+            )
             XCTFail("Expected fetch to throw on a 500 response")
         } catch {
             // Expected.

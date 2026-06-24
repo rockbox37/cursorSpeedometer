@@ -39,6 +39,17 @@ struct WeatherBadgeView: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(snapshot.rainText ?? "\(primary) \(secondary)")
                 }
+
+                if let lowTempWarning = snapshot.lowTempWarningText {
+                    HStack(spacing: 4) {
+                        Image(systemName: "thermometer.snowflake")
+                        Text(lowTempWarning)
+                    }
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Self.coldColor)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(lowTempWarning)
+                }
             }
         }
     }
