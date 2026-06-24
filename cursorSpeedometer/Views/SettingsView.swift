@@ -47,6 +47,25 @@ struct SettingsView: View {
                     Text("Warn when rain is expected within this many hours ahead.")
                 }
 
+                Section {
+                    Stepper(value: lowTempThresholdBinding, in: lowTempThresholdRange, step: 1) {
+                        Text("Comfort threshold: \(lowTempThresholdBinding.wrappedValue)\(temperatureSymbol)")
+                    }
+                    Stepper(
+                        value: $settings.lowTempWarningWindowHours,
+                        in: OpenMeteoMapper.minForecastWindowHours...OpenMeteoMapper.maxForecastWindowHours
+                    ) {
+                        Text("Warn within: ~\(settings.lowTempWarningWindowHours) \(lowTempWindowUnitLabel)")
+                    }
+                } header: {
+                    Text("Low Temperature Threshold")
+                } footer: {
+                    Text(
+                        "The lowest temperature you're comfortable riding in. "
+                        + "You'll be warned when the forecast is expected to drop below it within the window."
+                    )
+                }
+
                 Section("Display Theme") {
                     Toggle("Auto Theme (Day at sunrise, Night at sunset)", isOn: Binding(
                         get: { settings.autoThemeEnabled },
@@ -130,6 +149,43 @@ struct SettingsView: View {
 
     private var rainWindowUnitLabel: String {
         settings.rainWarningWindowHours == 1 ? "hr" : "hrs"
+    }
+
+    private var lowTempWindowUnitLabel: String {
+        settings.lowTempWarningWindowHours == 1 ? "hr" : "hrs"
+    }
+
+    private var temperatureSymbol: String {
+        settings.resolvedTemperatureUnit.symbol
+    }
+
+    /// The comfort threshold expressed (and edited) in the resolved display unit,
+    /// while stored canonically in Fahrenheit.
+    private var lowTempThresholdBinding: Binding<Int> {
+        Binding(
+            get: { displayTemperature(settings.lowTempThresholdFahrenheit) },
+            set: { settings.lowTempThresholdFahrenheit = fahrenheit(fromDisplay: $0) }
+        )
+    }
+
+    private var lowTempThresholdRange: ClosedRange<Int> {
+        let low = displayTemperature(AppSettings.minLowTempThresholdFahrenheit)
+        let high = displayTemperature(AppSettings.maxLowTempThresholdFahrenheit)
+        return low...high
+    }
+
+    private func displayTemperature(_ fahrenheit: Double) -> Int {
+        switch settings.resolvedTemperatureUnit {
+        case .fahrenheit: Int(fahrenheit.rounded())
+        case .celsius: Int(((fahrenheit - 32) * 5 / 9).rounded())
+        }
+    }
+
+    private func fahrenheit(fromDisplay value: Int) -> Double {
+        switch settings.resolvedTemperatureUnit {
+        case .fahrenheit: Double(value)
+        case .celsius: Double(value) * 9 / 5 + 32
+        }
     }
 
     private var unitsFooterText: String {

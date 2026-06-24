@@ -17,6 +17,20 @@ final class AppSettings: ObservableObject {
         static let odometerMeters = "odometerMeters"
         static let rideModeEnabled = "rideModeEnabled"
         static let rainWarningWindowHours = "rainWarningWindowHours"
+        static let lowTempThresholdFahrenheit = "lowTempThresholdFahrenheit"
+        static let lowTempWarningWindowHours = "lowTempWarningWindowHours"
+    }
+
+    /// Default low-temp comfort threshold (°F).
+    static let defaultLowTempThresholdFahrenheit = 50.0
+    /// Lowest selectable comfort threshold (°F).
+    static let minLowTempThresholdFahrenheit = 20.0
+    /// Highest selectable comfort threshold (°F).
+    static let maxLowTempThresholdFahrenheit = 70.0
+
+    /// Clamp a comfort threshold (°F) to the supported range.
+    static func clampLowTempThreshold(_ fahrenheit: Double) -> Double {
+        min(maxLowTempThresholdFahrenheit, max(minLowTempThresholdFahrenheit, fahrenheit))
     }
 
     private let defaults: UserDefaults
@@ -73,6 +87,24 @@ final class AppSettings: ObservableObject {
         }
     }
 
+    /// Lowest temperature (in °F, canonical) the rider is comfortable riding in.
+    @Published var lowTempThresholdFahrenheit: Double {
+        didSet {
+            let clamped = AppSettings.clampLowTempThreshold(lowTempThresholdFahrenheit)
+            if clamped != lowTempThresholdFahrenheit { lowTempThresholdFahrenheit = clamped; return }
+            defaults.set(lowTempThresholdFahrenheit, forKey: Key.lowTempThresholdFahrenheit)
+        }
+    }
+
+    /// Look-ahead window (in hours) for the low-temperature warning.
+    @Published var lowTempWarningWindowHours: Int {
+        didSet {
+            let clamped = OpenMeteoMapper.clampWindowHours(lowTempWarningWindowHours)
+            if clamped != lowTempWarningWindowHours { lowTempWarningWindowHours = clamped; return }
+            defaults.set(lowTempWarningWindowHours, forKey: Key.lowTempWarningWindowHours)
+        }
+    }
+
     @Published var activeTheme: ThemePreset = .day
     @Published var brightnessLevel: Double = 1.0
 
@@ -96,6 +128,14 @@ final class AppSettings: ObservableObject {
         self.rideModeEnabled = defaults.object(forKey: Key.rideModeEnabled) as? Bool ?? false
         self.rainWarningWindowHours = OpenMeteoMapper.clampWindowHours(
             defaults.object(forKey: Key.rainWarningWindowHours) as? Int
+                ?? OpenMeteoMapper.defaultForecastWindowHours
+        )
+        self.lowTempThresholdFahrenheit = AppSettings.clampLowTempThreshold(
+            defaults.object(forKey: Key.lowTempThresholdFahrenheit) as? Double
+                ?? AppSettings.defaultLowTempThresholdFahrenheit
+        )
+        self.lowTempWarningWindowHours = OpenMeteoMapper.clampWindowHours(
+            defaults.object(forKey: Key.lowTempWarningWindowHours) as? Int
                 ?? OpenMeteoMapper.defaultForecastWindowHours
         )
         if self.autoThemeEnabled {

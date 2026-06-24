@@ -19,16 +19,22 @@ final class WeatherController: ObservableObject {
     private var coordinate: (latitude: Double, longitude: Double)?
     private var unit: TemperatureUnit
     private var windowHours: Int
+    private var lowTempWindowHours: Int
+    private var lowTempThresholdFahrenheit: Double?
     private var isRunning = false
 
     init(
         provider: WeatherProvider = OpenMeteoWeatherService(),
         unit: TemperatureUnit = .fahrenheit,
-        windowHours: Int = OpenMeteoMapper.defaultForecastWindowHours
+        windowHours: Int = OpenMeteoMapper.defaultForecastWindowHours,
+        lowTempWindowHours: Int = OpenMeteoMapper.defaultForecastWindowHours,
+        lowTempThresholdFahrenheit: Double? = nil
     ) {
         self.provider = provider
         self.unit = unit
         self.windowHours = OpenMeteoMapper.clampWindowHours(windowHours)
+        self.lowTempWindowHours = OpenMeteoMapper.clampWindowHours(lowTempWindowHours)
+        self.lowTempThresholdFahrenheit = lowTempThresholdFahrenheit
     }
 
     /// Begin (or resume) periodic refreshes. Safe to call repeatedly.
@@ -71,10 +77,29 @@ final class WeatherController: ObservableObject {
         fetch()
     }
 
+    /// Update the low-temperature look-ahead window and refresh.
+    func setLowTempWindowHours(_ hours: Int) {
+        let clamped = OpenMeteoMapper.clampWindowHours(hours)
+        guard clamped != lowTempWindowHours else { return }
+        lowTempWindowHours = clamped
+        fetch()
+    }
+
+    /// Update the low-temperature comfort threshold (in °F) and refresh.
+    func setLowTempThresholdFahrenheit(_ fahrenheit: Double?) {
+        guard fahrenheit != lowTempThresholdFahrenheit else { return }
+        lowTempThresholdFahrenheit = fahrenheit
+        fetch()
+    }
+
     private func fetch() {
         guard let coordinate else { return }
-        let unit = self.unit
-        let windowHours = self.windowHours
+        let config = WeatherForecastConfig(
+            unit: unit,
+            rainWindowHours: windowHours,
+            lowTempWindowHours: lowTempWindowHours,
+            lowTempThresholdFahrenheit: lowTempThresholdFahrenheit
+        )
         let latitude = coordinate.latitude
         let longitude = coordinate.longitude
 
@@ -85,8 +110,7 @@ final class WeatherController: ObservableObject {
                 let result = try await self.provider.fetch(
                     latitude: latitude,
                     longitude: longitude,
-                    unit: unit,
-                    windowHours: windowHours
+                    config: config
                 )
                 guard !Task.isCancelled else { return }
                 self.snapshot = result
