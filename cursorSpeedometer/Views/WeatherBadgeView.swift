@@ -24,12 +24,12 @@ struct WeatherBadgeView: View {
                 }
                 .accessibilityElement(children: .combine)
 
-                if let rainText = snapshot.rainText {
+                    if let rainText = snapshot.rainText {
                     HStack(spacing: 4) {
                         Image(systemName: "cloud.rain.fill")
                         Text(rainText)
                     }
-                    .font(.caption.weight(.semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(palette.accentColor)
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(rainText)

@@ -1,0 +1,37 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "author": "agent:claude-opus-4.8",
+    "description": "Scope vBRIEF: increase the rain-warning line font size by 50% for legibility",
+    "created": "2026-06-24T04:15:00Z",
+    "updated": "2026-06-24T04:15:00Z"
+  },
+  "plan": {
+    "id": "rain-warning-font-size",
+    "title": "Larger rain-warning line",
+    "status": "completed",
+    "narratives": {
+      "Overview": "The 'Rain possible within ~Xhrs' line on the main weather badge is too small to read at a glance while riding. Increase its font size by 50% (caption ~12pt -> ~18pt).",
+      "Goals": "Make the rain-warning line 50% larger without disturbing the temperature display or layout.",
+      "FunctionalRequirements": "FR-1: The rain-warning line (icon + text) MUST render 50% larger than its current caption size.\nFR-2: The temperature row and existing colors/spacing MUST be unchanged.",
+      "Architecture": "WeatherBadgeView: replace the rain line's .caption font with a fixed .system(size: 18) so the increase is deterministic; the cloud.rain.fill icon scales with the same font.",
+      "TestingStrategy": "Build on the simulator and review the badge visually; existing unit tests for rain text formatting remain valid."
+    },
+    "items": [
+      {
+        "title": "Enlarge the rain-warning line by 50%",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "The rain-warning line renders at ~18pt; temperature row unchanged."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 26,
+      "completedAt": "2026-06-24T04:18:42Z"
+    },
+    "updated": "2026-06-24T04:18:42Z"
+  }
+}
