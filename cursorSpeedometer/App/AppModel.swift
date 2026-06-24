@@ -12,6 +12,7 @@ final class AppModel: ObservableObject {
     let themeController = ThemeAutoSwitcherController()
     let brightnessRunner = BrightnessControllerRunner()
     let weatherController = WeatherController()
+    let alertController = ThunderstormAlertController()
 
     private var cancellables = Set<AnyCancellable>()
     private var wasInBackground = false
@@ -35,6 +36,10 @@ final class AppModel: ObservableObject {
             .compactMap { $0 }
             .sink { [weak self] coordinate in
                 self?.weatherController.updateLocation(
+                    latitude: coordinate.latitude,
+                    longitude: coordinate.longitude
+                )
+                self?.alertController.updateLocation(
                     latitude: coordinate.latitude,
                     longitude: coordinate.longitude
                 )
@@ -65,6 +70,7 @@ final class AppModel: ObservableObject {
         applyRideMode()
         refreshAdaptiveControllers()
         weatherController.start()
+        alertController.start()
     }
 
     func onScenePhaseChange(_ phase: ScenePhase) {
@@ -77,6 +83,7 @@ final class AppModel: ObservableObject {
             refreshAdaptiveControllers()
             applyRideMode()
             weatherController.start()
+            alertController.start()
         case .inactive:
             themeController.stop()
             brightnessRunner.stop()
@@ -85,6 +92,7 @@ final class AppModel: ObservableObject {
             themeController.stop()
             brightnessRunner.stop()
             weatherController.stop()
+            alertController.stop()
         @unknown default:
             break
         }
