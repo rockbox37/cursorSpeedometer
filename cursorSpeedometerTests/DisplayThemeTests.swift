@@ -17,4 +17,10 @@ final class DisplayThemeTests: XCTestCase {
         let night = ThemePalette.palette(for: .night)
         XCTAssertNotEqual(day, night)
     }
+
+    func testIsDayPresetOnlyTrueForDay() {
+        XCTAssertTrue(ThemePalette.palette(for: .day).isDayPreset)
+        XCTAssertFalse(ThemePalette.palette(for: .night).isDayPreset)
+        XCTAssertFalse(ThemePalette.palette(for: .amber).isDayPreset)
+    }
 }

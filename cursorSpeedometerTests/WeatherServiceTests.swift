@@ -101,6 +101,18 @@ final class WeatherServiceTests: XCTestCase {
     func testRainTextIsNilWhenNoRainExpected() {
         let dry = WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
         XCTAssertNil(dry.rainText)
+        XCTAssertNil(dry.rainPrimaryText)
+        XCTAssertNil(dry.rainSecondaryText)
+    }
+
+    func testRainSplitsIntoTwoLines() {
+        let oneHour = WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: 1)
+        XCTAssertEqual(oneHour.rainPrimaryText, "Rain possible")
+        XCTAssertEqual(oneHour.rainSecondaryText, "within ~1hr")
+
+        let threeHours = WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: 3)
+        XCTAssertEqual(threeHours.rainPrimaryText, "Rain possible")
+        XCTAssertEqual(threeHours.rainSecondaryText, "within ~3hrs")
     }
 
     func testTemperatureTextRoundsAndAppendsSymbol() {
