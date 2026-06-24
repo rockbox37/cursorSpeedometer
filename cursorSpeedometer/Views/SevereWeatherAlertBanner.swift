@@ -35,3 +35,24 @@ struct SevereWeatherAlertBanner: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Severe weather banners") {
+    VStack(spacing: 12) {
+        SevereWeatherAlertBanner(
+            alert: SevereWeatherAlert(category: .tornado, level: .warning, event: "Tornado Warning")
+        )
+        SevereWeatherAlertBanner(
+            alert: SevereWeatherAlert(category: .tornado, level: .watch, event: "Tornado Watch")
+        )
+        SevereWeatherAlertBanner(
+            alert: SevereWeatherAlert(category: .thunderstorm, level: .warning, event: "Severe Thunderstorm Warning")
+        )
+        SevereWeatherAlertBanner(
+            alert: SevereWeatherAlert(category: .thunderstorm, level: .watch, event: "Severe Thunderstorm Watch")
+        )
+    }
+    .padding()
+    .background(Color.black)
+}
+#endif
