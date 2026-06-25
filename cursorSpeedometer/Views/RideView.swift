@@ -35,10 +35,14 @@ struct RideView: View {
     }
 
     private var topBar: some View {
-        HStack(alignment: .top) {
-            WeatherBadgeView(snapshot: weatherController.snapshot, palette: palette)
-            Spacer()
-            AppClockView(palette: palette)
+        ZStack(alignment: .top) {
+            HStack(alignment: .top) {
+                WeatherBadgeView(snapshot: weatherController.snapshot, palette: palette)
+                Spacer()
+                AppClockView(palette: palette)
+            }
+            CompassHeadingView(headingDegrees: locationService.headingDegrees, palette: palette)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
         .frame(maxWidth: .infinity, minHeight: 20)
     }
