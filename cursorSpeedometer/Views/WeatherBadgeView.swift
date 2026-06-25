@@ -8,6 +8,10 @@ struct WeatherBadgeView: View {
     private static let freezeColor = Color(red: 0.55, green: 0.85, blue: 1.0)
     /// Red used for the rain warning in the Day theme, for contrast on a bright background.
     private static let daytimeRainColor = Color(red: 0.85, green: 0.12, blue: 0.12)
+    /// Red for the low-temp warning in Day/Amber themes.
+    private static let lowTempWarningRed = Color(red: 0.85, green: 0.12, blue: 0.12)
+    /// Orange for the low-temp warning in the Night theme (legible on dark).
+    private static let lowTempWarningOrange = Color(red: 1.0, green: 0.55, blue: 0.0)
 
     var body: some View {
         if let snapshot {
@@ -40,15 +44,19 @@ struct WeatherBadgeView: View {
                     .accessibilityLabel(snapshot.rainText ?? "\(primary) \(secondary)")
                 }
 
-                if let lowTempWarning = snapshot.lowTempWarningText {
-                    HStack(spacing: 4) {
-                        Image(systemName: "thermometer.snowflake")
-                        Text(lowTempWarning)
+                if let lowTempPrimary = snapshot.lowTempPrimaryText,
+                   let lowTempSecondary = snapshot.lowTempSecondaryText {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "thermometer.snowflake")
+                            Text(lowTempPrimary)
+                        }
+                        Text(lowTempSecondary)
                     }
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Self.coldColor)
+                    .font(.system(size: 21, weight: .semibold))
+                    .foregroundStyle(lowTempWarningColor)
                     .accessibilityElement(children: .combine)
-                    .accessibilityLabel(lowTempWarning)
+                    .accessibilityLabel(snapshot.lowTempWarningText ?? "\(lowTempPrimary) \(lowTempSecondary)")
                 }
             }
         }
@@ -58,6 +66,11 @@ struct WeatherBadgeView: View {
     /// palettes are already red/amber).
     private var rainColor: Color {
         palette.isDayPreset ? Self.daytimeRainColor : palette.accentColor
+    }
+
+    /// Low-temp warning color by theme: orange at Night, red in Day/Amber.
+    private var lowTempWarningColor: Color {
+        palette.usesRedChannelOnly ? Self.lowTempWarningOrange : Self.lowTempWarningRed
     }
 
     private func temperatureColor(for warning: TemperatureWarning) -> Color {

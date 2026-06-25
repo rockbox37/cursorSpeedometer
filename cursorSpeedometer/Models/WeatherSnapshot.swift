@@ -52,15 +52,26 @@ struct WeatherSnapshot: Equatable, Sendable {
         return "within ~\(hours)\(unitLabel)"
     }
 
-    /// Rider-facing forecast cue for a dip below the comfort threshold, e.g.
-    /// "Temps may fall to below 50°F within 3 hours", or nil when not expected.
+    /// Combined low-temp cue for the accessibility label, e.g.
+    /// "Temps may fall below 50°F within 3 hours", or nil when not expected.
     var lowTempWarningText: String? {
-        guard let hours = lowTempExpectedInHours, let thresholdFahrenheit = lowTempThresholdFahrenheit else {
+        guard let primary = lowTempPrimaryText, let secondary = lowTempSecondaryText else { return nil }
+        return "\(primary) \(secondary)"
+    }
+
+    /// First line of the low-temp cue, e.g. "Temps may fall below 50°F".
+    var lowTempPrimaryText: String? {
+        guard let thresholdFahrenheit = lowTempThresholdFahrenheit, lowTempExpectedInHours != nil else {
             return nil
         }
-        let threshold = displayThreshold(thresholdFahrenheit)
+        return "Temps may fall below \(displayThreshold(thresholdFahrenheit))\(unit.symbol)"
+    }
+
+    /// Second line of the low-temp cue with the timeframe, e.g. "within 3 hours".
+    var lowTempSecondaryText: String? {
+        guard let hours = lowTempExpectedInHours, lowTempThresholdFahrenheit != nil else { return nil }
         let hourLabel = hours == 1 ? "hour" : "hours"
-        return "Temps may fall to below \(threshold)\(unit.symbol) within \(hours) \(hourLabel)"
+        return "within \(hours) \(hourLabel)"
     }
 
     /// The threshold rounded into the snapshot's display unit.

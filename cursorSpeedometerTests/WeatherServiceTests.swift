@@ -163,7 +163,7 @@ final class WeatherServiceTests: XCTestCase {
             lowTempExpectedInHours: 1,
             lowTempThresholdFahrenheit: 50
         )
-        XCTAssertEqual(single.lowTempWarningText, "Temps may fall to below 50°F within 1 hour")
+        XCTAssertEqual(single.lowTempWarningText, "Temps may fall below 50°F within 1 hour")
 
         let celsius = WeatherSnapshot(
             temperature: 20,
@@ -173,12 +173,26 @@ final class WeatherServiceTests: XCTestCase {
             lowTempThresholdFahrenheit: 50
         )
         // 50°F -> 10°C.
-        XCTAssertEqual(celsius.lowTempWarningText, "Temps may fall to below 10°C within 3 hours")
+        XCTAssertEqual(celsius.lowTempWarningText, "Temps may fall below 10°C within 3 hours")
+    }
+
+    func testLowTempWarningSplitsIntoTwoLines() {
+        let snapshot = WeatherSnapshot(
+            temperature: 70,
+            unit: .fahrenheit,
+            rainExpectedInHours: nil,
+            lowTempExpectedInHours: 3,
+            lowTempThresholdFahrenheit: 50
+        )
+        XCTAssertEqual(snapshot.lowTempPrimaryText, "Temps may fall below 50°F")
+        XCTAssertEqual(snapshot.lowTempSecondaryText, "within 3 hours")
     }
 
     func testLowTempWarningTextNilWhenNotExpected() {
         let snapshot = WeatherSnapshot(temperature: 70, unit: .fahrenheit, rainExpectedInHours: nil)
         XCTAssertNil(snapshot.lowTempWarningText)
+        XCTAssertNil(snapshot.lowTempPrimaryText)
+        XCTAssertNil(snapshot.lowTempSecondaryText)
     }
 
     @MainActor

@@ -1,0 +1,46 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #35"
+  },
+  "plan": {
+    "id": "low-temp-warning-style",
+    "title": "Low Temp Warning: theme-aware color, larger two-line text, drop \"to\"",
+    "status": "completed",
+    "narratives": {
+      "Description": "Low Temp Warning: theme-aware color, larger two-line text, drop \"to\"",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/35",
+      "Overview": "## Request\nImprove the legibility and wording of the **Low Temp Warning** on the ride screen (the \"Temps may fall to below DD within HH hours\" line added in #33). Note: this is the *low-temperature* warning, not the rain warning.\n\n### Current behavior\n- Rendered in a blue tint (`coldColor`) which is hard to see — see `WeatherBadgeView`.\n- Single line at 16pt: \"Temps may fall to below DD within HH hours\" (text from `WeatherSnapshot.lowTempWarningText`).\n\n### Desired behavior\n- **Color by theme** (blue is hard to see):\n  - Day theme: **red**\n  - Night theme: **orange**\n  - Amber theme: **red**\n- **Font ~30% larger** (16pt → ~21pt).\n- **Two lines** — break to a new line before the timeframe:\n  - Line 1: \"Temps may fall below DD\"\n  - Line 2: \"within HH hours\"\n- **Drop the word \"to\"**: \"Temps may fall ~~to~~ below DD…\" → \"Temps may fall below DD…\".\n\n### Implementation notes\n- Theme-aware color: `ThemePalette` already exposes `isDayPreset` (used for the rain warning's daytime red) plus `usesRedChannelOnly` (night) and `usesAmberChannelOnly` (amber); use these to pick red/orange/red.\n- Split `WeatherSnapshot.lowTempWarningText` into two parts (primary + timeframe), mirroring how the rain cue was split in #26 (`rainPrimaryText` / `rainSecondaryText`), and update `WeatherBadgeView` to render two lines. Keep a combined string for the accessibility label.\n- Update the existing low-temp warning text unit tests for the new wording (no \"to\") and the split.\n\n### Open question\n- Confirm the exact orange for Night mode (the Night palette is otherwise red-channel-only for contrast); pick an orange that stays legible on the dark background.",
+      "Labels": "enhancement",
+      "FunctionalRequirements": "FR-1: The Low Temp Warning MUST be red in Day, orange in Night, red in Amber (no longer blue).\nFR-2: Its font MUST be ~30% larger than the current 16pt (~21pt).\nFR-3: It MUST render on two lines: 'Temps may fall below DD' then 'within HH hours'.\nFR-4: The wording MUST drop 'to' ('Temps may fall below DD…').",
+      "Architecture": "Split WeatherSnapshot.lowTempWarningText into lowTempPrimaryText ('Temps may fall below DD') and lowTempSecondaryText ('within HH hours'); keep lowTempWarningText as the combined accessibility label (without 'to'). In WeatherBadgeView, render two lines at ~21pt and pick the color from the palette: red when isDayPreset or usesAmberChannelOnly, orange when usesRedChannelOnly (Night).",
+      "TestingStrategy": "Update existing low-temp text tests for the new wording (no 'to') and add tests for the primary/secondary split. Build + on-device review across Day/Night/Amber."
+    },
+    "items": [
+      {
+        "title": "Theme-aware color + larger two-line low-temp warning",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Red (Day/Amber) / orange (Night), ~21pt, two lines, no 'to'."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 35,
+      "completedAt": "2026-06-25T03:27:54Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/35",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #35: Low Temp Warning: theme-aware color, larger two-line text, drop \"to\""
+      }
+    ],
+    "updated": "2026-06-25T03:27:54Z"
+  }
+}
