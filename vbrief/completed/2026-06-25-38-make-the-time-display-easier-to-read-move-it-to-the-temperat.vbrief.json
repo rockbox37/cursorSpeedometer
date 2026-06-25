@@ -1,0 +1,46 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #38"
+  },
+  "plan": {
+    "id": "time-on-temp-row",
+    "title": "Make the time display easier to read: move it to the temperature row, right-aligned, matching size",
+    "status": "completed",
+    "narratives": {
+      "Description": "Make the time display easier to read: move it to the temperature row, right-aligned, matching size",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/38",
+      "Overview": "## Request\nThe time display should be easier for motorcyclists to read at a glance.\n\n- **Move it down** to the same line/row as the **temperature** display.\n- **Right-align** it (all the way to the right side of that row).\n- **Match the temperature display's font and size**.\n\n## Current behavior\n- The clock lives in the **brand header** (`AppClockView` inside `BrandHeaderView`), top-right next to the GPS signal status. It's small: `.font(.caption.weight(.semibold))`, `monospacedDigit()`, in `palette.secondaryColor`.\n- The temperature lives in the top bar (`WeatherBadgeView` inside `RideView.topBar`), top-left, rendered at `.font(.system(size: 32, weight: .semibold, design: .rounded))` with `monospacedDigit()`.\n\n## Desired behavior\n- Place the time on the temperature row in `RideView.topBar` (temperature left, time pushed to the far right via the existing `Spacer()`).\n- Style the time to match the temperature: `.system(size: 32, weight: .semibold, design: .rounded)`, `monospacedDigit()`.\n- Remove the clock from `BrandHeaderView` (or relocate accordingly) so it isn't shown twice.\n\n## Notes\n- Confirm color: match the temperature's neutral color (e.g. `palette.primaryColor`/`secondaryColor`) rather than the temperature-warning tint.",
+      "Labels": "enhancement",
+      "FunctionalRequirements": "FR-1: The time MUST appear on the same row as the temperature in RideView.topBar, pushed to the far right.\nFR-2: The time MUST use the temperature's font/size: .system(size: 32, weight: .semibold, design: .rounded) with monospacedDigit().\nFR-3: The clock MUST no longer appear in BrandHeaderView (no duplicate).\nFR-4: The time color MUST use a neutral palette color (not the temperature-warning tint).",
+      "Architecture": "Move AppClockView out of BrandHeaderView's trailing slot. In RideView.topBar, after the existing Spacer(), render AppClockView with a larger style. Add a font/size to AppClockView (parameterize or restyle) so it matches the temperature; keep TimelineView-based minute updates and the accessibility label. Verify BrandHeaderView's HStack still lays out sensibly with only the GPS status (Spacer retained).",
+      "TestingStrategy": "Build + xcodebuild test (no new logic to unit-test; this is layout/styling). On-device visual check that time is right-aligned on the temperature row at matching size across Day/Night/Amber, and absent from the header."
+    },
+    "items": [
+      {
+        "title": "Relocate clock to temperature row at matching size",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Time on temp row, right-aligned, 32pt rounded, removed from header."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 38,
+      "completedAt": "2026-06-25T03:56:07Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/38",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #38: Make the time display easier to read: move it to the temperature row, right-aligned, matching size"
+      }
+    ],
+    "updated": "2026-06-25T03:56:07Z"
+  }
+}

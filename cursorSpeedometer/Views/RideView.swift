@@ -35,14 +35,10 @@ struct RideView: View {
     }
 
     private var topBar: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .top) {
             WeatherBadgeView(snapshot: weatherController.snapshot, palette: palette)
             Spacer()
-            if settings.rideModeEnabled {
-                Label("Ride", systemImage: "bolt.fill")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(palette.accentColor)
-            }
+            AppClockView(palette: palette)
         }
         .frame(maxWidth: .infinity, minHeight: 20)
     }

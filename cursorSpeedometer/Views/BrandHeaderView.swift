@@ -27,7 +27,6 @@ struct BrandHeaderView: View {
             HStack(alignment: .center) {
                 GPSSignalStatusView(status: gpsStatus, palette: palette)
                 Spacer()
-                AppClockView(palette: palette)
             }
         }
         .padding(.horizontal, 12)
