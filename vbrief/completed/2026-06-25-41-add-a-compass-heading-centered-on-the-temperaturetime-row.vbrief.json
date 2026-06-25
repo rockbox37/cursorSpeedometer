@@ -1,0 +1,47 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #41"
+  },
+  "plan": {
+    "id": "compass-heading-row",
+    "title": "Add a compass heading centered on the temperature/time row",
+    "status": "completed",
+    "narratives": {
+      "Description": "Add a compass heading centered on the temperature/time row",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/41",
+      "Overview": "## Request\nAdd a **compass heading** in the **center** of the row that holds the temperature (left) and the time (right) on the ride screen. Use the **same font size, face, and color** as the temperature and time displays.\n\n## Current layout\n- `RideView.topBar` is an `HStack(alignment: .top)`: `WeatherBadgeView` (temperature, left) → `Spacer()` → `AppClockView` (time, right).\n- Temperature and time both render at `.system(size: 32, weight: .semibold, design: .rounded)`, `monospacedDigit()`, in `palette.primaryColor`.\n\n## Desired behavior\n- Place a compass heading in the horizontal center of that row (e.g. balance with spacers on both sides: temperature | Spacer | heading | Spacer | time).\n- Style it identically to the temperature/time: `.system(size: 32, weight: .semibold, design: .rounded)`, `monospacedDigit()`, `palette.primaryColor`.\n- Display the heading as a cardinal direction plus degrees, e.g. `NE 045°` (final format TBD during build).\n\n## Implementation notes\n- Source the heading from CoreLocation. Two options to decide during build:\n  - **Course over ground** (`CLLocation.course`) — direction of travel; most meaningful while riding, but invalid when stationary.\n  - **Magnetic/true heading** (`CLLocationManager.startUpdatingHeading` / `CLHeading`) — works at standstill but reflects which way the phone points, which may not match travel direction on a bike.\n- Likely a new lightweight `CompassHeadingView` mirroring `AppClockView`'s structure, fed by `LocationService`.\n- Handle the no-fix / invalid-heading case (e.g. show a placeholder like `--°` rather than a jumpy value).\n\n## Open questions\n- Course-over-ground vs. device heading (or course while moving, heading when stopped)?\n- Exact text format: `NE 045°`, `045° NE`, or degrees only?",
+      "Labels": "enhancement",
+      "FunctionalRequirements": "FR-1: A compass heading MUST appear horizontally centered on the temperature/time row in RideView.topBar.\nFR-2: It MUST use the same style as temperature/time: .system(size: 32, weight: .semibold, design: .rounded), monospacedDigit(), palette.primaryColor.\nFR-3: It MUST update live as the rider changes direction.\nFR-4: It MUST degrade gracefully (placeholder) when no valid heading/fix is available.\nFR-5: It MUST display an 8-point cardinal/intercardinal label only (N, NE, E, SE, S, SW, W, NW) with no degrees.",
+      "Architecture": "Add a CompassHeadingView mirroring AppClockView, fed by LocationService. Expose a heading value on LocationService (course over ground from CLLocation.course while moving; optionally CLHeading via startUpdatingHeading when stationary). Format as an 8-point cardinal/intercardinal label only (N, NE, E, SE, S, SW, W, NW) by mapping each ~45° sector to its label — no degrees shown. In RideView.topBar, balance the row as temperature | Spacer | heading | Spacer | time so the heading is centered.",
+      "TestingStrategy": "Unit-test the degrees->cardinal label helper (sector boundaries around 0/45/90/.../315/360, wraparound near 360->N, and invalid/negative -> placeholder). Build + on-device check that the heading is centered, matches temp/time styling, updates while riding, and shows a placeholder when stationary/no fix.",
+      "OpenQuestions": "[RESOLVED] Heading source: hybrid -- course-over-ground while moving above a small speed threshold, device heading (CLHeading) when stationary; validate via field testing. [RESOLVED] Format: 8-point cardinal/intercardinal label only (N, NE, E, SE, S, SW, W, NW), no degrees."
+    },
+    "items": [
+      {
+        "title": "Centered compass heading matching temp/time style",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Heading centered on the row, 32pt rounded primary, live updates, graceful placeholder."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 41,
+      "completedAt": "2026-06-25T04:25:18Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/41",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #41: Add a compass heading centered on the temperature/time row"
+      }
+    ],
+    "updated": "2026-06-25T04:25:18Z"
+  }
+}
