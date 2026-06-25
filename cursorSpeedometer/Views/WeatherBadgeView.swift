@@ -53,7 +53,7 @@ struct WeatherBadgeView: View {
                         }
                         Text(lowTempSecondary)
                     }
-                    .font(.system(size: 21, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(lowTempWarningColor)
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(snapshot.lowTempWarningText ?? "\(lowTempPrimary) \(lowTempSecondary)")
