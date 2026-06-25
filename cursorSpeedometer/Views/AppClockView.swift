@@ -6,9 +6,9 @@ struct AppClockView: View {
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
             Text(context.date, format: .dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute())
-                .font(.caption.weight(.semibold))
+                .font(.system(size: 32, weight: .semibold, design: .rounded))
                 .monospacedDigit()
-                .foregroundStyle(palette.secondaryColor.opacity(0.85))
+                .foregroundStyle(palette.primaryColor)
                 .accessibilityLabel("Current time \(context.date.formatted(date: .omitted, time: .shortened))")
         }
     }
