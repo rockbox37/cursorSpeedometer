@@ -111,26 +111,30 @@ final class WeatherServiceTests: XCTestCase {
 
     func testForecastConfigCoversLargerWindow() {
         let config = WeatherForecastConfig(rainWindowHours: 3, lowTempWindowHours: 9)
-        XCTAssertEqual(config.forecastHours, 9)
+        // +1 because hourly index 0 is the elapsed current hour.
+        XCTAssertEqual(config.forecastHours, 10)
     }
 
     func testLowTempDetectedWithinWindow() {
+        // Index 0 (60) is the elapsed current hour and is skipped; current temp (70)
+        // is above the threshold, so the future dip drives the warning.
         let snapshot = OpenMeteoMapper.snapshot(
-            from: response(temperatures: [60, 55, 48, 45, 44, 44]),
+            from: response(temperature: 70, temperatures: [60, 55, 48, 45, 44, 44]),
             unit: .fahrenheit,
             lowTempWindowHours: 6,
             lowTempThresholdFahrenheit: 50
         )
-        // First bucket below 50°F is index 2 -> ~3 hours out.
-        XCTAssertEqual(snapshot.lowTempExpectedInHours, 3)
+        // First future bucket below 50°F is index 2 -> 2 hours ahead.
+        XCTAssertEqual(snapshot.lowTempExpectedInHours, 2)
         XCTAssertEqual(snapshot.lowTempThresholdFahrenheit, 50)
     }
 
     func testLowTempOutsideWindowIgnored() {
+        // 45 sits at index 3 (~3 hours ahead), beyond the 2-hour window.
         let snapshot = OpenMeteoMapper.snapshot(
-            from: response(temperatures: [60, 60, 60, 45]),
+            from: response(temperature: 70, temperatures: [60, 60, 60, 45]),
             unit: .fahrenheit,
-            lowTempWindowHours: 3,
+            lowTempWindowHours: 2,
             lowTempThresholdFahrenheit: 50
         )
         XCTAssertNil(snapshot.lowTempExpectedInHours)
@@ -144,15 +148,39 @@ final class WeatherServiceTests: XCTestCase {
         XCTAssertNil(snapshot.lowTempExpectedInHours)
     }
 
-    func testLowTempUsesCelsiusForecastTemps() {
-        // Threshold 50°F == 10°C; a 9°C bucket is below it.
+    func testLowTempNotWarnedWhenCurrentlyAboveAndRising() {
+        // Regression (#43): current temp above threshold and only rising. The
+        // elapsed index-0 bucket (49) is below but must be ignored.
         let snapshot = OpenMeteoMapper.snapshot(
-            from: response(temperatures: [15, 12, 9, 8]),
+            from: response(temperature: 70, temperatures: [49, 55, 60, 65]),
+            unit: .fahrenheit,
+            lowTempWindowHours: 6,
+            lowTempThresholdFahrenheit: 50
+        )
+        XCTAssertNil(snapshot.lowTempExpectedInHours)
+    }
+
+    func testLowTempNotWarnedWhenCurrentlyBelowThreshold() {
+        // Already below the threshold -> handled by cold/freeze cues, not a
+        // forward-looking "may fall below" warning.
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(temperature: 45, temperatures: [44, 43, 42, 41]),
+            unit: .fahrenheit,
+            lowTempWindowHours: 6,
+            lowTempThresholdFahrenheit: 50
+        )
+        XCTAssertNil(snapshot.lowTempExpectedInHours)
+    }
+
+    func testLowTempUsesCelsiusForecastTemps() {
+        // Threshold 50°F == 10°C; a 9°C bucket is below it. Current 12°C is above.
+        let snapshot = OpenMeteoMapper.snapshot(
+            from: response(temperature: 12, temperatures: [15, 12, 9, 8]),
             unit: .celsius,
             lowTempWindowHours: 6,
             lowTempThresholdFahrenheit: 50
         )
-        XCTAssertEqual(snapshot.lowTempExpectedInHours, 3)
+        XCTAssertEqual(snapshot.lowTempExpectedInHours, 2)
     }
 
     func testLowTempWarningTextFormatsThresholdAndHours() {
