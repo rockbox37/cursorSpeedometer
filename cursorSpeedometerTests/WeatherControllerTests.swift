@@ -13,6 +13,25 @@ private struct FakeWeatherProvider: WeatherProvider {
     }
 }
 
+/// Counts how many times a fetch is requested (accessed on the main actor).
+private final class CountingWeatherProvider: WeatherProvider, @unchecked Sendable {
+    private(set) var fetchCount = 0
+    private let snapshot: WeatherSnapshot
+
+    init(snapshot: WeatherSnapshot) {
+        self.snapshot = snapshot
+    }
+
+    func fetch(
+        latitude: Double,
+        longitude: Double,
+        config: WeatherForecastConfig
+    ) async throws -> WeatherSnapshot {
+        fetchCount += 1
+        return snapshot
+    }
+}
+
 @MainActor
 final class WeatherControllerTests: XCTestCase {
     private func waitUntil(
@@ -167,6 +186,75 @@ final class WeatherControllerTests: XCTestCase {
 
         XCTAssertEqual(controller.activeRefreshInterval, WeatherController.nearFreezingRefreshInterval)
         controller.stop()
+    }
+
+    func testRefetchesAfterSignificantMove() async {
+        let provider = CountingWeatherProvider(
+            snapshot: WeatherSnapshot(temperature: 70, unit: .fahrenheit, rainExpectedInHours: nil)
+        )
+        let controller = WeatherController(provider: provider, unit: .fahrenheit)
+
+        controller.start()
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { provider.fetchCount >= 1 }
+
+        // A small move (~11 m) must not trigger a refetch.
+        controller.updateLocation(latitude: 37.0001, longitude: -122)
+        // A large move (~11 km) must.
+        controller.updateLocation(latitude: 37.1, longitude: -122)
+        await waitUntil { provider.fetchCount >= 2 }
+
+        XCTAssertEqual(provider.fetchCount, 2)
+        controller.stop()
+    }
+
+    func testFasterCadenceWhileRiding() async {
+        let controller = WeatherController(
+            provider: FakeWeatherProvider { _ in
+                WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
+            },
+            unit: .fahrenheit
+        )
+
+        controller.start()
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { controller.snapshot != nil }
+        XCTAssertEqual(controller.activeRefreshInterval, WeatherController.standardRefreshInterval)
+
+        // Move ~111 m (counts as movement, under the refetch distance) -> riding cadence.
+        controller.updateLocation(latitude: 37.001, longitude: -122)
+        XCTAssertEqual(controller.activeRefreshInterval, WeatherController.ridingRefreshInterval)
+        controller.stop()
+    }
+
+    func testRidingCadenceRevertsToStandardAfterIdle() async {
+        var current = Date(timeIntervalSince1970: 1_000)
+        let controller = WeatherController(
+            provider: FakeWeatherProvider { _ in
+                WeatherSnapshot(temperature: 60, unit: .fahrenheit, rainExpectedInHours: nil)
+            },
+            unit: .fahrenheit,
+            now: { current }
+        )
+
+        controller.start()
+        controller.updateLocation(latitude: 37, longitude: -122)
+        await waitUntil { controller.snapshot != nil }
+
+        controller.updateLocation(latitude: 37.001, longitude: -122)
+        XCTAssertEqual(controller.activeRefreshInterval, WeatherController.ridingRefreshInterval)
+
+        // Advance past the idle timeout, then a tiny (non-movement) update.
+        current = current.addingTimeInterval(WeatherController.ridingIdleTimeout + 1)
+        controller.updateLocation(latitude: 37.0011, longitude: -122)
+        XCTAssertEqual(controller.activeRefreshInterval, WeatherController.standardRefreshInterval)
+        controller.stop()
+    }
+
+    func testDistanceMetersApproximatesKnownSpan() {
+        // ~0.1° of latitude is ~11.1 km.
+        let distance = WeatherController.distanceMeters((latitude: 37, longitude: -122), (latitude: 37.1, longitude: -122))
+        XCTAssertEqual(distance, 11_119, accuracy: 200)
     }
 
     func testStopClearsActiveRefreshInterval() async {
