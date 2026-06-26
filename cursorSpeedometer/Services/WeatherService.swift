@@ -23,8 +23,10 @@ struct WeatherForecastConfig: Equatable, Sendable {
     }
 
     /// Hours of hourly forecast the request must cover to satisfy both analyses.
+    /// The +1 accounts for hourly index 0 being the elapsed current hour, so the
+    /// low-temp look-ahead still has `window` genuinely-future buckets after it.
     var forecastHours: Int {
-        OpenMeteoMapper.clampWindowHours(max(rainWindowHours, lowTempWindowHours))
+        OpenMeteoMapper.clampWindowHours(max(rainWindowHours, lowTempWindowHours)) + 1
     }
 }
 
@@ -107,8 +109,10 @@ enum OpenMeteoMapper {
         let amounts = response.hourly?.precipitation ?? []
         let temperatures = response.hourly?.temperature2m ?? []
 
+        let currentFahrenheit = toFahrenheit(response.current.temperature2m, unit: unit)
         let lowTempHours = lowTempThresholdFahrenheit.flatMap { threshold in
             hoursUntilLowTemp(
+                currentFahrenheit: currentFahrenheit,
                 temperatures: temperatures,
                 thresholdFahrenheit: threshold,
                 unit: unit,
@@ -142,22 +146,34 @@ enum OpenMeteoMapper {
         return nil
     }
 
-    /// Returns the 1-based hour of the first upcoming bucket whose forecast
-    /// temperature falls below the threshold, or nil if none does in the window.
+    /// Hours ahead (next full hour = 1) of the first *future* forecast bucket
+    /// whose temperature falls below the threshold, or nil.
+    ///
+    /// This is a forward-looking "may fall below" alert, so it only applies when
+    /// the current temperature is at/above the threshold (otherwise the cold/freeze
+    /// cues cover the present), and it ignores hourly index 0, which is the
+    /// already-elapsed current hour and can read below the threshold near the
+    /// dawn minimum even while the live temperature is climbing.
     private static func hoursUntilLowTemp(
+        currentFahrenheit: Double,
         temperatures: [Double?],
         thresholdFahrenheit: Double,
         unit: TemperatureUnit,
         windowHours: Int
     ) -> Int? {
-        for index in 0..<clampWindowHours(windowHours) {
-            guard index < temperatures.count, let temperature = temperatures[index] else { continue }
-            let fahrenheit = unit == .celsius ? temperature * 9 / 5 + 32 : temperature
-            if fahrenheit < thresholdFahrenheit {
-                return index + 1
+        guard currentFahrenheit >= thresholdFahrenheit else { return nil }
+        let window = clampWindowHours(windowHours)
+        for hoursAhead in 1...window {
+            guard hoursAhead < temperatures.count, let temperature = temperatures[hoursAhead] else { continue }
+            if toFahrenheit(temperature, unit: unit) < thresholdFahrenheit {
+                return hoursAhead
             }
         }
         return nil
+    }
+
+    private static func toFahrenheit(_ temperature: Double, unit: TemperatureUnit) -> Double {
+        unit == .celsius ? temperature * 9 / 5 + 32 : temperature
     }
 }
 

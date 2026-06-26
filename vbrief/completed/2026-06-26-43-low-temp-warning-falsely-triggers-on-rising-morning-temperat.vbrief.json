@@ -1,0 +1,46 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #43"
+  },
+  "plan": {
+    "id": "low-temp-false-trigger",
+    "title": "Low Temp Warning falsely triggers on rising morning temperatures",
+    "status": "completed",
+    "narratives": {
+      "Description": "Low Temp Warning falsely triggers on rising morning temperatures",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/43",
+      "Overview": "## Bug\nThe **Low Temp Warning** (\"Temps may fall below DD within HH hours\") fires in the morning even when the temperature is already **above** the threshold and steadily **rising** (only going up).\n\n## Root cause\nThe low-temp analysis reads Open-Meteo's `hourly.temperature_2m`. With our `forecast_hours` request parameter, **hourly index 0 is the current (already-elapsed) hour** (verified against the API: `hourly.time[0]` equals `current.time`, rounded down to the hour).\n\nIn `OpenMeteoMapper.hoursUntilLowTemp`:\n1. The scan starts at **index 0** — the elapsed current hour. Near the dawn minimum, that top-of-hour value can read at/just below the threshold even when the live `current` temperature has already climbed above it.\n2. There is **no check on the current temperature**. A \"may fall below\" alert should only apply when it's currently at/above the threshold and a *future* hour drops below it.\n\nCombined, a warming morning (e.g. 49.5 at the top of the hour → 51 now and rising) trips the warning off the stale index-0 bucket.\n\nThe rain warning uses the same index-0 logic but is acceptable there (\"rain within ~1 hour\" may legitimately include the current hour), so this fix is scoped to the low-temp path only.\n\n## Fix\n1. Only emit the low-temp warning when the **current temperature is at/above the threshold**.\n2. **Scan future hours only** (skip the elapsed current-hour bucket).\n3. Request **one extra forecast hour** so the look-ahead window still covers N full future hours after dropping index 0.\n4. Update unit tests + add regressions: \"currently above and rising → no warning\" and \"already below → no warning\".",
+      "Labels": "bug",
+      "FunctionalRequirements": "FR-1: The low-temp warning MUST NOT fire when the current temperature is at/above the threshold and no future hour within the window drops below it.\nFR-2: The low-temp warning MUST NOT fire when the current temperature is already below the threshold (cold/freeze cues cover that).\nFR-3: The analysis MUST consider only future hours, excluding the elapsed current-hour bucket (hourly index 0).\nFR-4: The reported hours-until value MUST reflect hours ahead of now (next full hour = 1).",
+      "Architecture": "In OpenMeteoMapper: pass the current temperature (converted to Fahrenheit) into hoursUntilLowTemp; guard that current>=threshold else return nil; scan hourly indices 1...clampWindowHours(window) (skip index 0) and return the matching index as hours-ahead. Bump WeatherForecastConfig.forecastHours to clampWindowHours(max(rain,lowTemp))+1 so N future buckets exist after dropping index 0. Leave the rain path (hoursUntilRain) unchanged.",
+      "TestingStrategy": "Update existing low-temp mapper tests to the future-only semantics; add regressions for 'current above + rising -> nil' and 'current below threshold -> nil'; update forecastHours expectation (+1). Run xcodebuild test + SwiftLint strict."
+    },
+    "items": [
+      {
+        "title": "Fix low-temp false trigger (future-only + current-temp guard)",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "No warning when above+rising or already below; future-only scan; tests green."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 43,
+      "completedAt": "2026-06-26T04:26:04Z"
+    },
+    "tags": [
+      "bug"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/43",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #43: Low Temp Warning falsely triggers on rising morning temperatures"
+      }
+    ],
+    "updated": "2026-06-26T04:26:04Z"
+  }
+}
