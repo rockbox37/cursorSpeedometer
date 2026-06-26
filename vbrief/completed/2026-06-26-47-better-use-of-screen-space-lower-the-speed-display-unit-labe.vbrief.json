@@ -1,0 +1,46 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #47"
+  },
+  "plan": {
+    "id": "ride-layout-space",
+    "title": "Better use of screen space: lower the speed display + unit label, enlarge speed 15%",
+    "status": "completed",
+    "narratives": {
+      "Description": "Better use of screen space: lower the speed display + unit label, enlarge speed 15%",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/47",
+      "Overview": "## Request\nMake better use of vertical screen space on the ride screen.\n\n1. **Move the main speedometer display down** the screen (it currently sits high, leaving a gap above the stats grid).\n2. **Bring the speed unit label down closer to the stats grid** (Trip, Odometer, Max, Average) so the number, its unit, and the grid read as one cluster.\n3. **Increase the main speed number by 15%** in size.\n\n## Current layout\n`RideView.speedDisplay`:\n```swift\nprivate var speedDisplay: some View {\n    VStack(spacing: 8) {\n        Text(rideViewModel.state.currentSpeedMps.formattedSpeed(using: settings.speedUnit))\n            .font(.system(size: 130, weight: .bold, design: .rounded))   // -> ~150 (15% larger)\n            ...\n        Text(settings.speedUnit.speedLabel)\n            .font(.title2.weight(.semibold))\n            ...\n    }\n    .frame(maxWidth: .infinity)\n    .padding(.vertical, 24)\n}\n```\nThe ride screen body is `VStack(spacing: 24) { topBar; alertBanner; speedDisplay; statsGrid; controls }`.\n\n## Desired behavior\n- Speed number font ~**150pt** (130 * 1.15 ≈ 149.5).\n- Push the speed display lower (e.g. add top spacing / a `Spacer` above it, or adjust the vertical padding/arrangement) so it's not floating near the top.\n- Reduce the gap between the unit label and the stats grid so the unit sits just above the grid.\n\n## Notes\n- Keep `minimumScaleFactor`/`lineLimit` so the larger number still fits at high speeds and on smaller devices.\n- Final spacing values are a judgment call; aim for a balanced, grouped look (speed number → unit → grid).",
+      "Labels": "enhancement",
+      "FunctionalRequirements": "FR-1: The main speed number MUST be ~15% larger (130pt -> ~150pt).\nFR-2: The speed display MUST sit lower on the screen (not floating near the top).\nFR-3: The speed unit label MUST sit close to the stats grid so speed -> unit -> grid read as one cluster.\nFR-4: The layout MUST be preserved on smaller devices (e.g. iPhone SE): no clipping/overflow; the large number still fits.",
+      "Architecture": "In RideView: bump speedDisplay font 130 -> 150 and keep minimumScaleFactor(0.5)/lineLimit(1). Remove the fixed .padding(.vertical, 24) that floats the cluster. Use a collapsing Spacer(minLength: 0) above the speed cluster to push it down, and group speedDisplay + statsGrid in a tighter inner VStack (spacing ~12) so the unit sits just above the grid. Spacers collapse and minimumScaleFactor shrinks the number on small screens, preserving the SE look.",
+      "TestingStrategy": "Layout/visual change; no new unit tests. Build + xcodebuild test (existing suite stays green) + SwiftLint strict. Visual check on a large device and a small device (iPhone SE) for grouping and no overflow."
+    },
+    "items": [
+      {
+        "title": "Lower speed display, group unit with grid, enlarge speed 15%",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Speed ~150pt, lowered, unit near grid, no overflow on SE."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 47,
+      "completedAt": "2026-06-26T22:11:56Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/47",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #47: Better use of screen space: lower the speed display + unit label, enlarge speed 15%"
+      }
+    ],
+    "updated": "2026-06-26T22:11:56Z"
+  }
+}
