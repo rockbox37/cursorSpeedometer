@@ -55,7 +55,7 @@ struct RideView: View {
     private var speedDisplay: some View {
         VStack(spacing: 8) {
             Text(rideViewModel.state.currentSpeedMps.formattedSpeed(using: settings.speedUnit))
-                .font(.system(size: 150, weight: .bold, design: .rounded))
+                .font(.system(size: 225, weight: .bold, design: .rounded))
                 .foregroundStyle(palette.primaryColor)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
