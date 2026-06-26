@@ -1,0 +1,46 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #49"
+  },
+  "plan": {
+    "id": "taller-tab-selector",
+    "title": "Make the Ride/Settings selector taller for gloved use",
+    "status": "completed",
+    "narratives": {
+      "Description": "Make the Ride/Settings selector taller for gloved use",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/49",
+      "Overview": "## Request\nMake the bottom **Ride / Settings** selector a little **taller** so it's easier to tap while wearing gloves.\n\n## Current\n`RootView` (in `cursorSpeedometerApp.swift`) uses a standard SwiftUI `TabView` with two `.tabItem`s (Ride = `speedometer`, Settings = `gearshape`). The native iOS tab bar height (~49pt) is system-fixed and can't be increased directly.\n\n## Approach\nReplace the native `TabView` with a custom, theme-aware bottom selector that mirrors the current tabs (same icons + labels) but with a larger tap height for gloved fingers. Switch the displayed screen via a `@State` selection.\n\n## Requirements\n- Two items: Ride (`speedometer`) and Settings (`gearshape`), same labels.\n- Noticeably taller tap targets than the native bar (e.g. ~64pt item height).\n- Theme-aware: selected uses the accent color, unselected the secondary color, on the theme background.\n- Respect the bottom safe area (home indicator); no clipping on smaller devices.\n- Accessible: each item exposes a label and selected state.",
+      "Labels": "enhancement",
+      "FunctionalRequirements": "FR-1: The Ride/Settings selector MUST have taller tap targets than the native tab bar (~64pt item height) for gloved use.\nFR-2: It MUST keep the two items (Ride=speedometer, Settings=gearshape) with the same labels and switch the displayed screen.\nFR-3: It MUST be theme-aware (selected=accent, unselected=secondary, on theme background).\nFR-4: It MUST respect the bottom safe area and not clip on smaller devices.\nFR-5: Each item MUST be accessible (label + selected state).",
+      "Architecture": "Replace the native TabView in RootView (cursorSpeedometerApp.swift) with a VStack: BrandHeaderView + a content area that switches between RideView and SettingsView on a @State selection + a custom bottom selector. The selector is an HStack of two equal-width buttons (icon over label) with increased height (minHeight ~64) and vertical padding, themed via ThemePalette derived from settings.activeTheme, with a subtle top divider. Implemented inline in the existing file to avoid new Xcode project file references.",
+      "TestingStrategy": "UI/navigation change; no new unit tests. Build + xcodebuild test (existing suite green) + SwiftLint strict. Visual check that both screens switch, the bar is taller, themes apply, and the home indicator area is respected on large and small devices."
+    },
+    "items": [
+      {
+        "title": "Custom taller glove-friendly Ride/Settings selector",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Taller themed selector switches screens; safe-area respected; tests green."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 49,
+      "completedAt": "2026-06-26T22:26:08Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/49",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #49: Make the Ride/Settings selector taller for gloved use"
+      }
+    ],
+    "updated": "2026-06-26T22:26:08Z"
+  }
+}
