@@ -23,8 +23,13 @@ struct RideView: View {
             VStack(spacing: 24) {
                 topBar
                 SevereWeatherAlertBanner(alert: alertController.alert)
-                speedDisplay
-                statsGrid
+                // Collapsing spacer pushes the speed cluster lower; it shrinks to
+                // nothing on small devices so nothing clips.
+                Spacer(minLength: 0)
+                VStack(spacing: 12) {
+                    speedDisplay
+                    statsGrid
+                }
                 controls
             }
             .padding()
@@ -50,7 +55,7 @@ struct RideView: View {
     private var speedDisplay: some View {
         VStack(spacing: 8) {
             Text(rideViewModel.state.currentSpeedMps.formattedSpeed(using: settings.speedUnit))
-                .font(.system(size: 130, weight: .bold, design: .rounded))
+                .font(.system(size: 150, weight: .bold, design: .rounded))
                 .foregroundStyle(palette.primaryColor)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
@@ -59,7 +64,6 @@ struct RideView: View {
                 .foregroundStyle(palette.secondaryColor)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
     }
 
     private var statsGrid: some View {
