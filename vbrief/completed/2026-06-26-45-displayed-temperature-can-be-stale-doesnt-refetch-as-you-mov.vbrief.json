@@ -1,0 +1,47 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #45"
+  },
+  "plan": {
+    "id": "weather-refresh-on-move",
+    "title": "Displayed temperature can be stale: doesn't refetch as you move while riding",
+    "status": "completed",
+    "narratives": {
+      "Description": "Displayed temperature can be stale: doesn't refetch as you move while riding",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/45",
+      "Overview": "## Report\nThe app showed **89°F** while a car thermometer read **80°F** — a ~9° gap. Question was whether the app temperature is stale.\n\n## Investigation\nThree contributing factors:\n\n1. **No refetch on movement.** `WeatherController.updateLocation(latitude:longitude:)` stores the new coordinate but only triggers an immediate fetch on the **first** fix:\n   ```swift\n   func updateLocation(latitude: Double, longitude: Double) {\n       let isFirstFix = coordinate == nil\n       coordinate = (latitude, longitude)\n       if isFirstFix { fetch() }   // later moves wait for the periodic timer\n   }\n   ```\n   So while riding, the temperature reflects wherever you were at the last refresh, not your current location.\n\n2. **15-minute refresh cadence.** `standardRefreshInterval = 900s` (240s only when near/below freezing). Foregrounding does force a refresh (`onScenePhaseChange(.active) -> weatherController.start() -> fetch()`), but during a continuous ride the reading can be up to ~15 minutes (and many miles) old.\n\n3. **Modeled vs. sensor.** Open-Meteo `current.temperature_2m` is a gridded model value, not a physical station/vehicle sensor, so it will never exactly match a car thermometer (microclimates, sun-baked roads, etc.).\n\nFactors 1–2 mean the displayed temp is effectively **stale with respect to your current location while moving**, which plausibly explains most of the gap if the ride started somewhere warmer.\n\n## Possible improvements (to discuss)\n- Refetch when the rider has moved a meaningful distance since the last weather fetch (e.g. a distance threshold like ~5–10 km), in addition to the periodic timer — while still respecting Open-Meteo's free-tier limits.\n- Optionally shorten the standard cadence (e.g. 5–10 min) while actively riding.\n- Optionally surface a \"last updated\" timestamp / freshness indicator so the value's age is transparent.\n- Document that the temperature is a regional modeled value and may differ from a vehicle sensor.",
+      "Labels": "enhancement",
+      "Scope": "Implementing two of the proposed improvements: (1) refetch weather after the rider moves a meaningful distance since the last fetch; (2) use a faster refresh cadence while actively riding. Not implementing the 'last updated' indicator in this scope.",
+      "FunctionalRequirements": "FR-1: Weather MUST refetch when the current location is at least a significant distance (default ~5 km) from the coordinate of the last fetch.\nFR-2: While the rider is actively moving, the periodic refresh cadence MUST be faster than the idle/standard cadence.\nFR-3: The near-or-below-freezing cadence remains the fastest and continues to take precedence.\nFR-4: API usage MUST stay well within Open-Meteo free-tier limits (no per-update fetching; distance-gated + bounded cadence).",
+      "Architecture": "In WeatherController: track lastFetchCoordinate (set when a fetch starts) and detect movement from the existing coordinate stream. On updateLocation, refetch if distance from lastFetchCoordinate >= significantMoveMeters; otherwise reschedule the timer so the cadence reflects current riding state. Add a pure static haversine distanceMeters helper (unit-testable). desiredInterval precedence: nearFreezing (240s) > riding (ridingRefreshInterval, e.g. 300s) > standard (900s). Riding is inferred from recent movement (consecutive-update step >= movementThresholdMeters within ridingIdleTimeout); inject a now: () -> Date clock for deterministic tests.",
+      "TestingStrategy": "Add tests: refetch occurs after a >5km move and not after a small move; activeRefreshInterval becomes ridingRefreshInterval after movement and reverts to standard after the idle timeout (using injected clock). Keep existing cadence/refetch tests green. xcodebuild test + SwiftLint strict."
+    },
+    "items": [
+      {
+        "title": "Distance-based refetch + faster riding cadence",
+        "status": "pending",
+        "narrative": {
+          "Acceptance": "Refetch after meaningful move; faster cadence while moving; freezing still fastest; tests green."
+        }
+      }
+    ],
+    "metadata": {
+      "kind": "scope",
+      "process": "Light",
+      "issue": 45,
+      "completedAt": "2026-06-26T21:38:31Z"
+    },
+    "tags": [
+      "enhancement"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/45",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #45: Displayed temperature can be stale: doesn't refetch as you move while riding"
+      }
+    ],
+    "updated": "2026-06-26T21:38:31Z"
+  }
+}
