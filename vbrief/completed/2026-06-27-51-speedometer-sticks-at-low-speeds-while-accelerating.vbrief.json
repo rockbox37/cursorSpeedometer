@@ -1,0 +1,31 @@
+{
+  "vBRIEFInfo": {
+    "version": "0.6",
+    "description": "Scope vBRIEF ingested from GitHub issue #51"
+  },
+  "plan": {
+    "title": "Speedometer sticks at low speeds while accelerating",
+    "status": "completed",
+    "narratives": {
+      "Description": "Speedometer sticks at low speeds while accelerating",
+      "Origin": "Ingested from https://github.com/rockbox37/cursorSpeedometer/issues/51",
+      "Overview": "## Report\nOn a ride, the speed display **stuck at low speeds while accelerating** — held at ~2 MPH longer than it should while pulling away, and in other cases stuck at ~8–9 MPH while clearly accelerating. It stayed wrong long enough to lose confidence in the display.\n\n## Diagnosis\nThe view model applies the engine result directly with no smoothing, so a \"stuck\" reading means low-speed samples are snapped to zero, held, or lagged.\n\n1. **Stationary gate too aggressive in the low range.** `TripComputerEngine` snaps resolved speed to 0 when the per-update position delta is under `stationaryDistanceMeters` (1.0 m) AND GPS Doppler is under `stationaryCreepSpeedMps` (2.5 m/s ≈ 5.6 mph). At ~1 Hz this suppresses real speeds in the ~1–5 mph range, so accelerating away from a stop feels stuck low.\n2. **Doppler validity/lag.** CoreLocation `speed` is -1 (invalid) right as movement resumes and in marginal reception; the engine then falls back to coarse, laggy position-derived speed. When Doppler is valid but lags during hard acceleration, the display follows the lagging value — nothing prefers the faster of derived vs. Doppler while accelerating.\n3. **Holds extend it.** Duplicate/out-of-order fixes (`delta <= 0`) and the accuracy guard return state unchanged, holding the last value instead of recovering from a better signal.\n\n## Fix\n- Loosen the stationary snap so it only triggers when genuinely stopped (smaller distance threshold; only snap to 0 when Doppler is ~0 or invalid, not up to 5.6 mph).\n- During acceleration, use the more responsive of Doppler vs. position-derived speed when both are plausible.\n- On a valid-Doppler duplicate fix, still update the displayed speed instead of only holding.\n- Add unit tests: accelerate-from-stop ramp, invalid-Doppler ramp.",
+      "Labels": "bug"
+    },
+    "items": [],
+    "tags": [
+      "bug"
+    ],
+    "references": [
+      {
+        "uri": "https://github.com/rockbox37/cursorSpeedometer/issues/51",
+        "type": "x-vbrief/github-issue",
+        "title": "Issue #51: Speedometer sticks at low speeds while accelerating"
+      }
+    ],
+    "updated": "2026-06-27T23:59:47Z",
+    "metadata": {
+      "completedAt": "2026-06-27T23:59:47Z"
+    }
+  }
+}

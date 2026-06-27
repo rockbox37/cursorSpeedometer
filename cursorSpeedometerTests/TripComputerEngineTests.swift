@@ -44,18 +44,20 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLatitude: 37.0,
             coordinateLongitude: -122.0
         )
+        // Position advances ~10 m in 1s, matching the 10 m/s Doppler reading.
         let moderate = LocationSample(
             speedMetersPerSecond: 10,
             timestamp: baseDate.addingTimeInterval(1),
             horizontalAccuracy: 5,
-            coordinateLatitude: 37.00009,
+            coordinateLatitude: 37.000089931,
             coordinateLongitude: -122.0
         )
+        // Position advances ~40 m over the next 2s, matching the 20 m/s Doppler reading.
         let fast = LocationSample(
             speedMetersPerSecond: 20,
             timestamp: baseDate.addingTimeInterval(3),
             horizontalAccuracy: 5,
-            coordinateLatitude: 37.00045,
+            coordinateLatitude: 37.000449655,
             coordinateLongitude: -122.0
         )
 
@@ -284,6 +286,55 @@ final class TripComputerEngineTests: XCTestCase {
         XCTAssertEqual(state.currentSpeedMps, 10, accuracy: 0.3)
     }
 
+    func testLaggingDopplerDuringAccelerationUsesResponsiveDerived() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 9,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        // The rider is accelerating: position advanced ~13 m in 1s (derived ~13 m/s),
+        // but the Doppler reading still lags at 9 m/s. The display must follow the
+        // faster, truer position-derived speed instead of staying pinned low.
+        let accelerating = LocationSample(
+            speedMetersPerSecond: 9,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.000117,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: accelerating, state: state, now: baseDate.addingTimeInterval(1))
+
+        XCTAssertEqual(state.currentSpeedMps, 13, accuracy: 0.5)
+    }
+
+    func testLowMovingSpeedIsNotSnappedToZero() {
+        let anchor = LocationSample(
+            speedMetersPerSecond: 0.9,
+            timestamp: baseDate,
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0,
+            coordinateLongitude: -122.0
+        )
+        // Pulling away at ~2 mph: position advances ~0.9 m in 1s and the Doppler agrees.
+        // This is genuine movement, not stopped jitter, so it must read the real speed.
+        let creeping = LocationSample(
+            speedMetersPerSecond: 0.9,
+            timestamp: baseDate.addingTimeInterval(1),
+            horizontalAccuracy: 5,
+            coordinateLatitude: 37.0000081,
+            coordinateLongitude: -122.0
+        )
+
+        var state = engine.process(sample: anchor, state: TripComputerState(), now: baseDate)
+        state = engine.process(sample: creeping, state: state, now: baseDate.addingTimeInterval(1))
+
+        XCTAssertEqual(state.currentSpeedMps, 0.9, accuracy: 0.2)
+    }
+
     func testInvalidDopplerFallsBackToDerivedSpeed() {
         let anchor = LocationSample(
             speedMetersPerSecond: 10,
@@ -400,13 +451,12 @@ final class TripComputerEngineTests: XCTestCase {
             coordinateLatitude: 37.0,
             coordinateLongitude: -122.0
         )
-        // ~13 m north over 1.2s gives a derived speed above the 10 m/s GPS
-        // reading, so the resolved (capped at GPS) speed is 10 m/s.
+        // ~12 m north over 1.2s gives a derived speed matching the 10 m/s GPS reading.
         let second = LocationSample(
             speedMetersPerSecond: 10,
             timestamp: baseDate.addingTimeInterval(1.2),
             horizontalAccuracy: 5,
-            coordinateLatitude: 37.00012,
+            coordinateLatitude: 37.000107919,
             coordinateLongitude: -122.0
         )
 
