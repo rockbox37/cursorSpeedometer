@@ -1,5 +1,13 @@
 import Foundation
 
+/// How urgently a GPS state should be surfaced to the rider. `.critical` means
+/// there is no usable fix (so no live speed); `.degraded` means a fix exists but
+/// its accuracy is poor enough that the reading may be unreliable.
+enum GPSAttentionLevel: Equatable, Sendable {
+    case critical
+    case degraded
+}
+
 enum GPSSignalStatus: Equatable, Sendable {
     case unavailable
     case searching
@@ -7,6 +15,39 @@ enum GPSSignalStatus: Equatable, Sendable {
     case fair
     case good
     case strong
+
+    /// Whether (and how urgently) this status warrants a prominent on-screen alert.
+    /// `nil` for a healthy fix (`.fair`/`.good`/`.strong`) — only the header bars show.
+    var attention: GPSAttentionLevel? {
+        switch self {
+        case .unavailable, .searching: .critical
+        case .weak: .degraded
+        case .fair, .good, .strong: nil
+        }
+    }
+
+    /// Short headline for the GPS alert banner, or `nil` when no alert is warranted.
+    var alertTitle: String? {
+        switch self {
+        case .unavailable: "No GPS Signal"
+        case .searching: "Searching for GPS…"
+        case .weak: "Weak GPS Signal"
+        case .fair, .good, .strong: nil
+        }
+    }
+
+    /// Smaller guidance line telling the rider how to restore a good fix, or `nil`
+    /// when no alert is warranted.
+    var alertGuidance: String? {
+        switch self {
+        case .unavailable:
+            "Enable Location Services for this app in Settings."
+        case .searching, .weak:
+            "Make sure your device has a clear, unobstructed view of the sky."
+        case .fair, .good, .strong:
+            nil
+        }
+    }
 
     var filledBars: Int {
         switch self {

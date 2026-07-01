@@ -85,4 +85,46 @@ final class GPSSignalStatusTests: XCTestCase {
         XCTAssertEqual(status, .weak)
         XCTAssertEqual(status.filledBars, 1)
     }
+
+    // MARK: - Attention / alert content
+
+    func testCriticalAttentionForNoUsableFix() {
+        XCTAssertEqual(GPSSignalStatus.unavailable.attention, .critical)
+        XCTAssertEqual(GPSSignalStatus.searching.attention, .critical)
+    }
+
+    func testDegradedAttentionForWeakFix() {
+        XCTAssertEqual(GPSSignalStatus.weak.attention, .degraded)
+    }
+
+    func testNoAttentionForHealthyFix() {
+        XCTAssertNil(GPSSignalStatus.fair.attention)
+        XCTAssertNil(GPSSignalStatus.good.attention)
+        XCTAssertNil(GPSSignalStatus.strong.attention)
+    }
+
+    func testAlertContentPresentForAttentionStates() {
+        for status in [GPSSignalStatus.unavailable, .searching, .weak] {
+            XCTAssertNotNil(status.alertTitle, "\(status) should have an alert title")
+            XCTAssertNotNil(status.alertGuidance, "\(status) should have guidance")
+        }
+    }
+
+    func testUnavailableGuidancePointsToSettings() {
+        XCTAssertEqual(GPSSignalStatus.unavailable.alertGuidance,
+                       "Enable Location Services for this app in Settings.")
+    }
+
+    func testSearchingAndWeakGuidanceMentionClearSky() {
+        let expected = "Make sure your device has a clear, unobstructed view of the sky."
+        XCTAssertEqual(GPSSignalStatus.searching.alertGuidance, expected)
+        XCTAssertEqual(GPSSignalStatus.weak.alertGuidance, expected)
+    }
+
+    func testNoAlertContentForHealthyFix() {
+        for status in [GPSSignalStatus.fair, .good, .strong] {
+            XCTAssertNil(status.alertTitle, "\(status) should have no alert title")
+            XCTAssertNil(status.alertGuidance, "\(status) should have no guidance")
+        }
+    }
 }
