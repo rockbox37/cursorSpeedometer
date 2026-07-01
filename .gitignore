@@ -7,6 +7,12 @@ build/
 # macOS
 .DS_Store
 
+# Deft framework: the vendored payload is no longer committed. As of Deft
+# v0.55.1+ the framework is npm-published and materialized locally via the
+# `deft` CLI (`npm i -g @deftai/directive@latest` then `deft update`), so
+# .deft/core/ is a per-machine artifact, not repo content.
+.deft/core/
+
 # Deft framework: ignore local-only caches and scratch directories
 .deft-cache/
 vbrief/.eval/candidates.jsonl
