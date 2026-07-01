@@ -64,4 +64,15 @@ CI (`.github/workflows/ios-ci.yml`) pins **Xcode 15.4**, builds + tests with cod
 
 ## Deft framework (ignore for app work)
 
-`.deft/`, `.agents/`, `vbrief/`, `AGENTS.md`, `.githooks/`, and `Taskfile.yml` (the `deft:` include) belong to the vendored **Deft Directive** dev framework, not the app. A CI guard (`.github/workflows/deft-core-guard.yml`) **rejects any PR that mixes `.deft/core/**` changes with app changes** — keep framework updates in their own PR. The pre-commit hook enforces a branch-protection policy (no direct commits to the default branch unless explicitly allowed). For normal app work, ignore this subtree.
+`.agents/`, `vbrief/`, `AGENTS.md`, `.githooks/`, and `Taskfile.yml` (the `deft:` include) belong to the **Deft Directive** dev framework, not the app. For normal app work, ignore this subtree.
+
+The framework payload is **not committed**. As of Deft v0.55.1+ it is npm-published and materialized locally under `.deft/core/` (gitignored) by the `deft` CLI. To bootstrap it on a fresh clone (or in any environment that needs `task deft:*`, the pre-commit hooks, or the skills):
+
+```bash
+npm i -g @deftai/directive@latest   # Node >= 20; installs the `deft` CLI
+deft update                          # deposits .deft/core/ locally
+deft migrate                         # one-time, idempotent provenance stamp
+deft doctor                          # verify
+```
+
+The iOS CI (`ios-ci.yml`) does not depend on Deft, so it needs no bootstrap. The pre-commit hook enforces a branch-protection policy (no direct commits to the default branch unless explicitly allowed).
