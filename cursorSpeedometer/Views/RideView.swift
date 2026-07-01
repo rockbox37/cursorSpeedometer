@@ -11,6 +11,14 @@ struct RideView: View {
         ThemePalette.palette(for: settings.activeTheme)
     }
 
+    private var gpsStatus: GPSSignalStatus {
+        GPSSignalStatus.resolve(
+            authorization: locationService.authorizationState,
+            horizontalAccuracy: locationService.latestSample?.horizontalAccuracy,
+            lastFixDate: locationService.latestSample?.timestamp
+        )
+    }
+
     var body: some View {
         ZStack {
             palette.backgroundColor.ignoresSafeArea()
@@ -23,6 +31,7 @@ struct RideView: View {
             VStack(spacing: 24) {
                 topBar
                 SevereWeatherAlertBanner(alert: alertController.alert)
+                GPSSignalAlertBanner(status: gpsStatus, palette: palette)
                 // Collapsing spacer pushes the speed cluster lower; it shrinks to
                 // nothing on small devices so nothing clips.
                 Spacer(minLength: 0)
@@ -97,13 +106,8 @@ struct RideView: View {
 
     private var controls: some View {
         VStack(spacing: 12) {
-            if locationService.authorizationState == .denied {
-                Text("Location access is required for GPS speed. Enable it in Settings.")
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(palette.secondaryColor)
-            }
-
+            // The denied / no-signal case is now surfaced prominently by
+            // GPSSignalAlertBanner above, so no footnote is needed here.
             Button("Reset Trip") {
                 rideViewModel.resetTrip()
             }
