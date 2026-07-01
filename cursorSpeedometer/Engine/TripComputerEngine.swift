@@ -27,7 +27,9 @@ struct TripComputerEngine: Sendable {
     /// Clear displayed speed only after this long without a processed location update.
     static let staleSampleSeconds = 3.0
     /// Position delta below this counts as "barely moved" for stationary detection.
-    static let stationaryDistanceMeters = 1.0
+    /// Kept small so a genuinely-moving low speed (~2 mph) isn't snapped to zero, while
+    /// stopped GPS jitter (typically a few tens of cm) still reads as stationary.
+    static let stationaryDistanceMeters = 0.6
     /// Below this GPS speed a tiny position delta is treated as stationary creep and
     /// snapped to zero; at or above it we trust the Doppler reading (so a duplicate
     /// fix at speed never flashes 0 mph).
@@ -180,19 +182,36 @@ struct TripComputerEngine: Sendable {
         if !gpsValid {
             // No Doppler reading: fall back to the position-derived speed.
             resolvedSpeed = derivedSpeed
-        } else if derivedSpeed > Self.stationaryCreepSpeedMps
-            && gpsSpeed > derivedSpeed * Self.derivedSpikeMultiplier
-            && gpsSpeed - derivedSpeed > Self.gpsSpikeMarginMps {
+        } else if isEgregiousDopplerSpike(gps: gpsSpeed, derived: derivedSpeed) {
             // Egregious Doppler spike far above a credible position-derived speed:
             // trust position. (A near-zero derived speed means the *position* glitched,
             // not the Doppler reading, so that case keeps the GPS speed below.)
             resolvedSpeed = derivedSpeed
-        } else {
-            // Trust the responsive GPS Doppler speed for the displayed value.
+        } else if isPositionDerivedSpike(gps: gpsSpeed, derived: derivedSpeed) {
+            // The position jumped well beyond a credible Doppler speed: trust Doppler.
             resolvedSpeed = gpsSpeed
+        } else {
+            // Both readings are credible. Use the more responsive (larger) of the two
+            // so a Doppler reading that lags or under-reports during acceleration can't
+            // pin the display low while the rider is clearly speeding up.
+            resolvedSpeed = max(gpsSpeed, derivedSpeed)
         }
 
         return SpeedComponents(resolved: resolvedSpeed, derived: derivedSpeed, gps: gpsSpeed, gpsValid: gpsValid)
+    }
+
+    /// A Doppler reading both far above and a multiple of a credible position-derived
+    /// speed is a Doppler glitch; fall back to the position truth.
+    private func isEgregiousDopplerSpike(gps: Double, derived: Double) -> Bool {
+        derived > Self.stationaryCreepSpeedMps
+            && gps > derived * Self.derivedSpikeMultiplier
+            && gps - derived > Self.gpsSpikeMarginMps
+    }
+
+    /// A position-derived speed wildly above a valid Doppler reading means the position
+    /// glitched forward, so the responsive-max blend must not pick the inflated value.
+    private func isPositionDerivedSpike(gps: Double, derived: Double) -> Bool {
+        gps > 0 && derived > gps * Self.derivedSpikeMultiplier && derived > 8.0
     }
 
     private func isPositionSpike(components: SpeedComponents) -> Bool {
