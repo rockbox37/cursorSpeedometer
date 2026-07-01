@@ -19,12 +19,15 @@ struct GPSSignalAlertBanner: View {
             HStack(spacing: 12) {
                 Image(systemName: iconName(for: attention))
                     .font(.title.weight(.bold))
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.title3.weight(.bold))
+                        .font(.title2.weight(.bold))
                     if let guidance = status.alertGuidance {
+                        // At least 50% larger than the former .footnote (~13pt) so the
+                        // tip stays readable at a glance while riding; the title steps
+                        // up in turn to keep the headline above the guidance.
                         Text(guidance)
-                            .font(.footnote)
+                            .font(.title3)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
